@@ -1,0 +1,10 @@
+//
+//  CommonCrypto.xcconfig
+//  JWTswift
+//
+//  Created by Blended Learning Center on 19.12.17.
+//  Copyright © 2017 Blended Learning Center. All rights reserved.
+//
+MODULEMAP_FILE[sdk=iphoneos*]        = $(SRCROOT)/CommonCrypto/iphoneos.modulemap
+MODULEMAP_FILE[sdk=iphonesimulator*] = $(SRCROOT)/CommonCrypto/iphonesimulator.modulemap
+MODULEMAP_FILE[sdk=macosx*]          = $(SRCROOT)/CommonCrypto/macosx.modulemap

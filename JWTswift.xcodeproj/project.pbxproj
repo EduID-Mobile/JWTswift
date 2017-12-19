@@ -10,6 +10,22 @@
 		680BB5AF1FE9143C00A877D3 /* JWTswift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680BB5A51FE9143C00A877D3 /* JWTswift.framework */; };
 		680BB5B41FE9143C00A877D3 /* JWTswiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */; };
 		680BB5B61FE9143C00A877D3 /* JWTswift.h in Headers */ = {isa = PBXBuildFile; fileRef = 680BB5A81FE9143C00A877D3 /* JWTswift.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5BF1FE9156700A877D3 /* CryptoManager.swift */; };
+		680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C11FE9157900A877D3 /* JWS.swift */; };
+		680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C21FE9157900A877D3 /* PemGenerator.swift */; };
+		680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C31FE9157900A877D3 /* KeyChain.swift */; };
+		680BB5C81FE9157A00A877D3 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C41FE9157A00A877D3 /* KeyManager.swift */; };
+		682190C31FE9433E00759FA5 /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 682190B31FE941D300759FA5 /* CommonCrypto.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		682190C81FE95ECA00759FA5 /* eduid_pub.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 682190C41FE95EC900759FA5 /* eduid_pub.jwks */; };
+		682190C91FE95ECA00759FA5 /* rsaCert.der in Resources */ = {isa = PBXBuildFile; fileRef = 682190C51FE95ECA00759FA5 /* rsaCert.der */; };
+		682190CA1FE95ECA00759FA5 /* ios_priv.pem in Resources */ = {isa = PBXBuildFile; fileRef = 682190C61FE95ECA00759FA5 /* ios_priv.pem */; };
+		682190CB1FE95ECA00759FA5 /* ios_priv.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 682190C71FE95ECA00759FA5 /* ios_priv.p12 */; };
+		682190D41FE96A8C00759FA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682190D31FE96A8C00759FA5 /* AppDelegate.swift */; };
+		682190D61FE96A8C00759FA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682190D51FE96A8C00759FA5 /* ViewController.swift */; };
+		682190D91FE96A8C00759FA5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682190D71FE96A8C00759FA5 /* Main.storyboard */; };
+		682190DC1FE96A8C00759FA5 /* AppTarget.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */; };
+		682190DE1FE96A8C00759FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 682190DD1FE96A8C00759FA5 /* Assets.xcassets */; };
+		682190E11FE96A8C00759FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,6 +36,20 @@
 			remoteGlobalIDString = 680BB5A41FE9143C00A877D3;
 			remoteInfo = JWTswift;
 		};
+		682190BF1FE9430700759FA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 680BB59C1FE9143C00A877D3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 682190B21FE941D300759FA5;
+			remoteInfo = CommonCrypto;
+		};
+		682190E71FE96B0900759FA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 680BB59C1FE9143C00A877D3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 682190D01FE96A8C00759FA5;
+			remoteInfo = AppTarget;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +59,31 @@
 		680BB5AE1FE9143C00A877D3 /* JWTswiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JWTswiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTswiftTests.swift; sourceTree = "<group>"; };
 		680BB5B51FE9143C00A877D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		680BB5BF1FE9156700A877D3 /* CryptoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptoManager.swift; sourceTree = "<group>"; };
+		680BB5C11FE9157900A877D3 /* JWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWS.swift; sourceTree = "<group>"; };
+		680BB5C21FE9157900A877D3 /* PemGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PemGenerator.swift; sourceTree = "<group>"; };
+		680BB5C31FE9157900A877D3 /* KeyChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
+		680BB5C41FE9157A00A877D3 /* KeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyManager.swift; sourceTree = "<group>"; };
+		682190B31FE941D300759FA5 /* CommonCrypto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonCrypto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		682190B61FE941D300759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		682190BB1FE941FC00759FA5 /* CommonCrypto.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = CommonCrypto.xcconfig; sourceTree = "<group>"; };
+		682190BC1FE9423A00759FA5 /* iphoneos.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = iphoneos.modulemap; sourceTree = "<group>"; };
+		682190BD1FE9427400759FA5 /* iphonesimulator.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = iphonesimulator.modulemap; sourceTree = "<group>"; };
+		682190BE1FE9429800759FA5 /* macosx.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = macosx.modulemap; sourceTree = "<group>"; };
+		682190C11FE9432500759FA5 /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = ../../../../../usr/lib/system/libcommonCrypto.dylib; sourceTree = "<group>"; };
+		682190C41FE95EC900759FA5 /* eduid_pub.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = eduid_pub.jwks; sourceTree = "<group>"; };
+		682190C51FE95ECA00759FA5 /* rsaCert.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = rsaCert.der; sourceTree = "<group>"; };
+		682190C61FE95ECA00759FA5 /* ios_priv.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ios_priv.pem; sourceTree = "<group>"; };
+		682190C71FE95ECA00759FA5 /* ios_priv.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = ios_priv.p12; sourceTree = "<group>"; };
+		682190D11FE96A8C00759FA5 /* AppTarget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppTarget.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		682190D31FE96A8C00759FA5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		682190D51FE96A8C00759FA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		682190D81FE96A8C00759FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		682190DB1FE96A8C00759FA5 /* AppTarget.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AppTarget.xcdatamodel; sourceTree = "<group>"; };
+		682190DD1FE96A8C00759FA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		682190E01FE96A8C00759FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		682190E21FE96A8C00759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		682190E61FE96A9600759FA5 /* AppTarget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppTarget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				682190C31FE9433E00759FA5 /* CommonCrypto.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +103,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		682190AF1FE941D300759FA5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		682190CE1FE96A8C00759FA5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -55,7 +125,10 @@
 			children = (
 				680BB5A71FE9143C00A877D3 /* JWTswift */,
 				680BB5B21FE9143C00A877D3 /* JWTswiftTests */,
+				682190B41FE941D300759FA5 /* CommonCrypto */,
+				682190D21FE96A8C00759FA5 /* AppTarget */,
 				680BB5A61FE9143C00A877D3 /* Products */,
+				680BB5F31FE9230900A877D3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +137,8 @@
 			children = (
 				680BB5A51FE9143C00A877D3 /* JWTswift.framework */,
 				680BB5AE1FE9143C00A877D3 /* JWTswiftTests.xctest */,
+				682190B31FE941D300759FA5 /* CommonCrypto.framework */,
+				682190D11FE96A8C00759FA5 /* AppTarget.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,7 +147,13 @@
 			isa = PBXGroup;
 			children = (
 				680BB5A81FE9143C00A877D3 /* JWTswift.h */,
+				680BB5C11FE9157900A877D3 /* JWS.swift */,
+				680BB5C31FE9157900A877D3 /* KeyChain.swift */,
+				680BB5C41FE9157A00A877D3 /* KeyManager.swift */,
+				680BB5C21FE9157900A877D3 /* PemGenerator.swift */,
+				680BB5BF1FE9156700A877D3 /* CryptoManager.swift */,
 				680BB5A91FE9143C00A877D3 /* Info.plist */,
+				682190CC1FE95ED200759FA5 /* TestResources */,
 			);
 			path = JWTswift;
 			sourceTree = "<group>";
@@ -86,6 +167,52 @@
 			path = JWTswiftTests;
 			sourceTree = "<group>";
 		};
+		680BB5F31FE9230900A877D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				682190C11FE9432500759FA5 /* libcommonCrypto.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		682190B41FE941D300759FA5 /* CommonCrypto */ = {
+			isa = PBXGroup;
+			children = (
+				682190B61FE941D300759FA5 /* Info.plist */,
+				682190BB1FE941FC00759FA5 /* CommonCrypto.xcconfig */,
+				682190BC1FE9423A00759FA5 /* iphoneos.modulemap */,
+				682190BE1FE9429800759FA5 /* macosx.modulemap */,
+				682190BD1FE9427400759FA5 /* iphonesimulator.modulemap */,
+			);
+			path = CommonCrypto;
+			sourceTree = "<group>";
+		};
+		682190CC1FE95ED200759FA5 /* TestResources */ = {
+			isa = PBXGroup;
+			children = (
+				682190C41FE95EC900759FA5 /* eduid_pub.jwks */,
+				682190C71FE95ECA00759FA5 /* ios_priv.p12 */,
+				682190C61FE95ECA00759FA5 /* ios_priv.pem */,
+				682190C51FE95ECA00759FA5 /* rsaCert.der */,
+			);
+			path = TestResources;
+			sourceTree = "<group>";
+		};
+		682190D21FE96A8C00759FA5 /* AppTarget */ = {
+			isa = PBXGroup;
+			children = (
+				682190E61FE96A9600759FA5 /* AppTarget.entitlements */,
+				682190D31FE96A8C00759FA5 /* AppDelegate.swift */,
+				682190D51FE96A8C00759FA5 /* ViewController.swift */,
+				682190D71FE96A8C00759FA5 /* Main.storyboard */,
+				682190DD1FE96A8C00759FA5 /* Assets.xcassets */,
+				682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */,
+				682190E21FE96A8C00759FA5 /* Info.plist */,
+				682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */,
+			);
+			path = AppTarget;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -94,6 +221,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				680BB5B61FE9143C00A877D3 /* JWTswift.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		682190B01FE941D300759FA5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +246,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				682190C01FE9430700759FA5 /* PBXTargetDependency */,
 			);
 			name = JWTswift;
 			productName = JWTswift;
@@ -130,11 +265,47 @@
 			);
 			dependencies = (
 				680BB5B11FE9143C00A877D3 /* PBXTargetDependency */,
+				682190E81FE96B0900759FA5 /* PBXTargetDependency */,
 			);
 			name = JWTswiftTests;
 			productName = JWTswiftTests;
 			productReference = 680BB5AE1FE9143C00A877D3 /* JWTswiftTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		682190B21FE941D300759FA5 /* CommonCrypto */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 682190B81FE941D300759FA5 /* Build configuration list for PBXNativeTarget "CommonCrypto" */;
+			buildPhases = (
+				682190AE1FE941D300759FA5 /* Sources */,
+				682190AF1FE941D300759FA5 /* Frameworks */,
+				682190B01FE941D300759FA5 /* Headers */,
+				682190B11FE941D300759FA5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CommonCrypto;
+			productName = CommonCrypto;
+			productReference = 682190B31FE941D300759FA5 /* CommonCrypto.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		682190D01FE96A8C00759FA5 /* AppTarget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 682190E31FE96A8C00759FA5 /* Build configuration list for PBXNativeTarget "AppTarget" */;
+			buildPhases = (
+				682190CD1FE96A8C00759FA5 /* Sources */,
+				682190CE1FE96A8C00759FA5 /* Frameworks */,
+				682190CF1FE96A8C00759FA5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AppTarget;
+			productName = AppTarget;
+			productReference = 682190D11FE96A8C00759FA5 /* AppTarget.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -148,11 +319,26 @@
 				TargetAttributes = {
 					680BB5A41FE9143C00A877D3 = {
 						CreatedOnToolsVersion = 9.1;
+						LastSwiftMigration = 0910;
 						ProvisioningStyle = Automatic;
 					};
 					680BB5AD1FE9143C00A877D3 = {
 						CreatedOnToolsVersion = 9.1;
 						ProvisioningStyle = Automatic;
+						TestTargetID = 682190D01FE96A8C00759FA5;
+					};
+					682190B21FE941D300759FA5 = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
+					682190D01FE96A8C00759FA5 = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -162,6 +348,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 680BB59B1FE9143C00A877D3;
 			productRefGroup = 680BB5A61FE9143C00A877D3 /* Products */;
@@ -170,6 +357,8 @@
 			targets = (
 				680BB5A41FE9143C00A877D3 /* JWTswift */,
 				680BB5AD1FE9143C00A877D3 /* JWTswiftTests */,
+				682190B21FE941D300759FA5 /* CommonCrypto */,
+				682190D01FE96A8C00759FA5 /* AppTarget */,
 			);
 		};
 /* End PBXProject section */
@@ -179,6 +368,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				682190CB1FE95ECA00759FA5 /* ios_priv.p12 in Resources */,
+				682190C91FE95ECA00759FA5 /* rsaCert.der in Resources */,
+				682190C81FE95ECA00759FA5 /* eduid_pub.jwks in Resources */,
+				682190CA1FE95ECA00759FA5 /* ios_priv.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +382,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		682190B11FE941D300759FA5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		682190CF1FE96A8C00759FA5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				682190E11FE96A8C00759FA5 /* LaunchScreen.storyboard in Resources */,
+				682190DE1FE96A8C00759FA5 /* Assets.xcassets in Resources */,
+				682190D91FE96A8C00759FA5 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -196,6 +406,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */,
+				680BB5C81FE9157A00A877D3 /* KeyManager.swift in Sources */,
+				680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */,
+				680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */,
+				680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +422,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		682190AE1FE941D300759FA5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		682190CD1FE96A8C00759FA5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				682190DC1FE96A8C00759FA5 /* AppTarget.xcdatamodeld in Sources */,
+				682190D61FE96A8C00759FA5 /* ViewController.swift in Sources */,
+				682190D41FE96A8C00759FA5 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -215,7 +447,36 @@
 			target = 680BB5A41FE9143C00A877D3 /* JWTswift */;
 			targetProxy = 680BB5B01FE9143C00A877D3 /* PBXContainerItemProxy */;
 		};
+		682190C01FE9430700759FA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 682190B21FE941D300759FA5 /* CommonCrypto */;
+			targetProxy = 682190BF1FE9430700759FA5 /* PBXContainerItemProxy */;
+		};
+		682190E81FE96B0900759FA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 682190D01FE96A8C00759FA5 /* AppTarget */;
+			targetProxy = 682190E71FE96B0900759FA5 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		682190D71FE96A8C00759FA5 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				682190D81FE96A8C00759FA5 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				682190E01FE96A8C00759FA5 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		680BB5B71FE9143C00A877D3 /* Debug */ = {
@@ -267,12 +528,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -321,10 +583,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -334,6 +597,7 @@
 		680BB5BA1FE9143C00A877D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -343,10 +607,16 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = JWTswift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -355,6 +625,7 @@
 		680BB5BB1FE9143C00A877D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -364,7 +635,12 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = JWTswift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -376,25 +652,117 @@
 		680BB5BD1FE9143C00A877D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Q759U55ZS8;
 				INFOPLIST_FILE = JWTswiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
 			};
 			name = Debug;
 		};
 		680BB5BE1FE9143C00A877D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Q759U55ZS8;
 				INFOPLIST_FILE = JWTswiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
+			};
+			name = Release;
+		};
+		682190B91FE941D300759FA5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 682190BB1FE941FC00759FA5 /* CommonCrypto.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Q759U55ZS8;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = CommonCrypto/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		682190BA1FE941D300759FA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 682190BB1FE941FC00759FA5 /* CommonCrypto.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Q759U55ZS8;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = CommonCrypto/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		682190E41FE96A8C00759FA5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AppTarget/AppTarget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Q759U55ZS8;
+				INFOPLIST_FILE = AppTarget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.AppTarget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		682190E51FE96A8C00759FA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AppTarget/AppTarget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Q759U55ZS8;
+				INFOPLIST_FILE = AppTarget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.AppTarget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -411,7 +779,7 @@
 				680BB5B81FE9143C00A877D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		680BB5B91FE9143C00A877D3 /* Build configuration list for PBXNativeTarget "JWTswift" */ = {
 			isa = XCConfigurationList;
@@ -420,7 +788,7 @@
 				680BB5BB1FE9143C00A877D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		680BB5BC1FE9143C00A877D3 /* Build configuration list for PBXNativeTarget "JWTswiftTests" */ = {
 			isa = XCConfigurationList;
@@ -429,9 +797,40 @@
 				680BB5BE1FE9143C00A877D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
+		};
+		682190B81FE941D300759FA5 /* Build configuration list for PBXNativeTarget "CommonCrypto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				682190B91FE941D300759FA5 /* Debug */,
+				682190BA1FE941D300759FA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		682190E31FE96A8C00759FA5 /* Build configuration list for PBXNativeTarget "AppTarget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				682190E41FE96A8C00759FA5 /* Debug */,
+				682190E51FE96A8C00759FA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				682190DB1FE96A8C00759FA5 /* AppTarget.xcdatamodel */,
+			);
+			currentVersion = 682190DB1FE96A8C00759FA5 /* AppTarget.xcdatamodel */;
+			path = AppTarget.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 680BB59C1FE9143C00A877D3 /* Project object */;
 }

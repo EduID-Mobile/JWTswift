@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-
 //! Project version number for JWTswift.
 FOUNDATION_EXPORT double JWTswiftVersionNumber;
 
@@ -15,5 +14,3 @@ FOUNDATION_EXPORT double JWTswiftVersionNumber;
 FOUNDATION_EXPORT const unsigned char JWTswiftVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <JWTswift/PublicHeader.h>
-
-
