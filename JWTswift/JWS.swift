@@ -51,8 +51,8 @@ class JWS{
         while(signature.count%4 != 0){
             signature += "="
         }
-        var datasignature = Data.init(base64Encoded: signature, options: .ignoreUnknownCharacters)
-        print("DATA SIG: " , datasignature?.base64EncodedString())
+        let datasignature = Data.init(base64Encoded: signature, options: .ignoreUnknownCharacters)
+        print("DATA SIG: " , datasignature!.base64EncodedString())
         do{
             let jsonHeader = try JSONSerialization.data(withJSONObject: header, options: .init(rawValue: 0))
             var headerEncoded = jsonHeader.base64EncodedString()
@@ -63,7 +63,7 @@ class JWS{
             let signedData = headerEncoded + "." + payloadEncoded
             print("SIGNEDDATA : \(signedData)")
             var error: Unmanaged<CFError>?
-            result = SecKeyVerifySignature(key, .rsaSignatureMessagePKCS1v15SHA256, signedData.data(using: String.Encoding.utf8)! as CFData, datasignature as! CFData, &error)
+            result = SecKeyVerifySignature(key, .rsaSignatureMessagePKCS1v15SHA256, signedData.data(using: String.Encoding.utf8)! as CFData, datasignature! as CFData, &error)
         }catch{
             print(error)
             return false

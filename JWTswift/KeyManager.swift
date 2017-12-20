@@ -201,7 +201,7 @@ class KeyManager {
     
     private func  bytesCount (base64str : String) -> Int{
         
-        var bitsCount = base64str.count * 6
+        let bitsCount = base64str.count * 6
         if bitsCount % 8 == 0 {
             return bitsCount / 8
         }
