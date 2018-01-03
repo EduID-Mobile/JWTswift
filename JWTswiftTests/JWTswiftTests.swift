@@ -12,16 +12,16 @@ import XCTest
 class JWTswiftTests: XCTestCase {
     let bundle = Bundle(identifier: "ch.htwchur.JWTswift")
     var pubPath : URL!
-    var keyman : KeyManager!
+    var keyman : KeyStore!
     var dict : [String: String]!
     
     override func setUp() {
         super.setUp()
-//        pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks") || NOT FOR FRAMEWORK
+        //        pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks") || NOT FOR FRAMEWORK
         
-        pubPath = bundle?.url(forResource: "eduid_pub", withExtension: "jwks")
-        keyman = KeyManager(resourcePath: pubPath.path)
-//        print("public key path : \(pubPath.path)")
+        //        pubPath = bundle?.url(forResource: "eduid_pub", withExtension: "jwks")
+        keyman = KeyStore()
+        //        print("public key path : \(pubPath.path)")
         dict = [
             "e"  : "AQAB",
             "kty" : "RSA",
@@ -46,9 +46,11 @@ class JWTswiftTests: XCTestCase {
     
     
     func testTransformingJWKintoPEMandSavingIntoKeychain(){
+        pubPath = bundle?.url(forResource: "eduid_pub", withExtension: "jwks")
         //JWK TO PEM PKCS#1 save to keychain, retrieve the pem from keychain and convert it back to JWK
-        let keyStr = keyman.jwksToPem()
-        let keyData = Data(base64Encoded: keyStr!)
+        let keyStr = keyman.jwksToPemFromBundle(jwksPath: pubPath.path)
+        XCTAssertNotNil(keyStr)
+        let keyData = Data(base64Encoded: (keyStr?.first!)!)
         
         let options : [String : Any] = [kSecAttrKeyType as String: kSecAttrKeyTypeRSA as String,
                                         kSecAttrKeyClass as String: kSecAttrKeyClassPublic as String,
@@ -74,7 +76,7 @@ class JWTswiftTests: XCTestCase {
     
     func testKeyGenerator(){
         //generate key pair create dictionary with public and private key in it
-        let keydict = KeyManager.generateKeyPair(keyTag: "htwchur.keys", keyType: kSecAttrKeyTypeRSA as String)
+        let keydict = KeyStore.generateKeyPair(keyTag: "htwchur.keys", keyType: kSecAttrKeyTypeRSA as String)
         XCTAssertNotNil(keydict)
         XCTAssertEqual(keydict?.count, 2)
         
@@ -90,49 +92,71 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testKIDGenerator () {
-        let kid  = KeyManager.createKID(jwkDict: dict)
+        let kid  = KeyStore.createKID(jwkDict: dict)
         print("KID : " , kid!)
         XCTAssertNotNil(kid)
+    }
+    
+    func testCreateSaveAndRetrieveKID(){
+        let kid = KeyStore.createKID(jwkDict: dict) as String!
+        print("KID : \(String(describing: kid))")
+        XCTAssertNotNil(kid)
+        _ = KeyChain.deleteKID(tagString: "testKID")
+        XCTAssertTrue( KeyChain.saveKid(tagString: "testKID", kid: kid!) )
+        
+        //load the kid from keychain
+        let loadKid = KeyChain.loadKid(tagString: "testKID")
+        XCTAssertNotNil(loadKid)
+        XCTAssertEqual(kid, loadKid)
+        
         
     }
     
-    /*
-     //kid is not saved to the key
-     func testSaveKIDasAttribute(){
-     
-     let pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks")
-     print("Public key Path : \(pubPath?.path ?? " ")")
-     let keyman = KeyManager(resourcePath: (pubPath?.relativePath)!)
-     let pem = keyman.jwkToPem(key: dict)
-     XCTAssertNotNil(pem)
-     let kid  = KeyManager.createKID(jwkDict: dict)
-     
-     let keyData = Data(base64Encoded: pem!)
-     let options : [String : Any] = [kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-     kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
-     kSecAttrKeySizeInBits as String : 2048,
-     kSecAttrApplicationLabel as String : kid! as CFString,
-     kSecAttrLabel as String: kid! as CFString
-     ]
-     var error : Unmanaged<CFError>?
-     let keyVar = SecKeyCreateWithData(keyData! as CFData, options as CFDictionary, &error)
-     if(error != nil) {
-     print(error.debugDescription)
-     return
-     }
-     
-     let  stat = KeyChain.saveKey(tagString: "testKey", key: keyVar!)
-     XCTAssertEqual(stat, noErr) //SAVED
-     let keyFromChain = KeyChain.loadKey(tagString: "testKey")
-     XCTAssertNotNil(keyFromChain)
-     let attr  = SecKeyCopyAttributes(keyFromChain!) as! [String : Any]
-     print(attr)
-     let label = attr[kSecAttrLabel as String] as? Data
-     XCTAssertNotNil(label)
-     XCTAssertEqual(kid, label?.base64EncodedString())
-     print("data kid : \(kid)")
-     
-     }*/
+    //kid is not saved to the key
+    func testSaveKIDasAttribute(){
+        
+        let pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks")
+        print("Public key Path : \(pubPath?.path ?? " ")")
+        
+        let pem = keyman.jwkToPem(key: dict)
+        XCTAssertNotNil(pem)
+        let kid  = KeyStore.createKID(jwkDict: dict)
+        print("KID  : \(kid!)")
+        let keyData = Data(base64Encoded: pem!)
+        let kidData = Data(base64Encoded: kid!.addPadding())
+        let options : [String : Any] = [kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+                                        kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
+                                        kSecAttrKeySizeInBits as String : 2048,
+                                        kSecAttrApplicationLabel as String : "apapun" as CFString,
+                                        kSecAttrAccessible as String : kSecAttrAccessibleAlwaysThisDeviceOnly,
+                                        kSecClass as String : kSecClassKey
+        ]
+        
+        var error : Unmanaged<CFError>?
+        let keyVar = SecKeyCreateWithData(keyData! as CFData, options as CFDictionary, &error)
+        
+        if(error != nil) {
+            print(error.debugDescription)
+            return
+        }
+        XCTAssertNil(error)
+        let  stat = KeyChain.saveKey(tagString: "testKey", key: keyVar!)
+//        print("error param : \(errSecParam)")
+        XCTAssertEqual(stat, true) //SAVED
+        let keyFromChain = KeyChain.loadKey(tagString: "testKey")
+        XCTAssertEqual(keyVar, keyFromChain)
+        XCTAssertNotNil(keyFromChain)
+        let attr  = SecKeyCopyAttributes(keyFromChain!) as! [String : Any]
+        print("attr : " ,attr)
+        let labeldata = attr[kSecAttrApplicationLabel as String] as! Data
+        print("label hex: " ,labeldata.hexDescription)
+        print("label string : \(labeldata.base64EncodedString())")
+        let label = String.init(data: labeldata, encoding: .utf8)
+        XCTAssertNotNil(label)
+        XCTAssertEqual(kid, labeldata.base64EncodedString())
+        print("data kid : \(String(describing: kid))")
+        //before kidData as label  -> V/a6JAdShh5/HGQT1lPt4wBvkhY=
+    }
     
     func testSaveKIDinKeychain(){
         
@@ -143,8 +167,7 @@ class JWTswiftTests: XCTestCase {
         let urlPath = bundle?.url(forResource: "rsaCert", withExtension: "der") //Bundle.main.url(forResource: "rsaCert", withExtension: ".der")
         print("url path : " , urlPath?.absoluteString as Any)
         
-        var keyMan = KeyManager.init(resourcePath: (urlPath?.relativePath)!)
-        let publickey = keyMan.getPublicKeyFromBundle()
+        let publickey = keyman.getPublicKeyFromBundle(resourcePath: (urlPath?.path)!)
         XCTAssertNotNil(publickey)
         print(publickey.debugDescription)
         
@@ -159,8 +182,8 @@ class JWTswiftTests: XCTestCase {
         
         //Get private key from pem data in bundle
         //keyMan = KeyManager(resourcePath: (Bundle.main.url(forResource: "ios_priv", withExtension: ".pem")?.relativePath)!) || Not for framework
-        keyMan = KeyManager(resourcePath: (bundle?.path(forResource: "ios_priv", ofType: "pem"))!)
-        let privateKey = keyMan.getPrivateKeyFromPEM()
+        let privateKeyPath = bundle?.path(forResource: "ios_priv", ofType: "pem")
+        let privateKey = keyman.getPrivateKeyFromPEM(resourcePath: privateKeyPath!)//keyMan.getPrivateKeyFromPEM()
         XCTAssertNotNil(privateKey)
         
         //Decrypt with private key
@@ -185,11 +208,10 @@ class JWTswiftTests: XCTestCase {
             print(error)
         }
         
-        let keyMan = KeyManager.init(resourcePath: (urlPath?.relativePath)!)
-        let publickey = keyMan.getPublicKeyFromBundle()
+        let publickey = keyman.getPublicKeyFromBundle(resourcePath: (urlPath?.path)!)
         XCTAssertNotNil(publickey)
         let status = KeyChain.saveKey(tagString: "eduid.publicKey", key: publickey!)
-        XCTAssertEqual(status, noErr)
+        XCTAssertEqual(status, true)
         print("ITEMNOT FOUND :",errSecItemNotFound)
         let keyFromKC = KeyChain.loadKey(tagString: "eduid.publicKey")
         XCTAssertNotNil(keyFromKC)

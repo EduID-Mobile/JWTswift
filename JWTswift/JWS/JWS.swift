@@ -19,21 +19,27 @@ class JWS{
         
     }
     
+    init(headerStr : String , payloadStr :  String , signatureStr : String? = nil) {
+        self.headerStr = headerStr
+        self.payloadStr = payloadStr
+        self.signatureStr = signatureStr
+    }
+    
     func sign(header: [String : Any], payload : [String: Any], key : SecKey) -> String? {
         var result : String?
         do{
             let jsonHeader = try JSONSerialization.data(withJSONObject: header, options: .init(rawValue: 0))
             var headerEncoded = jsonHeader.base64EncodedString()
-            headerEncoded = removePadding(text: headerEncoded)
+            headerEncoded = headerEncoded.clearPaddding()
             let jsonPayload = try JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
             var payloadEncoded = jsonPayload.base64EncodedString()
-            payloadEncoded = removePadding(text: payloadEncoded)
+            payloadEncoded = payloadEncoded.clearPaddding()
             let dataToSign = headerEncoded + "." + payloadEncoded
             print("DATA TO SIGN : \(dataToSign)")
             
             var error : Unmanaged<CFError>?
             let signature = SecKeyCreateSignature(key, SecKeyAlgorithm.rsaSignatureMessagePKCS1v15SHA256, dataToSign.data(using: String.Encoding.utf8)! as CFData, &error) as Data?
-            result = removePadding(text: (signature?.base64EncodedString())! )
+            result = (signature?.base64EncodedString())!.clearPaddding()
             self.signatureStr = result! //+ "=="
             print("SIGNATURE : \(String(describing: result))" , " Length : \(String(describing: result?.count))")
             result = dataToSign + "." + result!
@@ -56,10 +62,10 @@ class JWS{
         do{
             let jsonHeader = try JSONSerialization.data(withJSONObject: header, options: .init(rawValue: 0))
             var headerEncoded = jsonHeader.base64EncodedString()
-            headerEncoded = removePadding(text: headerEncoded)
+            headerEncoded = headerEncoded.clearPaddding()
             let jsonPayload = try JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
             var payloadEncoded = jsonPayload.base64EncodedString()
-            payloadEncoded = removePadding(text: payloadEncoded)
+            payloadEncoded = payloadEncoded.clearPaddding()
             let signedData = headerEncoded + "." + payloadEncoded
             print("SIGNEDDATA : \(signedData)")
             var error: Unmanaged<CFError>?
@@ -69,14 +75,6 @@ class JWS{
             return false
         }
         
-        return result
-    }
-    
-    private func removePadding(text : String) -> String{
-        var result = text
-        while result.last == "=" {
-            result.removeLast()
-        }
         return result
     }
     

@@ -9,33 +9,27 @@
 import Foundation
 import CoreFoundation
 import Security
-import CommonCrypto
 
-class KeyManager {
+class KeyStore {
     
-    private var resourcePath : String?
-    private let tagServer = "eduid.server.pubID"
-    private let tagSessionPub  = "eduid.session.pubID"
-    private let tagSessionPriv = "eduid.session.privID"
-    private let tagAppPub = "eduid.app.pubID"
-    private let tagAppPriv = "eduid.app.privID"
+    private var keys : [Key]?
     
     init() {
-        resourcePath = ""
+        self.keys = [Key]()
     }
     
-    init(resourcePath : String){
-        self.resourcePath = resourcePath
+    init(withKey key : Key) {
+        self.keys = [Key]()
+        self.keys!.append(key)
     }
     
-    
-    func changeResourcePath(path : String){
-        self.resourcePath = path
+    init(withKeys keys: [Key]) {
+        self.keys = keys
     }
     
-    func  getPublicKeyFromBundle () -> SecKey? {
+    func  getPublicKeyFromBundle (resourcePath: String) -> SecKey? {
         //DER format
-        let certData = NSData(contentsOfFile: resourcePath!)
+        let certData = NSData(contentsOfFile: resourcePath)
         let cert = SecCertificateCreateWithData(nil, certData! as CFData)
         var publicKey : SecKey? = nil
         var trust : SecTrust? = nil
@@ -57,8 +51,8 @@ class KeyManager {
         return publicKey
     }
     
-    func getCertificateFromBundle() -> SecCertificate? {
-        if let data = NSData(contentsOfFile: resourcePath!) {
+    func getCertificateFromBundle(resourcePath: String) -> SecCertificate? {
+        if let data = NSData(contentsOfFile: resourcePath) {
             
             //let cfData = CFDataCreate(kCFAllocatorDefault, UnsafePointer<UInt8>(data.bytes), data.length)
             let cert = SecCertificateCreateWithData(kCFAllocatorDefault, data as NSData)
@@ -102,31 +96,16 @@ class KeyManager {
         }
     }
     
-    class func generateKeyPair(keyTag : String , keyType : String) -> [String : SecKey]? {
-        let tag = keyTag.data(using: .utf8)!
-        var keysResult : [String : SecKey] = [:]
-        let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,
-                                            kSecAttrKeySizeInBits as String : 2048,
-                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : true,
-                                                                             kSecAttrApplicationTag as String : tag ]
-        ]
-        //kSecattrIsPermanent == true -> store the keychain in the default keychain while creating it, use the application tag to retrieve it from keychain later
-        var error : Unmanaged<CFError>?
-        guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
-            print(error.debugDescription)
-            return nil
-        }
-        keysResult["private"] = privateKey
-        keysResult["public"] = SecKeyCopyPublicKey(privateKey)
-        
-        return keysResult
-    }
     
-    //get RSA private key from pem(#PKCS1) data
-    func getPrivateKeyFromPEM() -> SecKey? {
+    /**
+     Get RSA private key from pem(#PKCS1) data in bundle
+     - parameter resourcePath: Path to the private key data in pem format (PKCS#1)
+     - returns : private key in SecKey format or nil when there is an error or no key found in pem data
+     */
+    func getPrivateKeyFromPEM(resourcePath : String) -> SecKey? {
         var keyInString : String?
         do{
-            keyInString = try String(contentsOfFile: resourcePath!)
+            keyInString = try String(contentsOfFile: resourcePath)
         } catch { print(error)}
         
         print("PEM BEFORE  : " , keyInString!)
@@ -144,23 +123,49 @@ class KeyManager {
         attributes[kSecAttrKeyType as String] = kSecAttrKeyTypeRSA as String
         attributes[kSecAttrKeyClass as String] = kSecAttrKeyClassPrivate as String
         attributes[kSecAttrKeySizeInBits as String] = String(2048) //String((data?.length)!) * 8)
-        var error : Unmanaged<CFError>?
         
+        var error : Unmanaged<CFError>?
         let privateKey = SecKeyCreateWithData(data! as CFData, attributes as CFDictionary, &error)
         print(error.debugDescription)
         return privateKey
     }
     
+    /**
+     Converting jwks data to pem string
+     parameter jwksSourceData: jwks in Data format
+     returns : Pem data in string format 
+    */
+    public func jwksToPemFromServer(jwksSourceData : Data) -> [String]?{
+        if jwksSourceData.count == 0 {
+            return nil
+        }
+        return jwksToPem(jwksSourceData: jwksSourceData)
+    }
+    
+    /**
+     
+     */
+    public func jwksToPemFromBundle(jwksPath : String) -> [String]? {
+        if jwksPath.count == 0{
+            return nil
+        }
+        return jwksToPem(jwksPath: jwksPath)
+    }
+    
     //jwks from server
-    func jwksToPem(jwksSourceData : Data? = nil) -> String? {
+    private func jwksToPem(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [String]? {
+        var result  = [String]()
         var dataFromPath : Data?
+        
         if(jwksSourceData != nil){
             dataFromPath = jwksSourceData
+        } else if jwksPath != nil{
+            dataFromPath = NSData(contentsOfFile: jwksPath!) as Data?
         } else {
-            dataFromPath = NSData(contentsOfFile: self.resourcePath!) as Data?
+            //BOTH jwksSourceData and jwksPath not nil or both are nil
+            return nil
         }
         var jsonData : [String : Any]?
-        var pemResult : String?
         do{
             jsonData = try JSONSerialization.jsonObject(with: dataFromPath as Data!, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
         }catch{
@@ -169,27 +174,32 @@ class KeyManager {
         }
         
         let keys = jsonData!["keys"] as! [[String: String]]
+       
+        for key in keys{
+            let pemResult = jwkToPem(key: key)
+            if pemResult != nil {
+                result.append(pemResult!)
+            }
+        }
         
+        /*
         if keys.count == 1 {
             let key = keys.first
             print("KEY  = \(key!)")
             pemResult = jwkToPem(key: key!)
-        }
-        return pemResult
+            result.append(pemResult!)
+        }*/
+        return result
     }
+    
+    
     //TODO : make it private
     func jwkToPem(key : [String : String]) -> String? {
         
-        var exponentStr = base64UrlToBase64(base64url: key["e"]!)
-        while exponentStr.count % 4 != 0{
-            exponentStr += "="
-        }
+        let exponentStr = key["e"]!.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
         
-        var modulusStr = base64UrlToBase64(base64url: key["n"]!)
-        while modulusStr.count % 4 != 0{
-            modulusStr += "="
-        }
+        let modulusStr = key["n"]!.base64UrlToBase64().addPadding()
         let modulusData = Data(base64Encoded: modulusStr)
         print("exponent : \(exponentStr)")
         print("modulus : \(modulusStr)")
@@ -209,23 +219,11 @@ class KeyManager {
             return (bitsCount / 8) + 1
         }
     }
+
     
-    private func base64UrlToBase64(base64url : String) -> String {
-        let base64 = base64url.replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        /* NO PADDING
-         while(base64.count % 4 != 0){
-         base64.append("=")
-         }*/
-        return base64
-    }
-    
-    private func base64ToBase64Url(base64: String) -> String {
-        let base64url = base64.replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
-        return base64url
-    }
-    
+    /**
+     
+     */
     func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
         var jwk : [String : String] = [:]
         print("LAST INDEX : \(pemData.endIndex.hashValue)")
@@ -237,11 +235,11 @@ class KeyManager {
         let subdataEx = pemData.subdata(in: rangeExponent)
         print("MOD HEX : \(subdataMod.hexDescription)")
         print("EX HEX : \(subdataEx.hexDescription)")
-        jwk["n"] = base64ToBase64Url(base64: subdataMod.base64EncodedString().clearPaddding() )
-        jwk["e"] = base64ToBase64Url(base64: subdataEx.base64EncodedString().clearPaddding() )
+        jwk["n"] = subdataMod.base64EncodedString().clearPaddding().base64ToBase64Url()
+        jwk["e"] = subdataEx.base64EncodedString().clearPaddding().base64ToBase64Url()
         jwk["kty"] = "RSA"
         if kid == nil {
-            jwk["kid"] =  KeyManager.createKID(jwkDict: jwk)
+            jwk["kid"] =  KeyStore.createKID(jwkDict: jwk)
         } else {
             jwk["kid"] = kid
         }
@@ -249,7 +247,11 @@ class KeyManager {
         return jwk
     }
     
-    //Generate a key ID from a modulus, exponent and keytype for the JWK
+    /**
+    Generate a key ID from a modulus, exponent and keytype for the JWK
+     - parameter jwkDict: String dictionary, containing keys : e, n , and kty , which are required to create a kid (thumbprint)
+     - returns : KID in base64encoded string format (without Padding)
+     */
     class func createKID(jwkDict : [String: String]) -> String? {
         
         var jsonString : String?
@@ -265,74 +267,43 @@ class KeyManager {
             let kidArray = Data.init(bytes: byteArray)
             print(kidArray.hashSHA256()!)
             let kidData = Data(bytes: kidArray.hashSHA256()!)
+
+            print("kidData : " , kidData.base64EncodedString().clearPaddding() )
+            var hashvalue = jsonString?.hashValue as Int!
+            print("String hashvalue : " , hashvalue! )
+            let dataHashvalue = Data(bytes: &hashvalue, count: MemoryLayout.size(ofValue: hashvalue))
+            print("data from string hash : " , dataHashvalue.base64EncodedString())
+            print("kid data : " , kidData.base64EncodedString().clearPaddding())
             return kidData.base64EncodedString().clearPaddding()
         }
         return nil
     }
-
-
     
     
+    /**
+     Generate a random key pair
+     - parameter keyTag: a unique name tag for the key
+     - paramater keyType: kSecAttrKeyType for now is RSA key type
+     - returns : A dictionary contains one key pair with keys "public", "private" to access the specific key
+     */
     
-}
-
-extension String{
-    
-    public func hexToBase64() -> Data {
-        var hex = self
-        var data = Data()
-        while hex.count > 0 {
-            
-            let indexHex = hex.index(hex.startIndex, offsetBy: 2)
-            let c : String = String(hex[..<indexHex])
-            hex = String(hex[indexHex...])
-            var ch: UInt32 = 0
-            Scanner(string: c).scanHexInt32(&ch)
-            var char = UInt8 (ch)
-            data.append(&char, count: 1)
+    class func generateKeyPair(keyTag : String , keyType : String) -> [String : SecKey]? {
+        let tag = keyTag.data(using: .utf8)!
+        var keysResult : [String : SecKey] = [:]
+        let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,
+                                            kSecAttrKeySizeInBits as String : 2048,
+                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : true,
+                                                                             kSecAttrApplicationTag as String : tag ]
+        ]
+        //kSecattrIsPermanent == true -> store the keychain in the default keychain while creating it, use the application tag to retrieve it from keychain later
+        var error : Unmanaged<CFError>?
+        guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+            print(error.debugDescription)
+            return nil
         }
-        //        let base64Str = data.base64EncodedString()
+        keysResult["private"] = privateKey
+        keysResult["public"] = SecKeyCopyPublicKey(privateKey)
         
-        return data // base64Str.clearPaddding()
+        return keysResult
     }
-    
-    public func clearPaddding() -> String {
-        var tmp = self
-        while(tmp.last == "="){
-            tmp.removeLast()
-        }
-        return tmp
-    }
-    
-    public func addPadding() -> String {
-        var tmp = self
-        while(tmp.count % 4 != 0){
-            tmp.append("=")
-        }
-        return tmp
-    }
-    
-}
-
-extension Data {
-    var hexDescription : String {
-        return reduce(""){$0 + String(format: "%02x", $1)}
-    }
-    
-    public func hashSHA256() -> [UInt8]? {
-        var result : [UInt8] = [UInt8].init(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        var digestData = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
-        print(CC_SHA256_DIGEST_LENGTH)
-        _ = digestData.withUnsafeMutableBytes { digestBytes in
-            self.withUnsafeBytes{ messageBytes in
-                CC_SHA256(messageBytes, CC_LONG(self.count), digestBytes)
-            }
-        }
-        
-        digestData.copyBytes(to: &result, count: digestData.count)
-        
-        return result
-    }
-    
-    
 }

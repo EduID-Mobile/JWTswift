@@ -162,7 +162,7 @@ class PemGenerator {
         let algoIDlength = sequenceAlgorithmID.count/2
         let bitStringlength = bitString.count/2
         result = sequenceMaker(byteLength: algoIDlength+bitStringlength, elements: [sequenceAlgorithmID, bitString])
-//        PKCS1
+        //PKCS#8 as result
         
         print("PEM HEX: \(result!)" )
         result = result?.hexToBase64().base64EncodedString()

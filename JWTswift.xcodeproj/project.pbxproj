@@ -14,7 +14,7 @@
 		680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C11FE9157900A877D3 /* JWS.swift */; };
 		680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C21FE9157900A877D3 /* PemGenerator.swift */; };
 		680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C31FE9157900A877D3 /* KeyChain.swift */; };
-		680BB5C81FE9157A00A877D3 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C41FE9157A00A877D3 /* KeyManager.swift */; };
+		680BB5C81FE9157A00A877D3 /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5C41FE9157A00A877D3 /* KeyStore.swift */; };
 		682190C31FE9433E00759FA5 /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 682190B31FE941D300759FA5 /* CommonCrypto.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		682190C81FE95ECA00759FA5 /* eduid_pub.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 682190C41FE95EC900759FA5 /* eduid_pub.jwks */; };
 		682190C91FE95ECA00759FA5 /* rsaCert.der in Resources */ = {isa = PBXBuildFile; fileRef = 682190C51FE95ECA00759FA5 /* rsaCert.der */; };
@@ -26,6 +26,8 @@
 		682190DC1FE96A8C00759FA5 /* AppTarget.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */; };
 		682190DE1FE96A8C00759FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 682190DD1FE96A8C00759FA5 /* Assets.xcassets */; };
 		682190E11FE96A8C00759FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */; };
+		685BBEC81FFCE1D900894040 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685BBEC71FFCE1D900894040 /* Key.swift */; };
+		68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68737F181FEBCC03001B32AB /* UtilExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,7 +65,7 @@
 		680BB5C11FE9157900A877D3 /* JWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWS.swift; sourceTree = "<group>"; };
 		680BB5C21FE9157900A877D3 /* PemGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PemGenerator.swift; sourceTree = "<group>"; };
 		680BB5C31FE9157900A877D3 /* KeyChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
-		680BB5C41FE9157A00A877D3 /* KeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyManager.swift; sourceTree = "<group>"; };
+		680BB5C41FE9157A00A877D3 /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
 		682190B31FE941D300759FA5 /* CommonCrypto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonCrypto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		682190B61FE941D300759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		682190BB1FE941FC00759FA5 /* CommonCrypto.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = CommonCrypto.xcconfig; sourceTree = "<group>"; };
@@ -84,6 +86,8 @@
 		682190E01FE96A8C00759FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		682190E21FE96A8C00759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		682190E61FE96A9600759FA5 /* AppTarget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppTarget.entitlements; sourceTree = "<group>"; };
+		685BBEC71FFCE1D900894040 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
+		68737F181FEBCC03001B32AB /* UtilExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,12 +150,10 @@
 		680BB5A71FE9143C00A877D3 /* JWTswift */ = {
 			isa = PBXGroup;
 			children = (
+				68737F1B1FEBCD7F001B32AB /* JWS */,
+				68737F1A1FEBCD4A001B32AB /* JWK */,
+				68737F171FEBCBEA001B32AB /* Util */,
 				680BB5A81FE9143C00A877D3 /* JWTswift.h */,
-				680BB5C11FE9157900A877D3 /* JWS.swift */,
-				680BB5C31FE9157900A877D3 /* KeyChain.swift */,
-				680BB5C41FE9157A00A877D3 /* KeyManager.swift */,
-				680BB5C21FE9157900A877D3 /* PemGenerator.swift */,
-				680BB5BF1FE9156700A877D3 /* CryptoManager.swift */,
 				680BB5A91FE9143C00A877D3 /* Info.plist */,
 				682190CC1FE95ED200759FA5 /* TestResources */,
 			);
@@ -211,6 +213,34 @@
 				682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */,
 			);
 			path = AppTarget;
+			sourceTree = "<group>";
+		};
+		68737F171FEBCBEA001B32AB /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				68737F181FEBCC03001B32AB /* UtilExtensions.swift */,
+				680BB5BF1FE9156700A877D3 /* CryptoManager.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		68737F1A1FEBCD4A001B32AB /* JWK */ = {
+			isa = PBXGroup;
+			children = (
+				680BB5C31FE9157900A877D3 /* KeyChain.swift */,
+				680BB5C41FE9157A00A877D3 /* KeyStore.swift */,
+				680BB5C21FE9157900A877D3 /* PemGenerator.swift */,
+				685BBEC71FFCE1D900894040 /* Key.swift */,
+			);
+			path = JWK;
+			sourceTree = "<group>";
+		};
+		68737F1B1FEBCD7F001B32AB /* JWS */ = {
+			isa = PBXGroup;
+			children = (
+				680BB5C11FE9157900A877D3 /* JWS.swift */,
+			);
+			path = JWS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -406,8 +436,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				685BBEC81FFCE1D900894040 /* Key.swift in Sources */,
 				680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */,
-				680BB5C81FE9157A00A877D3 /* KeyManager.swift in Sources */,
+				68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */,
+				680BB5C81FE9157A00A877D3 /* KeyStore.swift in Sources */,
 				680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */,
 				680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */,
 				680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */,
