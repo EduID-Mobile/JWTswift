@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "JWTswift"
-  s.version      = "0.0.1"
+  s.version      = "1.0.0"
   s.summary      = "A simple swift library to help the developer using JSON Web Token in swift environment(iOS)."
 
   # This description is used to generate tags and improve search results.
@@ -24,10 +24,9 @@ Pod::Spec.new do |s|
   #   * Try to keep it short, snappy and to the point.
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
-  s.description  = <<-DESC
-                   DESC
+  s.description  = "JWTswift is a completely independent library, which only used the basic C and Swift library for them."
 
-  s.homepage     = "http://EXAMPLE/JWTswift"
+  s.homepage     = "https://github.com/BLC-HTWChur/JWTswift"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -63,14 +62,9 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # s.platform     = :ios
+
   s.platform     = :ios, "10.0"
 
-  #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-  # s.tvos.deployment_target = "9.0"
 
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -79,7 +73,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/BLC-HTWChur/JWTswift", :tag => "#{s.version}" }
+  s.source       = { :path => "."}
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -93,7 +87,7 @@ Pod::Spec.new do |s|
   s.source_files  = "JWTswift", "JWTswift/**/*.{h,m,swift}"
   s.exclude_files = "Classes/Exclude"
 
-  # s.public_header_files = "Classes/**/*.h"
+
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -104,13 +98,11 @@ Pod::Spec.new do |s|
   #  non-essential files like tests, examples and documentation.
   #
 
-  # s.resource  = "icon.png"
   s.resources = "TestResources/*.jwks"
   s.resources = "TestResources/*.p12"
   s.resources = "TestResources/*.pem"
   s.resources = "TestResources/*.der"
 
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
 
 
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4'}
