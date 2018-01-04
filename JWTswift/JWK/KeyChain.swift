@@ -16,7 +16,7 @@ public class KeyChain {
      - parameter key: key data which want to be saved in to the keychain
      - returns:  Status from the saving process, true if successful, false if there any error
      */
-    static func saveKey(tagString: String, key: SecKey) -> Bool{
+    public static func saveKey(tagString: String, key: SecKey) -> Bool{
         let tag = tagString.data(using: .utf8)
         let saveQuery = [
             kSecClass as String : kSecClassKey as String,
@@ -37,7 +37,7 @@ public class KeyChain {
         }
     }
     
-    static func saveKid(tagString : String , kid : String) -> Bool{
+    public static func saveKid(tagString : String , kid : String) -> Bool{
 //        let tag = tagString.data(using: .utf8)
         let encodedKid = Data(base64Encoded: kid.addPadding())
         
@@ -66,7 +66,7 @@ public class KeyChain {
      - parameter tagString: unique identifier for the Key to simplify the retrieving process
      - returns : A SecKey object from the keychain , if there isn't any key found then return nil
      */
-    static func loadKey(tagString : String) -> SecKey? {
+    public static func loadKey(tagString : String) -> SecKey? {
         let tag = tagString.data(using: .utf8)
         let getQuery = [
             kSecClass as String : kSecClassKey,
@@ -86,7 +86,7 @@ public class KeyChain {
         }
     }
     
-    static func loadKid(tagString : String) -> String? {
+    public static func loadKid(tagString : String) -> String? {
 //        let tag = tagString.data(using: .utf8)
         let getQuery : [String : AnyObject] = [
             kSecClass as String : kSecClassGenericPassword,
@@ -119,7 +119,7 @@ public class KeyChain {
      - parameter tagString: unique identifier for the Key to simplify the retrieving process.
      - returns:  Status from the deleting process, true if successful, false if there any error
     */
-    static func deleteKey(tagString : String) -> Bool {
+    public static func deleteKey(tagString : String) -> Bool {
         
         let tag = tagString.data(using: .utf8)
         let getQuery : [String : Any] = [
@@ -137,7 +137,7 @@ public class KeyChain {
         }
     }
     
-    static func deleteKID(tagString: String) -> Bool {
+    public static func deleteKID(tagString: String) -> Bool {
         let deleteQuery : [String : Any] = [
             kSecClass as String : kSecClassGenericPassword,
             kSecAttrService as String : tagString as Any
@@ -153,7 +153,7 @@ public class KeyChain {
         
     }
     
-    class func createUniqueID() -> String {
+   class func createUniqueID() -> String {
         let uuid : CFUUID = CFUUIDCreate(nil)
         let cfStr : CFString = CFUUIDCreateString(nil, uuid)
         

@@ -16,7 +16,7 @@ public class PemGenerator {
     private var lengthExponent : Int
     
     
-    init(modulusHex: String, exponentHex: String, lengthModulus : Int, lengthExponent: Int) {
+    public init(modulusHex: String, exponentHex: String, lengthModulus : Int, lengthExponent: Int) {
         self.modulusHex = modulusHex
         self.exponentHex = exponentHex
         self.lengthModulus = lengthModulus
@@ -92,17 +92,17 @@ public class PemGenerator {
         return header
     }
     
-    func modulusInteger(length: Int) -> String {
+    public func modulusInteger(length: Int) -> String {
         var byteCount = length
         return integerMaker(byteLength: &byteCount, value: &self.modulusHex)
     }
     
-    func exponentInteger(length: Int) -> String{
+    public func exponentInteger(length: Int) -> String{
         var byteCount = length
         return integerMaker(byteLength: &byteCount, value: &self.exponentHex)
     }
     
-    func generateBitString(byteLength: Int , elements : [String]) ->String {
+    public func generateBitString(byteLength: Int , elements : [String]) ->String {
         var header = "03"
         var length : String?
         let tmpLength = byteLength + 1 // for the unused bit
@@ -171,7 +171,7 @@ public class PemGenerator {
         return result!
     }
     
-    func RSApublicHeaderFooter(key: String) -> String{
+    public func RSApublicHeaderFooter(key: String) -> String{
         let counter : Int = key.count / 64
         var result = key
         

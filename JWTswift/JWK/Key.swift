@@ -13,16 +13,16 @@ public class Key {
     private var kid : String
     private var keyObject : SecKey
     
-    init(keyObject : SecKey , kid : String) {
+    public init(keyObject : SecKey , kid : String) {
         self.keyObject = keyObject
         self.kid = kid
     }
     
-    func getKid() -> String {
+    public func getKid() -> String {
         return self.kid
     }
     
-    func getKeyObject() -> SecKey {
+    public func getKeyObject() -> SecKey {
         return self.keyObject
     }
 

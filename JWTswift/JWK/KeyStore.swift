@@ -14,20 +14,20 @@ public class KeyStore {
     
     private var keys : [Key]?
     
-    init() {
+    public init() {
         self.keys = [Key]()
     }
     
-    init(withKey key : Key) {
+    public init(withKey key : Key) {
         self.keys = [Key]()
         self.keys!.append(key)
     }
     
-    init(withKeys keys: [Key]) {
+    public init(withKeys keys: [Key]) {
         self.keys = keys
     }
     
-    func  getPublicKeyFromBundle (resourcePath: String) -> SecKey? {
+    public func  getPublicKeyFromBundle (resourcePath: String) -> SecKey? {
         //DER format
         let certData = NSData(contentsOfFile: resourcePath)
         let cert = SecCertificateCreateWithData(nil, certData! as CFData)
@@ -51,7 +51,7 @@ public class KeyStore {
         return publicKey
     }
     
-    func getCertificateFromBundle(resourcePath: String) -> SecCertificate? {
+    public func getCertificateFromBundle(resourcePath: String) -> SecCertificate? {
         if let data = NSData(contentsOfFile: resourcePath) {
             
             //let cfData = CFDataCreate(kCFAllocatorDefault, UnsafePointer<UInt8>(data.bytes), data.length)
@@ -60,6 +60,7 @@ public class KeyStore {
         }
         return nil
     }
+    
    /*
     //specialize for RSA private key in pem format (#PKCS1)
     func getPrivateKeyFromBundle() -> SecKey? {
@@ -102,7 +103,7 @@ public class KeyStore {
      - parameter resourcePath: Path to the private key data in pem format (PKCS#1)
      - returns : private key in SecKey format or nil when there is an error or no key found in pem data
      */
-    func getPrivateKeyFromPEM(resourcePath : String) -> SecKey? {
+    public func getPrivateKeyFromPEM(resourcePath : String) -> SecKey? {
         var keyInString : String?
         do{
             keyInString = try String(contentsOfFile: resourcePath)
@@ -194,7 +195,7 @@ public class KeyStore {
     
     
     //TODO : make it private
-    func jwkToPem(key : [String : String]) -> String? {
+     public func jwkToPem(key : [String : String]) -> String? {
         
         let exponentStr = key["e"]!.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
@@ -224,7 +225,7 @@ public class KeyStore {
     /**
      
      */
-    func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
+    public func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
         var jwk : [String : String] = [:]
         print("LAST INDEX : \(pemData.endIndex.hashValue)")
         let rangeModulus : Range<Int> = 9..<265
@@ -252,7 +253,7 @@ public class KeyStore {
      - parameter jwkDict: String dictionary, containing keys : e, n , and kty , which are required to create a kid (thumbprint)
      - returns : KID in base64encoded string format (without Padding)
      */
-    class func createKID(jwkDict : [String: String]) -> String? {
+    public class func createKID(jwkDict : [String: String]) -> String? {
         
         var jsonString : String?
         if jwkDict.keys.contains("e") && jwkDict.keys.contains("kty") && jwkDict.keys.contains("n") {
@@ -287,7 +288,7 @@ public class KeyStore {
      - returns : A dictionary contains one key pair with keys "public", "private" to access the specific key
      */
     
-    class func generateKeyPair(keyTag : String , keyType : String) -> [String : SecKey]? {
+    public class func generateKeyPair(keyTag : String , keyType : String) -> [String : SecKey]? {
         let tag = keyTag.data(using: .utf8)!
         var keysResult : [String : SecKey] = [:]
         let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,

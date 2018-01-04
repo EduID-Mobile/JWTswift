@@ -10,7 +10,7 @@ import Foundation
 
 public class CryptoManager {
     
-    static func encryptData (key: SecKey ,algorithm : SecKeyAlgorithm, plainData : NSData) -> NSData? {
+    public static func encryptData (key: SecKey ,algorithm : SecKeyAlgorithm, plainData : NSData) -> NSData? {
         let canEncrypt = SecKeyIsAlgorithmSupported(key, SecKeyOperationType.encrypt, algorithm)
         print("plaindata length : \(plainData.length)")
         print("keysize : \(SecKeyGetBlockSize(key))")
@@ -32,7 +32,7 @@ public class CryptoManager {
         return cipherText
     }
     
-    static func decryptData (key: SecKey , algorithm : SecKeyAlgorithm, cipherData : NSData) -> NSData? {
+    public static func decryptData (key: SecKey , algorithm : SecKeyAlgorithm, cipherData : NSData) -> NSData? {
         
         let canDecrypt = SecKeyIsAlgorithmSupported(key, .decrypt, algorithm)
         

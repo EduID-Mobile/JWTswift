@@ -15,17 +15,17 @@ public class JWS{
     var payloadStr : String? = nil
     var signatureStr : String? = nil
     
-    init() {
+    public init() {
         
     }
     
-    init(headerStr : String , payloadStr :  String , signatureStr : String? = nil) {
+    public init(headerStr : String , payloadStr :  String , signatureStr : String? = nil) {
         self.headerStr = headerStr
         self.payloadStr = payloadStr
         self.signatureStr = signatureStr
     }
     
-    func sign(header: [String : Any], payload : [String: Any], key : SecKey) -> String? {
+    public func sign(header: [String : Any], payload : [String: Any], key : SecKey) -> String? {
         var result : String?
         do{
             let jsonHeader = try JSONSerialization.data(withJSONObject: header, options: .init(rawValue: 0))
@@ -52,7 +52,7 @@ public class JWS{
 //    - RSA signature with PKCS#1 padding, input data must be SHA-256 generated digest.
 //    kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256
 //    - RSA signature with PKCS#1 padding, SHA-256 digest is generated from input data of any size.
-    func verify(header :  [String : Any] , payload :[String: Any] , signature: inout String, key : SecKey ) -> Bool {
+    public func verify(header :  [String : Any] , payload :[String: Any] , signature: inout String, key : SecKey ) -> Bool {
         var result : Bool = false
         while(signature.count%4 != 0){
             signature += "="
@@ -79,7 +79,7 @@ public class JWS{
     }
     
     
-    func createHeader (headerDictionary : [String:Any]) -> String{
+    public class func createHeader (headerDictionary : [String:Any]) -> String{
         var keys : [String] = []
         var header : [String : Any] = [:]
         keys.append("typ")
