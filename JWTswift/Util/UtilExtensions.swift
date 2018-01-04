@@ -10,7 +10,7 @@ import Foundation
 import CommonCrypto
 
 extension Data {
-    var hexDescription : String {
+    public var hexDescription : String {
         return reduce(""){$0 + String(format: "%02x", $1)}
     }
     

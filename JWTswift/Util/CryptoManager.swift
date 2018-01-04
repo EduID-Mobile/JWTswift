@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CryptoManager {
+public class CryptoManager {
     
     static func encryptData (key: SecKey ,algorithm : SecKeyAlgorithm, plainData : NSData) -> NSData? {
         let canEncrypt = SecKeyIsAlgorithmSupported(key, SecKeyOperationType.encrypt, algorithm)

@@ -10,7 +10,7 @@ import Foundation
 import CoreFoundation
 import Security
 
-class KeyStore {
+public class KeyStore {
     
     private var keys : [Key]?
     

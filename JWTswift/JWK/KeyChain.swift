@@ -8,7 +8,7 @@
 
 import Foundation
 
-class KeyChain {
+public class KeyChain {
 
     /**
      Saving a specific key into the keychain.

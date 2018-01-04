@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Key {
+public class Key {
     
     private var kid : String
     private var keyObject : SecKey

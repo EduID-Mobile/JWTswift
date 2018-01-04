@@ -8,7 +8,7 @@
 
 import Foundation
 
-class PemGenerator {
+public class PemGenerator {
     
     private var modulusHex : String
     private var exponentHex : String
