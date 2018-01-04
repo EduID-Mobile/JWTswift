@@ -9,7 +9,7 @@
 import Security
 import Foundation
 
-class JWS{
+public class JWS{
     
     var headerStr : String? = nil
     var payloadStr : String? = nil
