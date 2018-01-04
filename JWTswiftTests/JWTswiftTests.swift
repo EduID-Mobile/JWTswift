@@ -113,7 +113,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     //kid is not saved to the key
-    func testSaveKIDasAttribute(){
+    func testSaveKIDandKey(){
         
         let pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks")
         print("Public key Path : \(pubPath?.path ?? " ")")
@@ -123,13 +123,9 @@ class JWTswiftTests: XCTestCase {
         let kid  = KeyStore.createKID(jwkDict: dict)
         print("KID  : \(kid!)")
         let keyData = Data(base64Encoded: pem!)
-        let kidData = Data(base64Encoded: kid!.addPadding())
         let options : [String : Any] = [kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
                                         kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
-                                        kSecAttrKeySizeInBits as String : 2048,
-                                        kSecAttrApplicationLabel as String : "apapun" as CFString,
-                                        kSecAttrAccessible as String : kSecAttrAccessibleAlwaysThisDeviceOnly,
-                                        kSecClass as String : kSecClassKey
+                                        kSecAttrKeySizeInBits as String : 2048
         ]
         
         var error : Unmanaged<CFError>?
@@ -140,25 +136,23 @@ class JWTswiftTests: XCTestCase {
             return
         }
         XCTAssertNil(error)
-        let  stat = KeyChain.saveKey(tagString: "testKey", key: keyVar!)
-//        print("error param : \(errSecParam)")
-        XCTAssertEqual(stat, true) //SAVED
-        let keyFromChain = KeyChain.loadKey(tagString: "testKey")
-        XCTAssertEqual(keyVar, keyFromChain)
+        
+        let statKid = KeyChain.saveKid(tagString: "testKey", kid: kid!)
+        let statKey = KeyChain.saveKey(tagString: kid! , key: keyVar!)
+        XCTAssertTrue(statKid)
+        XCTAssertTrue(statKey) //SAVED
+        
+        let kidFromChain = KeyChain.loadKid(tagString: "testKey")
+        XCTAssertNotNil(kidFromChain)
+        XCTAssertEqual(kid!, kidFromChain)
+        
+        let keyFromChain = KeyChain.loadKey(tagString: kidFromChain!)
         XCTAssertNotNil(keyFromChain)
-        let attr  = SecKeyCopyAttributes(keyFromChain!) as! [String : Any]
-        print("attr : " ,attr)
-        let labeldata = attr[kSecAttrApplicationLabel as String] as! Data
-        print("label hex: " ,labeldata.hexDescription)
-        print("label string : \(labeldata.base64EncodedString())")
-        let label = String.init(data: labeldata, encoding: .utf8)
-        XCTAssertNotNil(label)
-        XCTAssertEqual(kid, labeldata.base64EncodedString())
-        print("data kid : \(String(describing: kid))")
-        //before kidData as label  -> V/a6JAdShh5/HGQT1lPt4wBvkhY=
-    }
-    
-    func testSaveKIDinKeychain(){
+        XCTAssertEqual(keyFromChain, keyVar)
+        
+        //deleting the keys on the keychain
+        XCTAssertTrue(KeyChain.deleteKey(tagString: kidFromChain!))
+        XCTAssertTrue(KeyChain.deleteKID(tagString: "testKey"))
         
     }
     

@@ -18,15 +18,19 @@ public class KeyChain {
      */
     public static func saveKey(tagString: String, key: SecKey) -> Bool{
         let tag = tagString.data(using: .utf8)
+        
+        //check if key is already on the keychain, return false if yes
+        if loadKey(tagString: tagString) == key {
+            return false
+        }
+        
         let saveQuery = [
             kSecClass as String : kSecClassKey as String,
             kSecAttrApplicationTag as String : tag!,
             kSecValueRef as String : key
 
         ] as [String : AnyObject]
-        // delete the old key if it does exist
-        let stats = deleteKey(tagString: tagString)
-        print("DELETE STATUS ON SAVING : " , stats.description)
+        
         let status = SecItemAdd(saveQuery as CFDictionary, nil)
         if status == noErr {
             return true
@@ -41,7 +45,7 @@ public class KeyChain {
 //        let tag = tagString.data(using: .utf8)
         let encodedKid = Data(base64Encoded: kid.addPadding())
         
-        // Check if item is already on the keychain
+        // Check if item is already on the keychain, return false if yes
         if loadKid(tagString: tagString) == kid {
             return false
         }
