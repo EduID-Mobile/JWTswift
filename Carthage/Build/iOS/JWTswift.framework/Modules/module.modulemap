@@ -1,0 +1,11 @@
+framework module JWTswift {
+  umbrella header "JWTswift.h"
+
+  export *
+  module * { export * }
+}
+
+module JWTswift.Swift {
+    header "JWTswift-Swift.h"
+    requires objc
+}
