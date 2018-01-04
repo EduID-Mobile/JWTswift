@@ -210,6 +210,8 @@ class JWTswiftTests: XCTestCase {
         let keyFromKC = KeyChain.loadKey(tagString: "eduid.publicKey")
         XCTAssertNotNil(keyFromKC)
         XCTAssertEqual(publickey!, keyFromKC!)
+        
+        XCTAssertTrue(KeyChain.deleteKey(tagString: "eduid.publicKey"))
     }
     
 }
