@@ -9,27 +9,39 @@
 import Foundation
 
 public class KeyChain {
-
+    
+//    ------ SAVE-------
+    
+    public static func saveKey(tagString: String , keyToSave : Key) -> Bool {
+        
+        //check if key is already on the keychain, return false if yes
+        if loadKey(tagString: tagString) != nil {
+            return false
+        }
+        
+        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()!, keyObject: keyToSave.getKeyObject()) {
+            return true
+        } else {
+            return false
+        }
+        
+    }
+    
     /**
      Saving a specific key into the keychain.
      - parameter tagString: unique identifier for the Key to simplify the retrieving process.
      - parameter key: key data which want to be saved in to the keychain
      - returns:  Status from the saving process, true if successful, false if there any error
      */
-    public static func saveKey(tagString: String, key: SecKey) -> Bool{
-        let tag = tagString.data(using: .utf8)
-        
-        //check if key is already on the keychain, return false if yes
-        if loadKey(tagString: tagString) == key {
-            return false
-        }
+    private static func saveKeyObject(tagString: String, keyObject: SecKey) -> Bool{
+        let tag = Data(base64Encoded: tagString.addPadding())
         
         let saveQuery = [
             kSecClass as String : kSecClassKey as String,
             kSecAttrApplicationTag as String : tag!,
-            kSecValueRef as String : key
-
-        ] as [String : AnyObject]
+            kSecValueRef as String : keyObject
+            
+            ] as [String : AnyObject]
         
         let status = SecItemAdd(saveQuery as CFDictionary, nil)
         if status == noErr {
@@ -41,9 +53,10 @@ public class KeyChain {
         }
     }
     
-    public static func saveKid(tagString : String , kid : String) -> Bool{
-//        let tag = tagString.data(using: .utf8)
-        let encodedKid = Data(base64Encoded: kid.addPadding())
+    private static func saveKid(tagString : String , kid : String) -> Bool{
+        //        let tag = tagString.data(using: .utf8)
+        //Make sure kid is base64 not base64url
+        let encodedKid = Data(base64Encoded: kid.addPadding().base64UrlToBase64())
         
         // Check if item is already on the keychain, return false if yes
         if loadKid(tagString: tagString) == kid {
@@ -65,19 +78,41 @@ public class KeyChain {
         return true
     }
     
+    //----LOAD----
+    
+    public static func loadKey(tagString : String) -> Key?{
+        var kidTmp : String?
+        var keyObjectTmp : SecKey?
+        
+        kidTmp = loadKid(tagString: tagString)
+        if(kidTmp == nil){
+            print("Error found in loading Key ID")
+            return nil
+        }
+        keyObjectTmp = loadKeyObject(tagString: kidTmp!)
+        if(keyObjectTmp == nil){
+            print("Error found in loading SecKey")
+            return nil
+        }
+        
+        let result = Key(keyObject: keyObjectTmp!, kid: kidTmp!)
+        return result
+        
+    }
+    
     /**
-     Load a specific key from the keychain.
+     Load a specific SecKey from the keychain.
      - parameter tagString: unique identifier for the Key to simplify the retrieving process
      - returns : A SecKey object from the keychain , if there isn't any key found then return nil
      */
-    public static func loadKey(tagString : String) -> SecKey? {
-        let tag = tagString.data(using: .utf8)
+    private static func loadKeyObject(tagString : String) -> SecKey? {
+        let tag = Data(base64Encoded: tagString.addPadding())
         let getQuery = [
             kSecClass as String : kSecClassKey,
             kSecAttrApplicationTag as String : tag!,
             kSecReturnRef as String : true,
             kSecAttrKeyType as String : kSecAttrKeyTypeRSA
-        ] as [String : Any]
+            ] as [String : Any]
         
         var loadedKey : CFTypeRef?
         let status : OSStatus = SecItemCopyMatching(getQuery as CFDictionary, &loadedKey)
@@ -90,8 +125,8 @@ public class KeyChain {
         }
     }
     
-    public static func loadKid(tagString : String) -> String? {
-//        let tag = tagString.data(using: .utf8)
+    private static func loadKid(tagString : String) -> String? {
+        //        let tag = tagString.data(using: .utf8)
         let getQuery : [String : AnyObject] = [
             kSecClass as String : kSecClassGenericPassword,
             kSecAttrService as String : tagString as AnyObject,
@@ -105,7 +140,7 @@ public class KeyChain {
         let status : OSStatus = withUnsafeMutablePointer(to: &loadedKid) {
             SecItemCopyMatching(getQuery as CFDictionary, UnsafeMutablePointer($0))
         }
-//            SecItemCopyMatching(getQuery as CFDictionary, &loadedKid)
+        //            SecItemCopyMatching(getQuery as CFDictionary, &loadedKid)
         
         if status == noErr {
             print(loadedKid.debugDescription)
@@ -118,14 +153,34 @@ public class KeyChain {
         
     }
     
+    //-----DELETE------
+    
+    public static func deleteKey(tagString: String, keyToDelete : Key) -> Bool {
+        let KIDIsDeleted = deleteKID(tagString: tagString)
+        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()!)
+        
+        if KIDIsDeleted && keyObjectIsDeleted {
+            return true
+        } else {
+            if !KIDIsDeleted{
+                print("error on deleting Key ID")
+            }
+            if !keyObjectIsDeleted{
+                print("error on deleting KeyObject")
+            }
+            return false
+        }
+        
+    }
+    
     /**
      Delete a specific key from the keychain.
      - parameter tagString: unique identifier for the Key to simplify the retrieving process.
      - returns:  Status from the deleting process, true if successful, false if there any error
-    */
-    public static func deleteKey(tagString : String) -> Bool {
+     */
+    private static func deleteKeyObject(tagString : String) -> Bool {
         
-        let tag = tagString.data(using: .utf8)
+        let tag = Data(base64Encoded: tagString.addPadding())
         let getQuery : [String : Any] = [
             kSecClass as String : kSecClassKey,
             kSecAttrApplicationTag as String : tag!,
@@ -141,7 +196,7 @@ public class KeyChain {
         }
     }
     
-    public static func deleteKID(tagString: String) -> Bool {
+    private static func deleteKID(tagString: String) -> Bool {
         let deleteQuery : [String : Any] = [
             kSecClass as String : kSecClassGenericPassword,
             kSecAttrService as String : tagString as Any
@@ -157,7 +212,7 @@ public class KeyChain {
         
     }
     
-   class func createUniqueID() -> String {
+    private class func createUniqueID() -> String {
         let uuid : CFUUID = CFUUIDCreate(nil)
         let cfStr : CFString = CFUUIDCreateString(nil, uuid)
         

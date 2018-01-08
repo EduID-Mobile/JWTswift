@@ -12,22 +12,59 @@ import Security
 
 public class KeyStore {
     
-    private var keys : [Key]?
+    private var keysCollection : [Key]?
     
     public init() {
-        self.keys = [Key]()
+        self.keysCollection = [Key]()
     }
     
     public init(withKey key : Key) {
-        self.keys = [Key]()
-        self.keys!.append(key)
+        self.keysCollection = [Key]()
+        self.keysCollection?.append(key)
     }
     
     public init(withKeys keys: [Key]) {
-        self.keys = keys
+        self.keysCollection = keys
     }
     
-    public func  getPublicKeyFromBundle (resourcePath: String) -> SecKey? {
+    public func addKey(key : Key) -> Bool {
+        if key.getKid() == nil {
+            print("key should have id!")
+            return false
+        }
+        self.keysCollection?.append(key)
+        return true
+    }
+    
+    public func deleteKey( key : Key) -> Bool {
+        let length : Int = self.keysCollection?.count as Int!
+        for i in 0 ..< length {
+            if keysCollection![i] == key {
+                self.keysCollection?.remove(at: i)
+                return true
+            }
+        }
+        return false
+    }
+    
+    public func deleteAll(){
+        keysCollection?.removeAll()
+    }
+    
+    public func getKey(withKid kid: String) -> Key? {
+       
+        for key in keysCollection! {
+            if key.getKid() == kid {
+                return key
+            }
+        }
+        
+        return nil
+    }
+    
+    //returning kid from the key
+    //return nil if no key found
+    public func  getPublicKeyFromCertificateInBundle (resourcePath: String) -> String? {
         //DER format
         let certData = NSData(contentsOfFile: resourcePath)
         let cert = SecCertificateCreateWithData(nil, certData! as CFData)
@@ -48,9 +85,18 @@ public class KeyStore {
                 }
             }
         }
-        return publicKey
+        if(publicKey == nil){
+            return nil
+        }
+        let keyEmpty = Key(keyObject: publicKey!, kid: nil)
+        let keyTmp = KeyStore.createKIDfromKey(key: keyEmpty)
+        if self.addKey(key:  keyTmp! ) {
+            return keyTmp!.getKid()
+        }else {
+            return nil
+        }
     }
-    
+    /*
     public func getCertificateFromBundle(resourcePath: String) -> SecCertificate? {
         if let data = NSData(contentsOfFile: resourcePath) {
             
@@ -60,6 +106,7 @@ public class KeyStore {
         }
         return nil
     }
+    */
     
    /*
     //specialize for RSA private key in pem format (#PKCS1)
@@ -103,7 +150,7 @@ public class KeyStore {
      - parameter resourcePath: Path to the private key data in pem format (PKCS#1)
      - returns : private key in SecKey format or nil when there is an error or no key found in pem data
      */
-    public func getPrivateKeyFromPEM(resourcePath : String) -> SecKey? {
+    public func getPrivateKeyFromPemInBundle(resourcePath : String, identifier : String) -> String? {
         var keyInString : String?
         do{
             keyInString = try String(contentsOfFile: resourcePath)
@@ -128,7 +175,12 @@ public class KeyStore {
         var error : Unmanaged<CFError>?
         let privateKey = SecKeyCreateWithData(data! as CFData, attributes as CFDictionary, &error)
         print(error.debugDescription)
-        return privateKey
+        if privateKey != nil {
+            let key = Key(keyObject: privateKey!, kid: identifier)
+            self.keysCollection?.append(key)
+            return identifier
+        }
+        return nil
     }
     
     /**
@@ -136,7 +188,7 @@ public class KeyStore {
      parameter jwksSourceData: jwks in Data format
      returns : Pem data in string format 
     */
-    public func jwksToPemFromServer(jwksSourceData : Data) -> [String]?{
+    public func jwksToKeyFromServer(jwksSourceData : Data) -> [Key]?{
         if jwksSourceData.count == 0 {
             return nil
         }
@@ -146,16 +198,16 @@ public class KeyStore {
     /**
      
      */
-    public func jwksToPemFromBundle(jwksPath : String) -> [String]? {
+    public func jwksToKeyFromBundle(jwksPath : String) -> [Key]? {
         if jwksPath.count == 0{
             return nil
         }
         return jwksToPem(jwksPath: jwksPath)
     }
     
-    //jwks from server
-    private func jwksToPem(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [String]? {
-        var result  = [String]()
+    //jwks
+    private func jwksToPem(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [Key]? {
+        var result  = [Key]()
         var dataFromPath : Data?
         
         if(jwksSourceData != nil){
@@ -174,40 +226,52 @@ public class KeyStore {
             return nil
         }
         
-        let keys = jsonData!["keys"] as! [[String: String]]
+        let keysJWKS = jsonData!["keys"] as! [[String: String]]
        
-        for key in keys{
-            let pemResult = jwkToPem(key: key)
-            if pemResult != nil {
-                result.append(pemResult!)
+        for keyJWKS in keysJWKS{
+            let keyResult = jwkToKey(jwkDict: keyJWKS)
+            if keyResult != nil {
+                result.append(keyResult!)
             }
         }
-        
-        /*
-        if keys.count == 1 {
-            let key = keys.first
-            print("KEY  = \(key!)")
-            pemResult = jwkToPem(key: key!)
-            result.append(pemResult!)
-        }*/
         return result
     }
     
     
     //TODO : make it private
-     public func jwkToPem(key : [String : String]) -> String? {
+    //PUBLIC KEY
+     public func jwkToKey(jwkDict : [String : String]) -> Key? {
         
-        let exponentStr = key["e"]!.base64UrlToBase64().addPadding()
+        let exponentStr = jwkDict["e"]!.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
         
-        let modulusStr = key["n"]!.base64UrlToBase64().addPadding()
+        let modulusStr = jwkDict["n"]!.base64UrlToBase64().addPadding()
         let modulusData = Data(base64Encoded: modulusStr)
         print("exponent : \(exponentStr)")
         print("modulus : \(modulusStr)")
         let pemGen = PemGenerator(modulusHex: (modulusData?.hexDescription)!, exponentHex: (exponentData?.hexDescription)!, lengthModulus: (modulusData?.count)!, lengthExponent: (exponentData?.count)!)
         let pemString = pemGen.generatePublicPem()
         
-        return pemString
+        let attributes : [String : Any] = [
+            kSecAttrKeyType as String : kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass as String : kSecAttrKeyClassPublic,
+            kSecAttrKeySizeInBits as String : 2048]
+        
+        var error: Unmanaged<CFError>?
+        let dataPem = Data.init(base64Encoded: pemString)
+        guard let publicKey = SecKeyCreateWithData(dataPem! as  CFData, attributes as CFDictionary, &error) else {
+            print("Cannot create key, Error : \(error.debugDescription)")
+            return nil
+        }
+        
+        if let kid = jwkDict["kid"] {
+            //base64url
+            return Key(keyObject: publicKey, kid: kid)
+        } else{
+            //if there is no Key ID, create a thumbprint for this jwk and use it as Key ID
+            let kidTmp = KeyStore.createKIDfromJWK(jwkDict: jwkDict)
+            return Key(keyObject: publicKey, kid: kidTmp)
+        }
     }
     
     private func  bytesCount (base64str : String) -> Int{
@@ -223,9 +287,9 @@ public class KeyStore {
 
     
     /**
-     
+     pkcs1 // SecKeyData as input parameter
      */
-    public func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
+    public class func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
         var jwk : [String : String] = [:]
         print("LAST INDEX : \(pemData.endIndex.hashValue)")
         let rangeModulus : Range<Int> = 9..<265
@@ -240,7 +304,7 @@ public class KeyStore {
         jwk["e"] = subdataEx.base64EncodedString().clearPaddding().base64ToBase64Url()
         jwk["kty"] = "RSA"
         if kid == nil {
-            jwk["kid"] =  KeyStore.createKID(jwkDict: jwk)
+            jwk["kid"] =  KeyStore.createKIDfromJWK(jwkDict: jwk)
         } else {
             jwk["kid"] = kid
         }
@@ -248,12 +312,29 @@ public class KeyStore {
         return jwk
     }
     
+    public class func createKIDfromKey(key : Key) -> Key? {
+        if key.getKid() != nil {
+            print("KID is already exist!")
+            return nil
+        }
+        
+        var error : Unmanaged<CFError>?
+        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data! else {
+            print("error on creating data from key")
+            return nil
+        }
+        print("DATA : " , dataFromKey)
+        let jwkDict = pemToJWK(pemData: dataFromKey)
+        return Key(keyObject: key.getKeyObject(), kid: jwkDict["kid"])
+        
+    }
+    
     /**
     Generate a key ID from a modulus, exponent and keytype for the JWK
      - parameter jwkDict: String dictionary, containing keys : e, n , and kty , which are required to create a kid (thumbprint)
      - returns : KID in base64encoded string format (without Padding)
      */
-    public class func createKID(jwkDict : [String: String]) -> String? {
+    public class func createKIDfromJWK(jwkDict : [String: String]) -> String? {
         
         var jsonString : String?
         if jwkDict.keys.contains("e") && jwkDict.keys.contains("kty") && jwkDict.keys.contains("n") {
@@ -288,13 +369,13 @@ public class KeyStore {
      - returns : A dictionary contains one key pair with keys "public", "private" to access the specific key
      */
     
-    public class func generateKeyPair(keyTag : String , keyType : String) -> [String : SecKey]? {
-        let tag = keyTag.data(using: .utf8)!
-        var keysResult : [String : SecKey] = [:]
+    public class func generateKeyPair(keyType : String) -> [String : Key]? { // parameter keyTag : String
+//        let tag = keyTag.data(using: .utf8)!
+        var keysResult : [String : Key] = [:]
         let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,
                                             kSecAttrKeySizeInBits as String : 2048,
-                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : true,
-                                                                             kSecAttrApplicationTag as String : tag ]
+                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : false]//,
+                                                                             //kSecAttrApplicationTag as String : tag ]
         ]
         //kSecattrIsPermanent == true -> store the keychain in the default keychain while creating it, use the application tag to retrieve it from keychain later
         var error : Unmanaged<CFError>?
@@ -302,8 +383,11 @@ public class KeyStore {
             print(error.debugDescription)
             return nil
         }
-        keysResult["private"] = privateKey
-        keysResult["public"] = SecKeyCopyPublicKey(privateKey)
+        keysResult["private"] = Key(keyObject: privateKey, kid: nil)
+        let publicSecKey = SecKeyCopyPublicKey(privateKey)
+        print(publicSecKey!)
+        let keyTmp = Key(keyObject: publicSecKey!, kid: nil)
+        keysResult["public"] = createKIDfromKey(key: keyTmp)
         
         return keysResult
     }

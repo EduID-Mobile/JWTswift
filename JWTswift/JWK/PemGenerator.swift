@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class PemGenerator {
+class PemGenerator {
     
     private var modulusHex : String
     private var exponentHex : String
@@ -16,7 +16,7 @@ public class PemGenerator {
     private var lengthExponent : Int
     
     
-    public init(modulusHex: String, exponentHex: String, lengthModulus : Int, lengthExponent: Int) {
+    init(modulusHex: String, exponentHex: String, lengthModulus : Int, lengthExponent: Int) {
         self.modulusHex = modulusHex
         self.exponentHex = exponentHex
         self.lengthModulus = lengthModulus
