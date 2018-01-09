@@ -14,7 +14,7 @@ public class JWS{
     var headerDict : [String : Any]? = nil
     var payloadDict : [String : Any]? = nil
     var signatureStr : String? = nil
-    var jwsCompactResult : String? = nil
+    public var jwsCompactResult : String? = nil
     
     public init() {
         

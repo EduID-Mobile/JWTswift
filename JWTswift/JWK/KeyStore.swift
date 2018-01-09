@@ -312,6 +312,16 @@ public class KeyStore {
         return jwk
     }
     
+    public class func keyToJwk(key : Key) -> [String: String]? {
+        var error : Unmanaged<CFError>?
+        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data! else {
+            print("error on creating data from key, \(error.debugDescription)")
+            return nil
+        }
+        
+        return pemToJWK(pemData: dataFromKey)
+    }
+    
     public class func createKIDfromKey(key : Key) -> Key? {
         if key.getKid() != nil {
             print("KID is already exist!")
