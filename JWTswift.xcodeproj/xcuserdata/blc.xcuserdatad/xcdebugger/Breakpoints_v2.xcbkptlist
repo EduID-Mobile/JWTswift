@@ -350,7 +350,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "382"
             endingLineNumber = "382"
-            landmarkName = "createKIDfromJWK(jwkDict:)"
+            landmarkName = "generateKeyPair(keyType:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

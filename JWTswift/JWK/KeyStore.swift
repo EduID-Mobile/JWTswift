@@ -319,7 +319,7 @@ public class KeyStore {
             return nil
         }
         
-        return pemToJWK(pemData: dataFromKey)
+        return pemToJWK(pemData: dataFromKey, kid: key.getKid()?.base64ToBase64Url() )
     }
     
     public class func createKIDfromKey(key : Key) -> Key? {
