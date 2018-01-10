@@ -183,6 +183,20 @@ public class KeyStore {
         return nil
     }
     
+    public func getPrivateKeyFromJWKSinBundle(resourcePath : String) -> Key? {
+        var jsonDict : [String: Any]
+        do{
+            let jwksData = try Data.init(contentsOf: URL(fileURLWithPath: resourcePath))
+            jsonDict = try JSONSerialization.jsonObject(with: jwksData) as! [String : Any]
+        } catch {
+            print("cannot find/ extract any jwks data on the path , Error: " , error.localizedDescription)
+            return nil
+        }
+        
+        
+        return jwkToKey(jwkDict: jsonDict)
+    }
+    
     /**
      Converting jwks data to pem string
      parameter jwksSourceData: jwks in Data format
@@ -240,12 +254,13 @@ public class KeyStore {
     
     //TODO : make it private
     //PUBLIC KEY
-     public func jwkToKey(jwkDict : [String : String]) -> Key? {
-        
-        let exponentStr = jwkDict["e"]!.base64UrlToBase64().addPadding()
+     public func jwkToKey(jwkDict : [String : Any]) -> Key? {
+        var exponentStr = jwkDict["e"] as! String
+        exponentStr = exponentStr.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
         
-        let modulusStr = jwkDict["n"]!.base64UrlToBase64().addPadding()
+        var modulusStr = jwkDict["n"] as! String
+        modulusStr = modulusStr.base64UrlToBase64().addPadding()
         let modulusData = Data(base64Encoded: modulusStr)
         print("exponent : \(exponentStr)")
         print("modulus : \(modulusStr)")
@@ -266,7 +281,7 @@ public class KeyStore {
         
         if let kid = jwkDict["kid"] {
             //base64url
-            return Key(keyObject: publicKey, kid: kid)
+            return Key(keyObject: publicKey, kid: kid as? String)
         } else{
             //if there is no Key ID, create a thumbprint for this jwk and use it as Key ID
             let kidTmp = KeyStore.createKIDfromJWK(jwkDict: jwkDict)
@@ -344,7 +359,7 @@ public class KeyStore {
      - parameter jwkDict: String dictionary, containing keys : e, n , and kty , which are required to create a kid (thumbprint)
      - returns : KID in base64encoded string format (without Padding)
      */
-    public class func createKIDfromJWK(jwkDict : [String: String]) -> String? {
+    public class func createKIDfromJWK(jwkDict : [String: Any]) -> String? {
         
         var jsonString : String?
         if jwkDict.keys.contains("e") && jwkDict.keys.contains("kty") && jwkDict.keys.contains("n") {
