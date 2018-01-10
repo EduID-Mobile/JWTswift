@@ -38,8 +38,8 @@ public class JWS{
     public func sign(key : Key , alg : JWSAlgorithm) -> String? {
         var headerVar = [String: Any]()
         var payloadVar = [String: Any]()
-        
-        headerVar["kid"] = key.getKid()
+        //kid in key is always in base64 , to send or sign need to be in base64url
+        headerVar["kid"] = key.getKid()?.base64ToBase64Url()
         headerVar["typ"] = "JWT"
         if alg == JWSAlgorithm.RS256 {
             headerVar["alg"] = "RS256"

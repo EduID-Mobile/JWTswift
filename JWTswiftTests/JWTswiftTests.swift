@@ -205,9 +205,14 @@ class JWTswiftTests: XCTestCase {
     func testGetKeyIDFromJWKSinBundle() {
         var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks")
         let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: (url?.relativePath)!)
-        
         XCTAssertNotNil(keyID)
         XCTAssertEqual(keyID, "tDVTKwRxlxhccA-yllPwjQdIBXpwbHq0GrYjt1FW8us" )
+        
+        url = bundle?.url(forResource: "ios_priv", withExtension: "pem")
+        let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: (url?.relativePath)!, identifier: keyID!)
+        let privkey = keyman.getKey(withKid: keyID!.base64UrlToBase64())
+        XCTAssertNotNil(privkey)
+        
     }
     
     
