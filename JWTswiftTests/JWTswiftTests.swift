@@ -36,7 +36,8 @@ class JWTswiftTests: XCTestCase {
         
         jwsPayloadDict = [
             "testdata" : "test1",
-            "payloadTest" : "test2"
+            "payloadTest" : "test2",
+            "keyToSend" : ["e": "AQAB", "kid": "LolpQpI9lNNqFu-UmAZLQJ3zKOeECBN8YQ4TUf1X86Y", "kty": "RSA", "n": "xHQNRKCzDmkKlxrQHeAwtrpcao0z2s-gvaZAbTt9e18-1F-LMwyLQjDJ681YhSLHIZXaCAStE_KxRf5byBbDbgL5Yx1ngCxKibQ43gFFiWCH6JRsUL-PNEHZdhOPWnSTlzSbszFxYSucYX3PyKVoG-lI03UyZ_60xKabAgciQtEszoFJ53A3ZKh3ddblsSnPPeuj2oIGRY4CmphAuGXl_ff5Co1j2i5ztS3P2oM4XaRB925HIXv2A-SqnBxBK_MRuH93BqGfOs6AVh1mRf1zSNnNAe-Lmku_jkTEk-FKlzSjb4cNgXwEDsSIP3mBMuPZ6zSKFf3FpX1kVRd83ecNfw"]
         ]
         
     }
@@ -195,10 +196,10 @@ class JWTswiftTests: XCTestCase {
     func testJWS(){
         let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
         XCTAssertNotNil(keydict)
-        let jws = JWS(headerDict: jwsHeaderDict, payloadDict: jwsPayloadDict)
-        XCTAssertNotNil(jws.sign(key: keydict!["private"]!))
+        let jws = JWS(payloadDict: jwsPayloadDict)
+        XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
         
-        XCTAssertTrue(jws.verify(header: jwsHeaderDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
+        XCTAssertTrue(jws.verify(header: jws.headerDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
     }
     
     

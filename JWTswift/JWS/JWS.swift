@@ -9,6 +9,12 @@
 import Security
 import Foundation
 
+public enum JWSAlgorithm {
+    case HS256
+    case RS256
+    case ES256
+}
+
 public class JWS{
     
     var headerDict : [String : Any]? = nil
@@ -16,14 +22,9 @@ public class JWS{
     var signatureStr : String? = nil
     public var jwsCompactResult : String? = nil
     
-    public init() {
-        
-    }
     
-    public init(headerDict : [String : Any] , payloadDict :  [String : Any] , signatureStr : String? = nil) {
-        self.headerDict = headerDict
+    public init(payloadDict :  [String : Any]) {
         self.payloadDict = payloadDict
-        self.signatureStr = signatureStr
     }
     
     
@@ -34,30 +35,20 @@ public class JWS{
      - returns : A complete String of JWS with the following format (header.payload.signature)
                 if object variable(header and payload dictionary) not nil then the signature(String) would be save as object variable as well.
      */
-    public func sign(header: [String : Any]? = nil, payload : [String: Any]? = nil , key : Key) -> String? {
-        var headerVar : [String: Any]
-        var payloadVar : [String: Any]
-        if header == nil {
-            if self.headerDict == nil {
-                print("No header data found for this signing")
-                return nil
-            } else {
-                headerVar = self.headerDict!
-            }
-        } else{
-            headerVar = header!
-        }
+    public func sign(key : Key , alg : JWSAlgorithm) -> String? {
+        var headerVar = [String: Any]()
+        var payloadVar = [String: Any]()
         
-        if payload == nil{
-            if self.payloadDict == nil {
-                print("No payload data found for this signing")
-                return nil
-            } else {
-                payloadVar = self.payloadDict!
-            }
-        } else {
-            payloadVar = payload!
+        headerVar["kid"] = key.getKid()
+        headerVar["typ"] = "JWT"
+        if alg == JWSAlgorithm.RS256 {
+            headerVar["alg"] = "RS256"
+        }else{
+            print("algorithm : \(alg) is not supported")
+            return nil
         }
+        self.headerDict = headerVar
+        payloadVar = self.payloadDict!
         
         var result : String?
         do{
