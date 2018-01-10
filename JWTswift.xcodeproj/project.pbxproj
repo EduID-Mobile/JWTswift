@@ -28,6 +28,7 @@
 		682190E11FE96A8C00759FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */; };
 		685BBEC81FFCE1D900894040 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685BBEC71FFCE1D900894040 /* Key.swift */; };
 		68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68737F181FEBCC03001B32AB /* UtilExtensions.swift */; };
+		68DA97AE2006229800CA96B6 /* ios_priv.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 68DA97AD2006229800CA96B6 /* ios_priv.jwks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		682190E61FE96A9600759FA5 /* AppTarget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppTarget.entitlements; sourceTree = "<group>"; };
 		685BBEC71FFCE1D900894040 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
 		68737F181FEBCC03001B32AB /* UtilExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilExtensions.swift; sourceTree = "<group>"; };
+		68DA97AD2006229800CA96B6 /* ios_priv.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ios_priv.jwks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 				682190C41FE95EC900759FA5 /* eduid_pub.jwks */,
 				682190C71FE95ECA00759FA5 /* ios_priv.p12 */,
 				682190C61FE95ECA00759FA5 /* ios_priv.pem */,
+				68DA97AD2006229800CA96B6 /* ios_priv.jwks */,
 				682190C51FE95ECA00759FA5 /* rsaCert.der */,
 			);
 			path = TestResources;
@@ -399,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				682190CB1FE95ECA00759FA5 /* ios_priv.p12 in Resources */,
+				68DA97AE2006229800CA96B6 /* ios_priv.jwks in Resources */,
 				682190C91FE95ECA00759FA5 /* rsaCert.der in Resources */,
 				682190C81FE95ECA00759FA5 /* eduid_pub.jwks in Resources */,
 				682190CA1FE95ECA00759FA5 /* ios_priv.pem in Resources */,

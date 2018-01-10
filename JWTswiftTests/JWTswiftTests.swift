@@ -202,5 +202,13 @@ class JWTswiftTests: XCTestCase {
         XCTAssertTrue(jws.verify(header: jws.headerDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
     }
     
+    func testGetKeyIDFromJWKSinBundle() {
+        var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks")
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: (url?.relativePath)!)
+        
+        XCTAssertNotNil(keyID)
+        XCTAssertEqual(keyID, "tDVTKwRxlxhccA-yllPwjQdIBXpwbHq0GrYjt1FW8us" )
+    }
+    
     
 }

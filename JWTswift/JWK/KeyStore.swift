@@ -183,7 +183,7 @@ public class KeyStore {
         return nil
     }
     
-    public func getPrivateKeyFromJWKSinBundle(resourcePath : String) -> Key? {
+    public func getPrivateKeyIDFromJWKSinBundle(resourcePath : String) -> String? {
         var jsonDict : [String: Any]
         do{
             let jwksData = try Data.init(contentsOf: URL(fileURLWithPath: resourcePath))
@@ -192,9 +192,9 @@ public class KeyStore {
             print("cannot find/ extract any jwks data on the path , Error: " , error.localizedDescription)
             return nil
         }
-        
-        
-        return jwkToKey(jwkDict: jsonDict)
+        let keyArray = jsonDict["keys"] as! [[String: Any]]
+        let resultkeyID = keyArray.first!["kid"] as! String
+        return resultkeyID
     }
     
     /**
@@ -254,7 +254,7 @@ public class KeyStore {
     
     //TODO : make it private
     //PUBLIC KEY
-     public func jwkToKey(jwkDict : [String : Any]) -> Key? {
+    public func jwkToKey(jwkDict : [String : Any] ) -> Key? {
         var exponentStr = jwkDict["e"] as! String
         exponentStr = exponentStr.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
