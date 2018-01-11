@@ -199,7 +199,25 @@ class JWTswiftTests: XCTestCase {
         let jws = JWS(payloadDict: jwsPayloadDict)
         XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
         
-        XCTAssertTrue(jws.verify(header: jws.headerDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
+        XCTAssertTrue(jws.verifyWithDict(header: jws.headerDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
+        
+        XCTAssertTrue(jws.verify(jwsToVerify: jws.jwsCompactResult!, key: keydict!["public"]!))
+    }
+    
+    func testJWSparse(){
+        let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        XCTAssertNotNil(keydict)
+        let jws = JWS(payloadDict: jwsPayloadDict)
+        XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
+        
+        print("jws : " , jws.jwsCompactResult!)
+        
+        let parsed = JWS.parseJWSpayload(stringJWS: jws.jwsCompactResult!)
+        print("PARSED")
+        print(parsed)
+        XCTAssertTrue(parsed.count != 0)
+        XCTAssertTrue((parsed["testdata"] != nil) && (parsed["payloadTest"] != nil) && (parsed["keyToSend"] != nil))
+        
     }
     
     func testGetKeyIDFromJWKSinBundle() {
