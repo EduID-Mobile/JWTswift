@@ -4,7 +4,7 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)ch.htwchur.JWTswift.keychain</string>
+		<string>$(AppIdentifierPrefix)ch.htwchur.AppTarget</string>
 	</array>
 </dict>
 </plist>
