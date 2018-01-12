@@ -214,9 +214,9 @@ class JWTswiftTests: XCTestCase {
         
         let parsed = JWS.parseJWSpayload(stringJWS: jws.jwsCompactResult!)
         print("PARSED")
-        print(parsed)
-        XCTAssertTrue(parsed.count != 0)
-        XCTAssertTrue((parsed["testdata"] != nil) && (parsed["payloadTest"] != nil) && (parsed["keyToSend"] != nil))
+        print(parsed!)
+        XCTAssertTrue(parsed?.count != 0)
+        XCTAssertTrue((parsed!["testdata"] != nil) && (parsed!["payloadTest"] != nil) && (parsed!["keyToSend"] != nil))
         
     }
     

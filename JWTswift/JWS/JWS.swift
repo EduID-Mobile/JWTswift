@@ -163,7 +163,10 @@ public func verifyWithDict(header :  [String : Any]? , payload :[String: Any]? ,
     return result
 }
 
-public class func parseJWSpayload(stringJWS : String) -> [String : Any] {
+public class func parseJWSpayload(stringJWS : String) -> [String : Any]? {
+    if stringJWS.count == 0 || !stringJWS.contains(".") {
+        return nil
+    }
     var result = [String : Any]()
     let splits = stringJWS.split(separator: ".")
     
