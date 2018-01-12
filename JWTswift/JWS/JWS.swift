@@ -170,7 +170,7 @@ public static func parseJWSpayload(stringJWS : String) -> [String : Any]? {
     var result = [String : Any]()
     let splits = stringJWS.split(separator: ".")
     
-    let payload = String(splits[1]).base64UrlToBase64()
+    let payload = String(splits[1]).base64UrlToBase64().addPadding()
     let payloadData = Data(base64Encoded: payload)
     do{
         result = try JSONSerialization.jsonObject(with: payloadData!, options: .allowFragments) as! [String : Any]
