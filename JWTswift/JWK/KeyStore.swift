@@ -304,7 +304,7 @@ public class KeyStore {
     /**
      pkcs1 // SecKeyData as input parameter
      */
-    public class func pemToJWK(pemData : Data , kid: String? = nil) -> [String: String]{
+    public class func pemToJWK(pemData : Data , kid: String? = nil) -> [String: Any]{
         var jwk : [String : String] = [:]
         print("LAST INDEX : \(pemData.endIndex.hashValue)")
         let rangeModulus : Range<Int> = 9..<265
@@ -327,7 +327,7 @@ public class KeyStore {
         return jwk
     }
     
-    public class func keyToJwk(key : Key) -> [String: String]? {
+    public class func keyToJwk(key : Key) -> [String: Any]? {
         var error : Unmanaged<CFError>?
         guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data! else {
             print("error on creating data from key, \(error.debugDescription)")
@@ -350,7 +350,7 @@ public class KeyStore {
         }
         print("DATA : " , dataFromKey)
         let jwkDict = pemToJWK(pemData: dataFromKey)
-        return Key(keyObject: key.getKeyObject(), kid: jwkDict["kid"])
+        return Key(keyObject: key.getKeyObject(), kid: jwkDict["kid"] as? String)
         
     }
     

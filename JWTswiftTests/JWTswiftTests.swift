@@ -201,7 +201,7 @@ class JWTswiftTests: XCTestCase {
         
         XCTAssertTrue(jws.verifyWithDict(header: jws.headerDict, payload: jwsPayloadDict, signature: jws.signatureStr!, key: keydict!["public"]! )  )
         
-        XCTAssertTrue(jws.verify(jwsToVerify: jws.jwsCompactResult!, key: keydict!["public"]!))
+        XCTAssertTrue(JWS.verify(jwsToVerify: jws.jwsCompactResult!, key: keydict!["public"]!))
     }
     
     func testJWSparse(){
