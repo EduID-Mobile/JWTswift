@@ -381,7 +381,7 @@ public class KeyStore {
             let dataHashvalue = Data(bytes: &hashvalue, count: MemoryLayout.size(ofValue: hashvalue))
             print("data from string hash : " , dataHashvalue.base64EncodedString())
             print("kid data : " , kidData.base64EncodedString().clearPaddding())
-            return kidData.base64EncodedString().clearPaddding()
+            return kidData.base64EncodedString().clearPaddding().base64ToBase64Url()
         }
         return nil
     }
