@@ -372,8 +372,8 @@ public class KeyStore {
             }
             print(byteArray)
             let kidArray = Data.init(bytes: byteArray)
-            print(kidArray.hashSHA256()!)
-            let kidData = Data(bytes: kidArray.hashSHA256()!)
+            print([UInt8](kidArray.hashSHA256()))
+            let kidData = kidArray.hashSHA256()
 
             print("kidData : " , kidData.base64EncodedString().clearPaddding() )
             var hashvalue = jsonString?.hashValue as Int!

@@ -16,6 +16,7 @@ class JWTswiftTests: XCTestCase {
     var dict : [String: String]!
     var jwsHeaderDict : [String: Any]!
     var jwsPayloadDict : [String : Any]!
+    var dataToHash : String!
     
     override func setUp() {
         super.setUp()
@@ -40,6 +41,8 @@ class JWTswiftTests: XCTestCase {
             "keyToSend" : ["e": "AQAB", "kid": "LolpQpI9lNNqFu-UmAZLQJ3zKOeECBN8YQ4TUf1X86Y", "kty": "RSA", "n": "xHQNRKCzDmkKlxrQHeAwtrpcao0z2s-gvaZAbTt9e18-1F-LMwyLQjDJ681YhSLHIZXaCAStE_KxRf5byBbDbgL5Yx1ngCxKibQ43gFFiWCH6JRsUL-PNEHZdhOPWnSTlzSbszFxYSucYX3PyKVoG-lI03UyZ_60xKabAgciQtEszoFJ53A3ZKh3ddblsSnPPeuj2oIGRY4CmphAuGXl_ff5Co1j2i5ztS3P2oM4XaRB925HIXv2A-SqnBxBK_MRuH93BqGfOs6AVh1mRf1zSNnNAe-Lmku_jkTEk-FKlzSjb4cNgXwEDsSIP3mBMuPZ6zSKFf3FpX1kVRd83ecNfw"]
         ]
         
+        dataToHash = "NDk4YmIwN2EtMWZlNy00ZDk4LWEyMTctMDY4OTFkMzVlYmFmAySFHbjPcIT3RCdaMlAO"
+        
     }
     
     override func tearDown() {
@@ -48,6 +51,7 @@ class JWTswiftTests: XCTestCase {
         dict = nil
         jwsHeaderDict = nil
         jwsPayloadDict = nil
+        dataToHash = nil
         super.tearDown()
     }
     
@@ -230,6 +234,16 @@ class JWTswiftTests: XCTestCase {
         let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: (url?.relativePath)!, identifier: keyID!)
         let privkey = keyman.getKey(withKid: keyID!.base64UrlToBase64())
         XCTAssertNotNil(privkey)
+        
+    }
+    
+    func testHashfunction() {
+        let data = dataToHash.data(using: .ascii)
+        XCTAssertNotNil(data!)
+        let result = data?.hashSHA256()
+        print([UInt8](result!) )
+        print(result?.base64EncodedString())
+        XCTAssertEqual(result?.hexDescription, "d39d6be6abc67dee3dae59ba565038e0f2cf6e9b42d42db4f5c4939528cf9a96")
         
     }
     

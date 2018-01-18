@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.289694"
+            timestampString = "537965072.947408"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
             landmarkName = "testKeyGenerator()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.2900701"
+            timestampString = "537965072.947813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "177"
-            endingLineNumber = "177"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
             landmarkName = "testSavingAndRetrievingKeyfromKeychain()"
             landmarkType = "7">
             <Locations>
@@ -122,7 +122,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswift/JWK/KeyStore.swift"
-            timestampString = "537875435.290422"
+            timestampString = "537965072.948176"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "378"
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.2904741"
+            timestampString = "537965072.94823"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "testSaveKIDandKey()"
             landmarkType = "7">
             <Locations>
@@ -218,7 +218,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswift/JWS/JWS.swift"
-            timestampString = "537875435.290791"
+            timestampString = "537965072.948552"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "40"
@@ -281,7 +281,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswift/JWK/KeyStore.swift"
-            timestampString = "537875435.291049"
+            timestampString = "537965072.948807"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "397"
@@ -297,11 +297,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.2911"
+            timestampString = "537965072.9488569"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
             landmarkName = "testTransformingJWKintoPEMandSavingIntoKeychain()"
             landmarkType = "7">
          </BreakpointContent>
@@ -313,7 +313,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswift/JWK/KeyStore.swift"
-            timestampString = "537875435.29136"
+            timestampString = "537965072.949124"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "257"
@@ -329,7 +329,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswift/JWK/KeyStore.swift"
-            timestampString = "537875435.29141"
+            timestampString = "537965072.949172"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "276"
@@ -345,11 +345,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.291456"
+            timestampString = "537965072.949216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
             landmarkName = "testSaveKIDandKey()"
             landmarkType = "7">
             <Locations>
@@ -393,11 +393,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.2917089"
+            timestampString = "537965072.949484"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "112"
-            endingLineNumber = "112"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
             landmarkName = "testSaveKIDandKey()"
             landmarkType = "7">
          </BreakpointContent>
@@ -441,11 +441,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.292013"
+            timestampString = "537965072.949795"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "191"
-            endingLineNumber = "191"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
             landmarkName = "testSavingAndRetrievingKeyfromKeychain()"
             landmarkType = "7">
             <Locations>
@@ -489,11 +489,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.292273"
+            timestampString = "537965072.950067"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "233"
-            endingLineNumber = "233"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
             landmarkName = "testGetKeyIDFromJWKSinBundle()"
             landmarkType = "7">
          </BreakpointContent>
@@ -505,11 +505,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.292531"
+            timestampString = "537965072.950333"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "230"
-            endingLineNumber = "230"
+            startingLineNumber = "234"
+            endingLineNumber = "234"
             landmarkName = "testGetKeyIDFromJWKSinBundle()"
             landmarkType = "7">
             <Locations>
@@ -549,11 +549,11 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JWTswiftTests/JWTswiftTests.swift"
-            timestampString = "537875435.292785"
+            timestampString = "537965072.9506"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "13"
@@ -562,81 +562,97 @@
             landmarkType = "3">
             <Locations>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "variable initialization expression of JWTswiftTests.JWTswiftTests.bundle : Swift.Optional&lt;__ObjC.Bundle&gt;"
                   moduleName = "JWTswiftTests"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/blc/Documents/GitHub/JWTswift/JWTswiftTests/JWTswiftTests.swift"
-                  timestampString = "537439024.8887661"
+                  timestampString = "537961522.278991"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "13"
                   endingLineNumber = "13"
-                  offsetFromSymbolStart = "4">
+                  offsetFromSymbolStart = "16">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "JWTswiftTests.JWTswiftTests.bundle.getter : Swift.Optional&lt;__ObjC.Bundle&gt;"
                   moduleName = "JWTswiftTests"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/blc/Documents/GitHub/JWTswift/JWTswiftTests/JWTswiftTests.swift"
-                  timestampString = "537439024.891257"
+                  timestampString = "537961522.2805229"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "13"
                   endingLineNumber = "13"
-                  offsetFromSymbolStart = "109">
+                  offsetFromSymbolStart = "104">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "JWTswiftTests.JWTswiftTests.init(invocation: Swift.Optional&lt;__ObjC.NSInvocation&gt;) -&gt; JWTswiftTests.JWTswiftTests"
                   moduleName = "JWTswiftTests"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/blc/Documents/GitHub/JWTswift/JWTswiftTests/JWTswiftTests.swift"
-                  timestampString = "537439024.893888"
+                  timestampString = "537961522.281903"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "13"
                   endingLineNumber = "13"
-                  offsetFromSymbolStart = "21">
+                  offsetFromSymbolStart = "24">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "JWTswiftTests.JWTswiftTests.init(selector: ObjectiveC.Selector) -&gt; JWTswiftTests.JWTswiftTests"
                   moduleName = "JWTswiftTests"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/blc/Documents/GitHub/JWTswift/JWTswiftTests/JWTswiftTests.swift"
-                  timestampString = "537439024.895929"
+                  timestampString = "537961522.283334"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "13"
                   endingLineNumber = "13"
-                  offsetFromSymbolStart = "21">
+                  offsetFromSymbolStart = "24">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "JWTswiftTests.JWTswiftTests.init() -&gt; JWTswiftTests.JWTswiftTests"
                   moduleName = "JWTswiftTests"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/blc/Documents/GitHub/JWTswift/JWTswiftTests/JWTswiftTests.swift"
-                  timestampString = "537439024.897704"
+                  timestampString = "537961522.284789"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "13"
                   endingLineNumber = "13"
-                  offsetFromSymbolStart = "17">
+                  offsetFromSymbolStart = "20">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "JWTswiftTests/JWTswiftTests.swift"
+            timestampString = "537965072.950873"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
+            landmarkName = "testHashfunction()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

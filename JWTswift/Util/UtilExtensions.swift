@@ -8,13 +8,14 @@
 
 import Foundation
 import CommonCrypto
+import Security
 
 extension Data {
     public var hexDescription : String {
         return reduce(""){$0 + String(format: "%02x", $1)}
     }
     
-    public func hashSHA256() -> [UInt8]? {
+    public func hashSHA256() -> Data {
         
         var result : [UInt8] = [UInt8].init(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
         var digestData = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
@@ -27,7 +28,7 @@ extension Data {
         
         digestData.copyBytes(to: &result, count: digestData.count)
         
-        return result
+        return Data(bytes: result)
     }
     
 }
