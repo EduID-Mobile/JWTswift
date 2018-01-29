@@ -19,7 +19,7 @@ public class KeyChain {
             return false
         }
         
-        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()!, keyObject: keyToSave.getKeyObject()) {
+        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()! + tagString , keyObject: keyToSave.getKeyObject()) {
             return true
         } else {
             return false
@@ -89,7 +89,7 @@ public class KeyChain {
             print("Error found in loading Key ID")
             return nil
         }
-        keyObjectTmp = loadKeyObject(tagString: kidTmp!)
+        keyObjectTmp = loadKeyObject(tagString: kidTmp! + tagString)
         if(keyObjectTmp == nil){
             print("Error found in loading SecKey")
             return nil
@@ -157,7 +157,7 @@ public class KeyChain {
     
     public static func deleteKey(tagString: String, keyToDelete : Key) -> Bool {
         let KIDIsDeleted = deleteKID(tagString: tagString)
-        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()!)
+        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()! + tagString)
         
         if KIDIsDeleted && keyObjectIsDeleted {
             return true
