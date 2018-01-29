@@ -12,6 +12,22 @@ public class KeyChain {
     
 //    ------ SAVE-------
     
+    public static func saveKeyPair(tagString : String, keyPair : [String : Key]) -> Bool {
+        
+        if loadKeyPair(tagString: tagString) != nil {
+            return false
+        }
+        
+        if(saveKid(tagString: tagString , kid: (keyPair["public"]?.getKid())!) &&
+            saveKeyObject(tagString: (keyPair["public"]?.getKid())! + "public", keyObject: (keyPair["public"]?.getKeyObject())!) &&
+            saveKeyObject(tagString: (keyPair["private"]?.getKid())! + "private", keyObject: (keyPair["private"]?.getKeyObject())!)) {
+            return true
+        } else {
+            return false
+        }
+        
+    }
+    
     public static func saveKey(tagString: String , keyToSave : Key) -> Bool {
         
         //check if key is already on the keychain, return false if yes
@@ -20,7 +36,7 @@ public class KeyChain {
         }
         
         
-        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()!.clearPaddding() + tagString , keyObject: keyToSave.getKeyObject() ) {
+        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()! , keyObject: keyToSave.getKeyObject() ) {
             return true
         } else {
             return false
@@ -81,6 +97,29 @@ public class KeyChain {
     
     //----LOAD----
     
+    public static func loadKeyPair(tagString : String) -> [String : Key]? {
+        
+        let kidTmp = loadKid(tagString: tagString)
+        if kidTmp == nil {
+            print("No key ID found in the keychain")
+            return nil
+        }
+        
+        let pubKeyObject = loadKeyObject(tagString: kidTmp! + "public")
+        let privKeyObject = loadKeyObject(tagString: kidTmp! + "private")
+        
+        if(pubKeyObject == nil || privKeyObject == nil ){
+            print ("No KeyPair found in the keychain")
+            return nil
+        }
+        
+        var keyPair = [String : Key]()
+        keyPair["public"] = Key(keyObject: pubKeyObject!, kid: kidTmp!)
+        keyPair["private"] = Key(keyObject: privKeyObject!, kid: kidTmp!)
+        
+        return keyPair
+    }
+    
     public static func loadKey(tagString : String) -> Key?{
         var kidTmp : String?
         var keyObjectTmp : SecKey?
@@ -92,7 +131,7 @@ public class KeyChain {
             print("Error found in loading Key ID")
             return nil
         }
-        keyObjectTmp = loadKeyObject(tagString: kidTmp!.clearPaddding() + tagString)
+        keyObjectTmp = loadKeyObject(tagString: kidTmp!)
         if(keyObjectTmp == nil){
             print("Error found in loading SecKey")
             return nil
@@ -158,10 +197,33 @@ public class KeyChain {
     
     //-----DELETE------
     
+    public static func deleteKeyPair(tagString : String , keyPair : [String : Key]) -> Bool {
+        
+        let kidIsDeleted = deleteKID(tagString: tagString)
+        let pubKeyIsDeleted = deleteKeyObject(tagString: keyPair["public"]!.getKid()! + "public")
+        let privKeyIsDeleted = deleteKeyObject(tagString: keyPair["private"]!.getKid()! + "private")
+        
+        if kidIsDeleted && pubKeyIsDeleted && privKeyIsDeleted {
+            return true
+        } else {
+            if !kidIsDeleted {
+                print("error on deleting keyID")
+            }
+            if !pubKeyIsDeleted {
+                print("error on deleting public Key")
+            }
+            if !privKeyIsDeleted {
+                print("error on deleting private Key")
+            }
+            return false
+        }
+        
+    }
+    
     public static func deleteKey(tagString: String, keyToDelete : Key) -> Bool {
         
         let KIDIsDeleted = deleteKID(tagString: tagString)
-        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()!.clearPaddding() + tagString)
+        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()!)
         
         if KIDIsDeleted && keyObjectIsDeleted {
             return true

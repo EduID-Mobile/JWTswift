@@ -133,6 +133,29 @@ class JWTswiftTests: XCTestCase {
         
     }
     
+    func testCreateAndSaveKeyPair() {
+        
+        
+        let keypair = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        
+        XCTAssertNotNil(keypair)
+        XCTAssertTrue(keypair?.count == 2)
+        
+        let saved = KeyChain.saveKeyPair(tagString: "test", keyPair: keypair!)
+        XCTAssertTrue(saved)
+        
+        let keyLoaded = KeyChain.loadKeyPair(tagString: "test")
+        XCTAssertNotNil(keyLoaded)
+        print(keyLoaded?.count)
+        XCTAssertTrue(keyLoaded?.count == 2)
+        
+        XCTAssertEqual(keypair!["public"]?.getKid(), keyLoaded!["public"]?.getKid())
+        XCTAssertEqual(keypair!["private"]?.getKid(), keyLoaded!["private"]?.getKid())
+        
+        KeyChain.deleteKeyPair(tagString: "test", keyPair: keypair!)
+        
+    }
+    
     func testGetPublicAndPrivatefromBundle (){
         //get public key from DER data in bundle
         let urlPath = bundle?.url(forResource: "rsaCert", withExtension: "der") //Bundle.main.url(forResource: "rsaCert", withExtension: ".der")
@@ -178,6 +201,7 @@ class JWTswiftTests: XCTestCase {
         } catch {
             print(error)
         }
+        
         
         let publickeyId = keyman.getPublicKeyFromCertificateInBundle(resourcePath: (urlPath?.path)!)
         XCTAssertNotNil(publickeyId)
