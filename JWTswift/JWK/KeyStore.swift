@@ -408,11 +408,12 @@ public class KeyStore {
             print(error.debugDescription)
             return nil
         }
-        keysResult["private"] = Key(keyObject: privateKey, kid: nil)
         let publicSecKey = SecKeyCopyPublicKey(privateKey)
         print(publicSecKey!)
         let keyTmp = Key(keyObject: publicSecKey!, kid: nil)
         keysResult["public"] = createKIDfromKey(key: keyTmp)
+        keysResult["private"] = Key(keyObject: privateKey, kid: keysResult["public"]?.getKid())
+        
         
         return keysResult
     }
