@@ -19,7 +19,8 @@ public class KeyChain {
             return false
         }
         
-        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()! + tagString , keyObject: keyToSave.getKeyObject()) {
+        
+        if saveKid(tagString: tagString, kid: keyToSave.getKid()!) && saveKeyObject(tagString: keyToSave.getKid()!.clearPaddding() + tagString , keyObject: keyToSave.getKeyObject() ) {
             return true
         } else {
             return false
@@ -34,7 +35,7 @@ public class KeyChain {
      - returns:  Status from the saving process, true if successful, false if there any error
      */
     private static func saveKeyObject(tagString: String, keyObject: SecKey) -> Bool{
-        let tag = Data(base64Encoded: tagString.addPadding())
+        let tag = tagString.data(using: .utf8)
         
         let saveQuery = [
             kSecClass as String : kSecClassKey as String,
@@ -84,12 +85,14 @@ public class KeyChain {
         var kidTmp : String?
         var keyObjectTmp : SecKey?
         
+//        let dataTag = tagString.data(using: .utf8)
+        
         kidTmp = loadKid(tagString: tagString)
         if(kidTmp == nil){
             print("Error found in loading Key ID")
             return nil
         }
-        keyObjectTmp = loadKeyObject(tagString: kidTmp! + tagString)
+        keyObjectTmp = loadKeyObject(tagString: kidTmp!.clearPaddding() + tagString)
         if(keyObjectTmp == nil){
             print("Error found in loading SecKey")
             return nil
@@ -106,7 +109,7 @@ public class KeyChain {
      - returns : A SecKey object from the keychain , if there isn't any key found then return nil
      */
     private static func loadKeyObject(tagString : String) -> SecKey? {
-        let tag = Data(base64Encoded: tagString.addPadding())
+        let tag = tagString.data(using: .utf8)
         let getQuery = [
             kSecClass as String : kSecClassKey,
             kSecAttrApplicationTag as String : tag!,
@@ -156,8 +159,9 @@ public class KeyChain {
     //-----DELETE------
     
     public static func deleteKey(tagString: String, keyToDelete : Key) -> Bool {
+        
         let KIDIsDeleted = deleteKID(tagString: tagString)
-        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()! + tagString)
+        let keyObjectIsDeleted = deleteKeyObject(tagString: keyToDelete.getKid()!.clearPaddding() + tagString)
         
         if KIDIsDeleted && keyObjectIsDeleted {
             return true
@@ -180,7 +184,7 @@ public class KeyChain {
      */
     private static func deleteKeyObject(tagString : String) -> Bool {
         
-        let tag = Data(base64Encoded: tagString.addPadding())
+        let tag = tagString.data(using: .utf8)
         let getQuery : [String : Any] = [
             kSecClass as String : kSecClassKey,
             kSecAttrApplicationTag as String : tag!,
