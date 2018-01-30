@@ -15,7 +15,7 @@ public class Key {
     
     public init(keyObject : SecKey , kid : String?) {
         self.keyObject = keyObject
-        self.kid = kid?.base64UrlToBase64()
+        self.kid = kid
     }
     
     public func getKid() -> String? {

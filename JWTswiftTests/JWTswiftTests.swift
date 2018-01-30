@@ -137,7 +137,7 @@ class JWTswiftTests: XCTestCase {
         
         
         let keypair = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
-        
+//        KeyChain.deleteKeyPair(tagString: "test", keyPair: keypair!)
         XCTAssertNotNil(keypair)
         XCTAssertTrue(keypair?.count == 2)
         
@@ -146,14 +146,13 @@ class JWTswiftTests: XCTestCase {
         
         let keyLoaded = KeyChain.loadKeyPair(tagString: "test")
         XCTAssertNotNil(keyLoaded)
-        print(keyLoaded?.count)
         XCTAssertTrue(keyLoaded?.count == 2)
         
         XCTAssertEqual(keypair!["public"]?.getKid(), keyLoaded!["public"]?.getKid())
         XCTAssertEqual(keypair!["private"]?.getKid(), keyLoaded!["private"]?.getKid())
         
-        KeyChain.deleteKeyPair(tagString: "test", keyPair: keypair!)
-        
+        let deleted = KeyChain.deleteKeyPair(tagString: "test", keyPair: keypair!)
+        XCTAssertTrue(deleted)
     }
     
     func testGetPublicAndPrivatefromBundle (){
@@ -256,7 +255,7 @@ class JWTswiftTests: XCTestCase {
         
         url = bundle?.url(forResource: "ios_priv", withExtension: "pem")
         let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: (url?.relativePath)!, identifier: keyID!)
-        let privkey = keyman.getKey(withKid: keyID!.base64UrlToBase64())
+        let privkey = keyman.getKey(withKid: keyID!)
         XCTAssertNotNil(privkey)
         
     }

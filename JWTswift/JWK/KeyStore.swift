@@ -348,7 +348,7 @@ public class KeyStore {
             print("error on creating data from key")
             return nil
         }
-        print("DATA : " , dataFromKey)
+//        print("DATA : " , dataFromKey)
         let jwkDict = pemToJWK(pemData: dataFromKey)
         return Key(keyObject: key.getKeyObject(), kid: jwkDict["kid"] as? String)
         

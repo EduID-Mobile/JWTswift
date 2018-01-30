@@ -71,9 +71,9 @@ public class KeyChain {
     }
     
     private static func saveKid(tagString : String , kid : String) -> Bool{
-        //        let tag = tagString.data(using: .utf8)
+//                let tag = tagString.data(using: .utf8)
         //Make sure kid is base64 not base64url
-        let encodedKid = Data(base64Encoded: kid.addPadding().base64UrlToBase64())
+        let encodedKid = kid.data(using: .utf8)
         
         // Check if item is already on the keychain, return false if yes
         if loadKid(tagString: tagString) == kid {
@@ -92,6 +92,7 @@ public class KeyChain {
             print("FAILED STATUS : \(status)")
             return false
         }
+        print("KID Saved : \(kid)")
         return true
     }
     
@@ -185,9 +186,16 @@ public class KeyChain {
         //            SecItemCopyMatching(getQuery as CFDictionary, &loadedKid)
         
         if status == noErr {
-            print(loadedKid.debugDescription)
+            let kid  = loadedKid as! Data
+            let kidstr = String(data: kid, encoding: .utf8)
+            print("loaded kid : \(kidstr!)")
+            return kidstr
+            /*
             let dataKid = loadedKid as! Data
-            return dataKid.base64EncodedString().clearPaddding()
+            print(dataKid.base64EncodedString())
+            return String(data: dataKid, encoding: .utf8)
+//            return dataKid.base64EncodedString().clearPaddding()
+ */
         } else{
             print(status.description)
             return nil
@@ -270,6 +278,7 @@ public class KeyChain {
         
         let status = SecItemDelete(deleteQuery as CFDictionary)
         if status == noErr{
+            print("delete kid successful")
             return true
         } else {
             print(status)
