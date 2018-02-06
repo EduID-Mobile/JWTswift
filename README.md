@@ -38,7 +38,7 @@ These are the main functions of this libary:
 
 ## Structure ##
 
-![alt text]( "JWTswift structure")
+![alt text](https://github.com/BLC-HTWChur/JWTswift/blob/master/JWTswift.png "JWTswift structure")
   
 ## Basics ##
 
