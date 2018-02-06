@@ -148,7 +148,7 @@ public class KeyStore {
     /**
      Get RSA private key from pem(#PKCS1) data in bundle
      - parameter resourcePath: Path to the private key data in pem format (PKCS#1)
-     - returns : private key in SecKey format or nil when there is an error or no key found in pem data
+     - returns : kid fromt the key object or nil when there is an error or no key found in pem data
      */
     public func getPrivateKeyFromPemInBundle(resourcePath : String, identifier : String) -> String? {
         var keyInString : String?
@@ -193,7 +193,7 @@ public class KeyStore {
             return nil
         }
         let keyArray = jsonDict["keys"] as! [[String: Any]]
-        let resultkeyID = keyArray.first!["kid"] as! String
+        let resultkeyID = keyArray.first?["kid"] as! String
         return resultkeyID
     }
     
@@ -381,7 +381,9 @@ public class KeyStore {
             let dataHashvalue = Data(bytes: &hashvalue, count: MemoryLayout.size(ofValue: hashvalue))
             print("data from string hash : " , dataHashvalue.base64EncodedString())
             print("kid data : " , kidData.base64EncodedString().clearPaddding())
-            return kidData.base64EncodedString().clearPaddding().base64ToBase64Url()
+            let result = kidData.base64EncodedString().clearPaddding().base64ToBase64Url()
+//            jwkDict["kid"] = result
+            return result
         }
         return nil
     }
@@ -399,8 +401,9 @@ public class KeyStore {
         var keysResult : [String : Key] = [:]
         let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,
                                             kSecAttrKeySizeInBits as String : 2048,
-                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : false]//,
-                                                                             //kSecAttrApplicationTag as String : tag ]
+                                            kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : false]
+                            
+                                            //kSecAttrApplicationTag as String : tag ]
         ]
         //kSecattrIsPermanent == true -> store the keychain in the default keychain while creating it, use the application tag to retrieve it from keychain later
         var error : Unmanaged<CFError>?

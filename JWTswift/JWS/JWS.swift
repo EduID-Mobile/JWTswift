@@ -33,8 +33,6 @@ public class JWS{
     
     /**
      Sign a header and payload data together with a specific key to create a signature
-     - parameter header : a dictionary contains all the header data, if nil then object variable would be used for this function
-     - parameter payload : a dictionary contains all payload data, if nil then object variable would be used for this function
      - returns : A complete String of JWS with the following format (header.payload.signature)
      if object variable(header and payload dictionary) not nil then the signature(String) would be save as object variable as well.
      */
