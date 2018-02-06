@@ -7,6 +7,7 @@ This library fully uses the native iOS security framework and common crypto (**i
 
 - [Installing](#installing)
 - [Functions](#functions)
+- [Structure](#structure)
 - [Basics](#basics)
 - [Usage](#usage)
   - [Key](#key)
@@ -35,6 +36,9 @@ These are the main functions of this libary:
 * Convert jwk data into a Key object, which is required for the saving function
 * JWS basic functionalities : Sign, Verify, and Parsing the data(Payload, Header)
 
+## Structure ##
+
+![alt text]( "JWTswift structure")
   
 ## Basics ##
 
@@ -228,7 +232,7 @@ Return Boolean value as result, true if the deletion is successful and false whe
   //could do an empty initialization
   var jws = JWS.init()
   
-  or recommended is init with payload dictionary
+  //recommended is init with payload dictionary
   var jws  = JWS.init(payloadDict: 'dictionary contains payload data in [String : Any] format')
 ```
 
