@@ -59,13 +59,13 @@ The main purpose of this library is in this object class
 
 This object is needed to be initialize for the first time :
 ```shell
-//Generate an empty keystore
+// Generate an empty keystore
   var keystore  = KeyStore.init()
 
-//Generate with key
+// Generate with key
   var keystore = KeyStore.init(withKey key: 'Key')
  
-//Generate with collection of Keys, take an array of keys
+// Generate with collection of Keys, take an array of keys
   var keystore = KeyStore.init(withKeys keys: '[Key]')
 ```
   
@@ -132,10 +132,10 @@ As parameter a string path to the jwks data is required, and the method will ret
 There are two methods for this function, the first one is to deal with jwks, which the iOS device get from the server, and the other one to extract the public key from the bundle. Kid will be generated if there isn't any found inside the jwk.
 
 ```shell
-  //convert jwks from server, take data as parameter
+  // Convert jwks from server, take data as parameter
   keystore.jwksToKeyFromServer(jwksSourceData: 'jwks in data format')
   
-  //convert jwks from bundle, take path as parameter
+  // Convert jwks from bundle, take path as parameter
   keystore.jwksToKeyFromBundle(jwksPath: 'string path to jwks')
 ```
 
@@ -173,10 +173,10 @@ Return nil if there is any error occured.
 These *class* methods are used to generate a kid string for a public key.
 
 ```shell
-  //the first one take key object as parameter and return key object as well as result with kid inside
+  // The first one take key object as parameter and return key object as well as result with kid inside
   KeyStore.createKIDfromKey(Key: 'key object as parameter)
   
-  //this following method takes a jwk in dictionary format [String: Any], return a kid string in return
+  // This following method takes a jwk in dictionary format [String: Any], return a kid string in return
   // NOTICE: kid string is not added inside the jwk dictionary!
   KeyStore.createKIDfromJWK(jwksDict: 'jwk in dictionary format)
 ```
@@ -206,10 +206,10 @@ Methods return boolean as result, true when successful, otherwise false.
 Saving a keypair separately is NOT possible in this keychain.
 (Ex. if you want to save private key after saved its public key before, you need to delete the public key first and save both as a keypair)
 ```shell
-  //save key pair
+  // Save key pair
   KeyChain.saveKeyPair(tagString: 'any string tag', keyPair : 'Key pair in dictionary format with keys "public", and "private" ')
   
-  //save single Key
+  // Save single Key
   KeyChain.saveKey(tagString: 'any string tag', keyToSave: 'Key object')
 ```
 
@@ -220,10 +220,10 @@ As a parameter the tag string is required, make sure the tag string is the same 
 Methods return a key object or key pair in dictionary  as result, or nil if no specific key found
 
 ```shell
-  //this would return a key pair in dictionary [String : Key] format (keys : "public" and "private") or nil if any error occurrs
+  // This would return a key pair in dictionary [String : Key] format (keys : "public" and "private") or nil if any error occurrs
   KeyChain.loadKeyPair(tagString: 'string tag')
   
-  //This would return a single key object as result or nil if any error occurs
+  // This would return a single key object as result or nil if any error occurs
   KeyChain.loadKey(tagString: 'string tag')
 ```
 
@@ -232,10 +232,10 @@ Functions to delete a specific key or keypair inside the keychain
 Return Boolean value as result, true if the deletion is successful and false when not
 
 ```shell
-  //deleting a key pair
+  // Deleting a key pair
   KeyChain.deleteKeyPair(tagString: 'string tag of the keypair', keyPair: 'Keypair dictionary, user want to delete')
   
-  //deleting a single key
+  // Deleting a single key
   KeyChain.deleteKey(tagString: 'string tag of the key', keyToDelete: 'key object')
 ```
 
@@ -243,10 +243,10 @@ Return Boolean value as result, true if the deletion is successful and false whe
 
 **Initialization**
 ```shell
-  //could do an empty initialization
+  // Could do an empty initialization
   var jws = JWS.init()
   
-  //recommended is init with payload dictionary
+  // But init with payload dictionary is recommended
   var jws  = JWS.init(payloadDict: 'dictionary contains payload data in [String : Any] format')
 ```
 
@@ -257,7 +257,7 @@ Currently only *JWSAlgorithm.RS256* algorithm is supported.
 Function returns a complete string of Base64URL encoded JWS with 2 dots as separator ( header.payload.signature )
 
 ```shell
-  //jws should has payload data inside it, before this function is called
+  // Jws should has payload data inside it, before this function is called
   jws.Sign(key: 'Key object used to sign', alg: 'JWSAlgorithm.RS256')
 ```
 
