@@ -254,7 +254,7 @@ Return Boolean value as result, true if the deletion is successful and false whe
 
 Takes a key as parameter, to sign the data, and algoritm (JWSAlgorithm).
 Currently only *JWSAlgorithm.RS256* algorithm is supported.
-Function returns a complete string of Base64URL encoded JWS with 2 dots as separator ( header.payload.signature )
+Function returns a complete string of Base64URL encoded JWS with 2 dots as separator (header.payload.signature)
 
 ```shell
   // Jws should has payload data inside it, before this function is called
