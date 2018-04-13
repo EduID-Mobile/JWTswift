@@ -37,7 +37,7 @@ public class KeyStore {
     }
     
     public func deleteKey( key : Key) -> Bool {
-        let length : Int = self.keysCollection?.count as! Int
+        let length : Int = self.keysCollection!.count as Int
         for i in 0 ..< length {
             if keysCollection![i] == key {
                 self.keysCollection?.remove(at: i)
@@ -240,7 +240,7 @@ public class KeyStore {
         }
         var jsonData : [String : Any]?
         do{
-            jsonData = try JSONSerialization.jsonObject(with: dataFromPath as! Data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
+            jsonData = try JSONSerialization.jsonObject(with: dataFromPath! as Data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
         }catch{
             print(error)
             return nil
@@ -343,7 +343,7 @@ public class KeyStore {
     
     public class func keyToJwk(key : Key) -> [String: Any]? {
         var error : Unmanaged<CFError>?
-        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data! else {
+        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data? else {
             print("error on creating data from key, \(error.debugDescription)")
             return nil
         }
@@ -358,7 +358,7 @@ public class KeyStore {
         }
         
         var error : Unmanaged<CFError>?
-        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data! else {
+        guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data? else {
             print("error on creating data from key")
             return nil
         }
@@ -378,7 +378,7 @@ public class KeyStore {
         var jsonString : String?
         if jwkDict.keys.contains("e") && jwkDict.keys.contains("kty") && jwkDict.keys.contains("n") {
             
-            jsonString = "{\"e\":\"\(jwkDict["e"]!)\",\"kty\":\"\(jwkDict["kty"]!)\",\"n\":\"\(jwkDict["n"]!)\"}" as String!
+            jsonString = "{\"e\":\"\(jwkDict["e"]!)\",\"kty\":\"\(jwkDict["kty"]!)\",\"n\":\"\(jwkDict["n"]!)\"}" as String?
             print("string :" , jsonString!)
             var byteArray = [UInt8]()
             for char in jsonString!.utf8 {
@@ -390,7 +390,7 @@ public class KeyStore {
             let kidData = kidArray.hashSHA256()
 
             print("kidData : " , kidData.base64EncodedString().clearPaddding() )
-            var hashvalue = jsonString?.hashValue as Int!
+            var hashvalue = jsonString?.hashValue as Int?
             print("String hashvalue : " , hashvalue! )
             let dataHashvalue = Data(bytes: &hashvalue, count: MemoryLayout.size(ofValue: hashvalue))
             print("data from string hash : " , dataHashvalue.base64EncodedString())
