@@ -37,7 +37,7 @@ public class KeyStore {
     }
     
     public func deleteKey( key : Key) -> Bool {
-        let length : Int = self.keysCollection?.count as Int!
+        let length : Int = self.keysCollection?.count as! Int
         for i in 0 ..< length {
             if keysCollection![i] == key {
                 self.keysCollection?.remove(at: i)
@@ -240,7 +240,7 @@ public class KeyStore {
         }
         var jsonData : [String : Any]?
         do{
-            jsonData = try JSONSerialization.jsonObject(with: dataFromPath as Data!, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
+            jsonData = try JSONSerialization.jsonObject(with: dataFromPath as! Data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
         }catch{
             print(error)
             return nil
