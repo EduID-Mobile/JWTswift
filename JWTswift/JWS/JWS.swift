@@ -16,7 +16,7 @@ public enum JWSAlgorithm {
 }
 
 public class JWS{
-    
+    //header would be generated automatically as default on the sign() function below.
     public var headerDict : [String : Any]? = nil
     public var payloadDict : [String : Any]? = nil
     var signatureStr : String? = nil
@@ -34,7 +34,6 @@ public class JWS{
     /**
      Sign a header and payload data together with a specific key to create a signature
      - returns : A complete String of JWS with the following format (header.payload.signature)
-     if object variable(header and payload dictionary) not nil then the signature(String) would be save as object variable as well.
      */
     public func sign(key : Key , alg : JWSAlgorithm) -> String? {
         var headerVar = [String: Any]()
@@ -87,9 +86,8 @@ public class JWS{
     
     /**
      Verify function to check if the data has been sent by the desired Sender
-     - parameter header : a dictionary contains all the header information
-     - parameter payload : a dictionary contains all payload data
-     - parameter signature : signature string which used for verifying
+     - parameter jwsToVerify : a jws packet, that the user want to verify
+     - parameter key: a key to verify the signature of the JWS package
      -returns:  Status from verifying the data, true if successful, false if not verified or if there any error on process
      */
     public static func verify(jwsToVerify : String, key : Key) -> Bool{

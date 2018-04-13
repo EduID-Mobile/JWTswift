@@ -132,6 +132,10 @@ public class KeyStore {
         return privateKey
     }*/
     
+    /**
+     Additional function to import private key from the pem format(PKCS#1)
+     - parameter certString: String form from a private key(.pem PKCS#1)
+ */
     private func cutHeaderFooterPem (certString : inout String) {
         //CUT HEADER AND TAIL FROM PEM KEY
         let offset = ("-----BEGIN RSA PRIVATE KEY-----").count
@@ -198,9 +202,9 @@ public class KeyStore {
     }
     
     /**
-     Converting jwks data to pem string
-     parameter jwksSourceData: jwks in Data format
-     returns : Pem data in string format 
+     Converting jwks data from Server to key object(s)
+     - parameter jwksSourceData: jwks in Data format
+     - returns : an array of key objects, or nil if no key found in jwks
     */
     public func jwksToKeyFromServer(jwksSourceData : Data) -> [Key]?{
         if jwksSourceData.count == 0 {
@@ -210,7 +214,9 @@ public class KeyStore {
     }
     
     /**
-     
+     Converting jwks data from app bundle to key object(s)
+     - parameter jwksPath: path to the jwks data
+     - returns : an array of key objects, or nil if no key found in jwks
      */
     public func jwksToKeyFromBundle(jwksPath : String) -> [Key]? {
         if jwksPath.count == 0{
@@ -219,7 +225,7 @@ public class KeyStore {
         return jwksToPem(jwksPath: jwksPath)
     }
     
-    //jwks
+    
     private func jwksToPem(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [Key]? {
         var result  = [Key]()
         var dataFromPath : Data?
@@ -253,7 +259,11 @@ public class KeyStore {
     
     
     //TODO : make it private
-    //PUBLIC KEY
+    /**
+     Main function to convert a single jwk data into a Key object(which could be used by the apple native functions).
+     - parameter jwkDict: a JWK in dictionary format
+     - returns : A key object or nil if there is any error on converting process
+    */
     public func jwkToKey(jwkDict : [String : Any] ) -> Key? {
         var exponentStr = jwkDict["e"] as! String
         exponentStr = exponentStr.base64UrlToBase64().addPadding()
@@ -303,6 +313,10 @@ public class KeyStore {
     
     /**
      pkcs1 // SecKeyData as input parameter
+     Main function to convert Pem Key into a jwk
+     - parameter pemData: data form of the key(SecKey/ keyObject)
+     - parameter kid: key id if available for the jwk
+     - returns : a JWK object in dictionary format [String: Any]
      */
     public class func pemToJWK(pemData : Data , kid: String? = nil) -> [String: Any]{
         var jwk : [String : String] = [:]
