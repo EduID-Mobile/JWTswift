@@ -101,6 +101,8 @@
 		682190E21FE96A8C00759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		682190E61FE96A9600759FA5 /* AppTarget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppTarget.entitlements; sourceTree = "<group>"; };
 		6845BB712080B2AF000AB562 /* libcache.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcache.dylib; path = ../../../../../usr/lib/system/libcache.dylib; sourceTree = "<group>"; };
+		6853396D20848DB3003EF3EC /* libcache.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcache.dylib; path = ../../../Desktop/libcache.dylib; sourceTree = "<group>"; };
+		6853396F20848E58003EF3EC /* Xcode.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; name = Xcode.app; path = ../../../../../Applications/Xcode.app; sourceTree = "<group>"; };
 		685BBEC71FFCE1D900894040 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
 		68737F181FEBCC03001B32AB /* UtilExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilExtensions.swift; sourceTree = "<group>"; };
 		68DA97AD2006229800CA96B6 /* ios_priv.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ios_priv.jwks; sourceTree = "<group>"; };
@@ -187,7 +189,9 @@
 		680BB5F31FE9230900A877D3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6853396F20848E58003EF3EC /* Xcode.app */,
 				6845BB712080B2AF000AB562 /* libcache.dylib */,
+				6853396D20848DB3003EF3EC /* libcache.dylib */,
 				682190C11FE9432500759FA5 /* libcommonCrypto.dylib */,
 			);
 			name = Frameworks;
@@ -670,11 +674,11 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
+					"$(inherited)/**",
 					/usr/lib/system,
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lcache";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -702,11 +706,11 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
+					"$(inherited)/**",
 					/usr/lib/system,
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lcache";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

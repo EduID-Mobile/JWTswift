@@ -1,0 +1,10 @@
+framework module JWTswift {
+  umbrella header "JWTswift.h"
+
+  export *
+  module * { export * }
+}
+
+module JWTswift.__Swift {
+    exclude header "JWTswift-Swift.h"
+}
