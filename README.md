@@ -22,7 +22,7 @@ If help is needed, tutorial of using carthage could be find [here](https://www.r
 
 add this line to your Cartfile 
 ```shell
-  github "BLC-HTWChur/JWTswift"
+  github "EduID-Mobile/JWTswift"
   ```
   
 ## Functions ##
