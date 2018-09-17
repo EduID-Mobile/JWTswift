@@ -17,6 +17,8 @@ class JWTswiftTests: XCTestCase {
     var jwsHeaderDict : [String: Any]!
     var jwsPayloadDict : [String : Any]!
     var dataToHash : String!
+    var testJWK : [String:Any]!
+    var testCEK : [UInt8]!
     
     override func setUp() {
         super.setUp()
@@ -43,7 +45,22 @@ class JWTswiftTests: XCTestCase {
         
         dataToHash = "NDk4YmIwN2EtMWZlNy00ZDk4LWEyMTctMDY4OTFkMzVlYmFmAySFHbjPcIT3RCdaMlAO"
         
+        testJWK = [
+                "kty":"RSA",
+            "n":"sXchDaQebHnPiGvyDOAT4saGEUetSyo9MKLOoWFsueri23bOdgWp4Dy1WlUzewbgBHod5pcM9H95GQRV3JDXboIRROSBigeC5yjU1hGzHHyXss8UDprecbAYxknTcQkhslANGRUZmdTOQ5qTRsLAt6BTYuyvVRdhS8exSZEy_c4gs_7svlJJQ4H9_NxsiIoLwAEk7-Q3UXERGYw_75IDrGA84-lA_-Ct4eTlXHBIY2EaV7t7LjJaynVJCpkv4LKjTTAumiGUIuQhrNhZLuF_RJLqHpM2kgWFLU7-VTdL1VbC2tejvcI2BlMkEpk1BzBZI0KQB0GaDWFLN-aEAw3vRw",
+                "e":"AQAB",
+                "d":"VFCWOqXr8nvZNyaaJLXdnNPXZKRaWCjkU5Q2egQQpTBMwhprMzWzpR8Sxq1OPThh_J6MUD8Z35wky9b8eEO0pwNS8xlh1lOFRRBoNqDIKVOku0aZb-rynq8cxjDTLZQ6Fz7jSjR1Klop-YKaUHc9GsEofQqYruPhzSA-QgajZGPbE_0ZaVDJHfyd7UUBUKunFMScbflYAAOYJqVIVwaYR5zWEEceUjNnTNo_CVSj-VvXLO5VZfCUAVLgW4dpf1SrtZjSt34YLsRarSb127reG_DUwg9Ch-KyvjT1SkHgUWRVGcyly7uvVGRSDwsXypdrNinPA4jlhoNdizK2zF2CWQ",
+                "p":"9gY2w6I6S6L0juEKsbeDAwpd9WMfgqFoeA9vEyEUuk4kLwBKcoe1x4HG68ik918hdDSE9vDQSccA3xXHOAFOPJ8R9EeIAbTi1VwBYnbTp87X-xcPWlEPkrdoUKW60tgs1aNd_Nnc9LEVVPMS390zbFxt8TN_biaBgelNgbC95sM",
+                "q":"uKlCKvKv_ZJMVcdIs5vVSU_6cPtYI1ljWytExV_skstvRSNi9r66jdd9-yBhVfuG4shsp2j7rGnIio901RBeHo6TPKWVVykPu1iYhQXw1jIABfw-MVsN-3bQ76WLdt2SDxsHs7q7zPyUyHXmps7ycZ5c72wGkUwNOjYelmkiNS0",
+                "dp":"w0kZbV63cVRvVX6yk3C8cMxo2qCM4Y8nsq1lmMSYhG4EcL6FWbX5h9yuvngs4iLEFk6eALoUS4vIWEwcL4txw9LsWH_zKI-hwoReoP77cOdSL4AVcraHawlkpyd2TWjE5evgbhWtOxnZee3cXJBkAi64Ik6jZxbvk-RR3pEhnCs",
+                "dq":"o_8V14SezckO6CNLKs_btPdFiO9_kC1DsuUTd2LAfIIVeMZ7jn1Gus_Ff7B7IVx3p5KuBGOVF8L-qifLb6nQnLysgHDh132NDioZkhH7mI7hPG-PYE_odApKdnqECHWw0J-F0JWnUd6D2B_1TvF9mXA2Qx-iGYn8OVV1Bsmp6qU",
+                "qi":"eNho5yRBEBxhGBtQRww9QirZsB66TrfFReG_CcteI1aCneT0ELGhYlRlCtUkTRclIfuEPmNsNDPbLoLqqCVznFbvdB7x-Tl-m0l_eFTj2KiqwGqE9PZB9nNTwMVvH3VRRSLWACvPnSiwP8N5Usy-WRXS-V7TbpxIhvepTfE0NNo"
+        ]
+        
+        testCEK = [4, 211, 31, 197, 84, 157, 252, 254, 11, 100, 157, 250, 63, 170, 106,206, 107, 124, 212, 45, 111, 107, 9, 219, 200, 177, 0, 240, 143, 156,44, 207]
     }
+    
+    
     
     override func tearDown() {
         pubPath = nil
@@ -52,6 +69,8 @@ class JWTswiftTests: XCTestCase {
         jwsHeaderDict = nil
         jwsPayloadDict = nil
         dataToHash = nil
+        testJWK = nil
+        testCEK = nil
         super.tearDown()
     }
     
@@ -79,12 +98,12 @@ class JWTswiftTests: XCTestCase {
                                         ]
         let publickey = SecKeyCreateWithData(keyData! as CFData, options as CFDictionary, &error)
         XCTAssertNil(error , "ERROR while creating SecKey")
-        let attributes = SecKeyCopyAttributes(publickey!) as NSDictionary!
+        let attributes = SecKeyCopyAttributes(publickey!) as NSDictionary?
         print(attributes!)
         
         XCTAssertTrue(SecKeyIsAlgorithmSupported(publickey!, SecKeyOperationType.encrypt, .rsaEncryptionPKCS1))
         print("KEYSTR : \(keyStr!)")
-        let keyFromChain = SecKeyCopyExternalRepresentation(publickey!, &error) as Data!
+        let keyFromChain = SecKeyCopyExternalRepresentation(publickey!, &error) as Data?
         XCTAssertNotNil(keyFromChain)
         print("key : \(String(describing: keyFromChain?.base64EncodedString() ))")
         print("Key hex : \(String(describing: keyFromChain?.hexDescription)) ")
@@ -157,7 +176,7 @@ class JWTswiftTests: XCTestCase {
     
     func testRetrievingWithoutSaved(){
         let stat = KeyChain.loadKeyPair(tagString: "test")
-        print(stat)
+        print(stat ?? "")
         XCTAssertNil(stat)
     }
     
@@ -270,10 +289,93 @@ class JWTswiftTests: XCTestCase {
         XCTAssertNotNil(data!)
         let result = data?.hashSHA256()
         print([UInt8](result!) )
-        print(result?.base64EncodedString())
+        print(result?.base64EncodedString() as Any)
         XCTAssertEqual(result?.hexDescription, "d39d6be6abc67dee3dae59ba565038e0f2cf6e9b42d42db4f5c4939528cf9a96")
         
     }
     
+    func testJWE(){
+        let jwe = JWE()
+        print(jwe.joseHeaderDict)
+        jwe.plaintext = "Live long and prosper."
+        guard let bytetext : [UInt8] = Array(jwe.plaintext!.utf8) else {
+            print(errno)
+        }
+        print("byte format of the text : " , bytetext)
+        do{
+            let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict, options: .init(rawValue: 0))
+            print(jsonheader.base64EncodedString().base64ToBase64Url().clearPaddding())
+        }catch {
+            XCTFail()
+        }
+    }
     
+    func testJweGenerateCEK(){
+        let jwe = JWE()
+        let cekArray = jwe.generateCEK()
+        print(cekArray)
+        XCTAssertNotNil(cekArray)
+        XCTAssertEqual(cekArray?.count, 32)
+    }
+    
+    func testEncryptDecrpytCEK() {
+        //encrypt CEK with public JWK from the recipient
+        
+        guard let key = keyman.jwkToKey(jwkDict: testJWK) else {
+            XCTFail()
+            return
+        }
+        let jwe = JWE()
+        
+        let cipherText = jwe.encryptCEK(encryptKey: key, alg: .RSA1_5, cek: testCEK)
+        print("str =" , cipherText!)
+        XCTAssertNotNil(cipherText)
+    }
+    
+    func testJweGenerateInitVector(){
+        let jwe = JWE()
+        let str = jwe.generateInitVec()
+        print("init vector = " , str!.count)
+        XCTAssertNotNil(str)
+    }
+    
+    func testSHA512(){
+        let testString = "blcHTWchur"
+        let dataTest = testString.data(using: .utf8)
+        let hashdata  = dataTest?.hashSHA512()
+        
+        
+        print("SHA512 result = ", hashdata!.hexDescription, "\n length = ", hashdata!.hexDescription.count)
+        
+        XCTAssertEqual(hashdata?.hexDescription.uppercased(), "CF37521606600314182DFE80E514393CE45950DC8010E83E639018DF7DD6DC1CD15A6254E334CAB30C1F15F4A7BB0FBE486D991C839818AA74A39DC88B153635")
+    }
+    
+    func testEncryptAES() {
+        let jwe = JWE()
+        
+        let message = "Don't try to read this text. Top Secret Stuff"
+        let messageData = message.data(using: .utf8)!
+        let keyData = "12345678901234567890123456789012".data(using: .utf8)!
+        let ivData = "abcdefghijklmnop".data(using: .utf8)!
+        
+        let encryptedData = jwe.encryptAes(data: messageData, keyData: keyData, ivData: ivData)
+        let decryptedData = jwe.decryptAes(data: encryptedData, keyData: keyData, ivData: ivData)
+        let decrypted = String(data: decryptedData, encoding: .utf8)!
+        print("decrypted Text = " , decrypted)
+        XCTAssertEqual(decrypted, message)
+    }
+    
+    func testAES128(){
+        let jwe = JWE()
+        let testCEK = [4, 211, 31, 197, 84, 157, 252, 254, 11, 100, 157, 250, 63, 170, 106, 206, 107, 124, 212, 45, 111, 107, 9, 219, 200, 177, 0, 240, 143, 156, 44, 207]
+        
+        //first extract CEK
+        let middleIndex = (testCEK.count / 2)
+        let macKey = testCEK[..<middleIndex]
+        let encKey = testCEK[middleIndex...]
+        print("MAC KEY = \(macKey)")
+        print("ENC KEY = \(encKey)")
+        
+        
+    }
 }

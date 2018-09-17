@@ -31,6 +31,20 @@ extension Data {
         return Data(bytes: result)
     }
     
+    public func hashSHA512() -> Data {
+        var result: [UInt8] = [UInt8].init(repeating: 0, count: Int(CC_SHA512_DIGEST_LENGTH))
+        var digestData = Data(count: Int(CC_SHA512_DIGEST_LENGTH))
+        
+        _ = digestData.withUnsafeMutableBytes { digestBytes in
+            self.withUnsafeBytes{ messageBytes in
+                CC_SHA512(messageBytes, CC_LONG(self.count), digestBytes)
+            }
+        }
+        
+        digestData.copyBytes(to: &result, count: digestData.count)
+        
+        return Data(bytes: result)
+    }
 }
 
 extension String{

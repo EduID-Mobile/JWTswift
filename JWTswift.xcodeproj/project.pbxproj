@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		157FDC6C214B97FA0013B117 /* JWE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FDC6B214B97FA0013B117 /* JWE.swift */; };
 		680BB5AF1FE9143C00A877D3 /* JWTswift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680BB5A51FE9143C00A877D3 /* JWTswift.framework */; };
 		680BB5B41FE9143C00A877D3 /* JWTswiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */; };
 		680BB5B61FE9143C00A877D3 /* JWTswift.h in Headers */ = {isa = PBXBuildFile; fileRef = 680BB5A81FE9143C00A877D3 /* JWTswift.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -69,6 +70,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		157FDC6B214B97FA0013B117 /* JWE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWE.swift; sourceTree = "<group>"; };
 		680BB5A51FE9143C00A877D3 /* JWTswift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JWTswift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		680BB5A81FE9143C00A877D3 /* JWTswift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JWTswift.h; sourceTree = "<group>"; };
 		680BB5A91FE9143C00A877D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,6 +141,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		157FDC6A214B97E70013B117 /* JWE */ = {
+			isa = PBXGroup;
+			children = (
+				157FDC6B214B97FA0013B117 /* JWE.swift */,
+			);
+			path = JWE;
+			sourceTree = "<group>";
+		};
 		680BB59B1FE9143C00A877D3 = {
 			isa = PBXGroup;
 			children = (
@@ -165,6 +175,7 @@
 		680BB5A71FE9143C00A877D3 /* JWTswift */ = {
 			isa = PBXGroup;
 			children = (
+				157FDC6A214B97E70013B117 /* JWE */,
 				68737F1B1FEBCD7F001B32AB /* JWS */,
 				68737F1A1FEBCD4A001B32AB /* JWK */,
 				68737F171FEBCBEA001B32AB /* Util */,
@@ -362,7 +373,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0910;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Blended Learning Center";
 				TargetAttributes = {
 					680BB5A41FE9143C00A877D3 = {
@@ -457,6 +468,7 @@
 			files = (
 				685BBEC81FFCE1D900894040 /* Key.swift in Sources */,
 				680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */,
+				157FDC6C214B97FA0013B117 /* JWE.swift in Sources */,
 				68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */,
 				680BB5C81FE9157A00A877D3 /* KeyStore.swift in Sources */,
 				680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */,
@@ -584,7 +596,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -671,6 +683,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -700,6 +713,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswift;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -724,12 +738,15 @@
 					"$(inherited)",
 					/usr/lib/system,
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
+				VALID_ARCHS = "arm64 armv7 armv7s i386";
 			};
 			name = Debug;
 		};
@@ -746,13 +763,16 @@
 					"$(inherited)",
 					/usr/lib/system,
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
+				VALID_ARCHS = "arm64 armv7 armv7s i386";
 			};
 			name = Release;
 		};
@@ -772,6 +792,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -796,6 +817,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
