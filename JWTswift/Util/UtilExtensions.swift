@@ -100,3 +100,10 @@ extension String{
     }
     
 }
+
+extension Sequence where Iterator.Element == Character {
+    
+    func asByteArray() -> [UInt8] {
+        return String(self).utf8.map{UInt8($0)}
+    }
+}

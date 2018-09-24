@@ -8,7 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		157FDC6C214B97FA0013B117 /* JWE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FDC6B214B97FA0013B117 /* JWE.swift */; };
-		680BB5AF1FE9143C00A877D3 /* JWTswift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680BB5A51FE9143C00A877D3 /* JWTswift.framework */; };
+		15AA82DF2150ED81003E0599 /* JWE.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 157FDC6B214B97FA0013B117 /* JWE.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E02150ED81003E0599 /* JWS.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5C11FE9157900A877D3 /* JWS.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E12150ED81003E0599 /* KeyChain.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5C31FE9157900A877D3 /* KeyChain.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E22150ED81003E0599 /* KeyStore.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5C41FE9157A00A877D3 /* KeyStore.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E32150ED81003E0599 /* PemGenerator.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5C21FE9157900A877D3 /* PemGenerator.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E42150ED81003E0599 /* Key.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 685BBEC71FFCE1D900894040 /* Key.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E52150ED81003E0599 /* UtilExtensions.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 68737F181FEBCC03001B32AB /* UtilExtensions.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15AA82E62150ED81003E0599 /* CryptoManager.swift in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5BF1FE9156700A877D3 /* CryptoManager.swift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		15C2551B2158D7CF00C79695 /* RSA1_5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551A2158D7CF00C79695 /* RSA1_5.swift */; };
+		15C2551D215908C800C79695 /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551C215908C800C79695 /* AES.swift */; };
+		15C2551F21592D1100C79695 /* HmacSha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551E21592D1100C79695 /* HmacSha.swift */; };
 		680BB5B41FE9143C00A877D3 /* JWTswiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */; };
 		680BB5B61FE9143C00A877D3 /* JWTswift.h in Headers */ = {isa = PBXBuildFile; fileRef = 680BB5A81FE9143C00A877D3 /* JWTswift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5BF1FE9156700A877D3 /* CryptoManager.swift */; };
@@ -26,7 +36,6 @@
 		682190DC1FE96A8C00759FA5 /* AppTarget.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 682190DA1FE96A8C00759FA5 /* AppTarget.xcdatamodeld */; };
 		682190DE1FE96A8C00759FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 682190DD1FE96A8C00759FA5 /* Assets.xcassets */; };
 		682190E11FE96A8C00759FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682190DF1FE96A8C00759FA5 /* LaunchScreen.storyboard */; };
-		6851F1182008AD92007AC430 /* JWTswift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680BB5A51FE9143C00A877D3 /* JWTswift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		685BBEC81FFCE1D900894040 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685BBEC71FFCE1D900894040 /* Key.swift */; };
 		68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68737F181FEBCC03001B32AB /* UtilExtensions.swift */; };
 		68DA97AE2006229800CA96B6 /* ios_priv.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 68DA97AD2006229800CA96B6 /* ios_priv.jwks */; };
@@ -57,13 +66,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		6851F1172008AD75007AC430 /* CopyFiles */ = {
+		15AA82DD2150ED37003E0599 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				6851F1182008AD92007AC430 /* JWTswift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		15AA82DE2150ED62003E0599 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				15AA82DF2150ED81003E0599 /* JWE.swift in CopyFiles */,
+				15AA82E02150ED81003E0599 /* JWS.swift in CopyFiles */,
+				15AA82E12150ED81003E0599 /* KeyChain.swift in CopyFiles */,
+				15AA82E22150ED81003E0599 /* KeyStore.swift in CopyFiles */,
+				15AA82E32150ED81003E0599 /* PemGenerator.swift in CopyFiles */,
+				15AA82E42150ED81003E0599 /* Key.swift in CopyFiles */,
+				15AA82E52150ED81003E0599 /* UtilExtensions.swift in CopyFiles */,
+				15AA82E62150ED81003E0599 /* CryptoManager.swift in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +96,9 @@
 
 /* Begin PBXFileReference section */
 		157FDC6B214B97FA0013B117 /* JWE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWE.swift; sourceTree = "<group>"; };
+		15C2551A2158D7CF00C79695 /* RSA1_5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSA1_5.swift; sourceTree = "<group>"; };
+		15C2551C215908C800C79695 /* AES.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
+		15C2551E21592D1100C79695 /* HmacSha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacSha.swift; sourceTree = "<group>"; };
 		680BB5A51FE9143C00A877D3 /* JWTswift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JWTswift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		680BB5A81FE9143C00A877D3 /* JWTswift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JWTswift.h; sourceTree = "<group>"; };
 		680BB5A91FE9143C00A877D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -102,7 +130,6 @@
 		682190E01FE96A8C00759FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		682190E21FE96A8C00759FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		682190E61FE96A9600759FA5 /* AppTarget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppTarget.entitlements; sourceTree = "<group>"; };
-		6845BB712080B2AF000AB562 /* libcache.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcache.dylib; path = ../../../../../usr/lib/system/libcache.dylib; sourceTree = "<group>"; };
 		685BBEC71FFCE1D900894040 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
 		68737F181FEBCC03001B32AB /* UtilExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilExtensions.swift; sourceTree = "<group>"; };
 		68DA97AD2006229800CA96B6 /* ios_priv.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ios_priv.jwks; sourceTree = "<group>"; };
@@ -120,7 +147,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				680BB5AF1FE9143C00A877D3 /* JWTswift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +175,16 @@
 			path = JWE;
 			sourceTree = "<group>";
 		};
+		15C255172158D78700C79695 /* CryptoAlgorithm */ = {
+			isa = PBXGroup;
+			children = (
+				15C2551A2158D7CF00C79695 /* RSA1_5.swift */,
+				15C2551C215908C800C79695 /* AES.swift */,
+				15C2551E21592D1100C79695 /* HmacSha.swift */,
+			);
+			path = CryptoAlgorithm;
+			sourceTree = "<group>";
+		};
 		680BB59B1FE9143C00A877D3 = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +211,7 @@
 		680BB5A71FE9143C00A877D3 /* JWTswift */ = {
 			isa = PBXGroup;
 			children = (
+				15C255172158D78700C79695 /* CryptoAlgorithm */,
 				157FDC6A214B97E70013B117 /* JWE */,
 				68737F1B1FEBCD7F001B32AB /* JWS */,
 				68737F1A1FEBCD4A001B32AB /* JWK */,
@@ -198,7 +235,6 @@
 		680BB5F31FE9230900A877D3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6845BB712080B2AF000AB562 /* libcache.dylib */,
 				682190C11FE9432500759FA5 /* libcommonCrypto.dylib */,
 			);
 			name = Frameworks;
@@ -300,6 +336,7 @@
 				680BB5A11FE9143C00A877D3 /* Frameworks */,
 				680BB5A21FE9143C00A877D3 /* Headers */,
 				680BB5A31FE9143C00A877D3 /* Resources */,
+				15AA82DD2150ED37003E0599 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -318,7 +355,6 @@
 				680BB5AA1FE9143C00A877D3 /* Sources */,
 				680BB5AB1FE9143C00A877D3 /* Frameworks */,
 				680BB5AC1FE9143C00A877D3 /* Resources */,
-				6851F1172008AD75007AC430 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -356,6 +392,7 @@
 				682190CD1FE96A8C00759FA5 /* Sources */,
 				682190CE1FE96A8C00759FA5 /* Frameworks */,
 				682190CF1FE96A8C00759FA5 /* Resources */,
+				15AA82DE2150ED62003E0599 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -467,10 +504,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				685BBEC81FFCE1D900894040 /* Key.swift in Sources */,
+				15C2551F21592D1100C79695 /* HmacSha.swift in Sources */,
+				15C2551D215908C800C79695 /* AES.swift in Sources */,
 				680BB5C51FE9157A00A877D3 /* JWS.swift in Sources */,
 				157FDC6C214B97FA0013B117 /* JWE.swift in Sources */,
 				68737F191FEBCC03001B32AB /* UtilExtensions.swift in Sources */,
 				680BB5C81FE9157A00A877D3 /* KeyStore.swift in Sources */,
+				15C2551B2158D7CF00C79695 /* RSA1_5.swift in Sources */,
 				680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */,
 				680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */,
 				680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */,
@@ -601,7 +641,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -659,7 +699,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -729,6 +769,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7,
+				);
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4Q8U997468;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -741,12 +785,13 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos11.4;
+				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "$(ARCHS_STANDARD) armv7s i386";
 			};
 			name = Debug;
 		};
@@ -754,6 +799,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7,
+				);
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4Q8U997468;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -766,13 +815,14 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.JWTswiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos11.4;
+				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppTarget.app/AppTarget";
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "$(ARCHS_STANDARD) armv7s i386";
 			};
 			name = Release;
 		};
@@ -796,6 +846,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -821,6 +872,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -837,8 +889,10 @@
 				INFOPLIST_FILE = AppTarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.AppTarget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -856,8 +910,10 @@
 				INFOPLIST_FILE = AppTarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.htwchur.AppTarget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;

@@ -20,40 +20,150 @@ public enum encAlgorithm {
 
 public class JWE {
     var joseHeaderDict : [String : Any]?
-    var encryptedKey : String?
-    var initVector : String?
-    var aad : String?
-    var plaintext : String?
+    var joseHeaderData : Data?
+    var encryptedCEK: String?
+    var initVector : [UInt8]?
     var chiphertext : String?
     var authTag : String?
     
+    var compactJWE : String?
+    var cek : [UInt8]?
+    var plaintext : [String : Any]?
     
-    init(){
+    init() {
         //Header will be set with default algorithm, this could be changed in the future
-        joseHeaderDict = [ "alg" : "RSA1_5" ,
+        joseHeaderDict = ["alg" : "RSA1_5" ,
                            "enc" : "A128CBC-HS256"]
+        joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
     }
     
-    init(plaintext : String) {
+    init(jweCompact : String) {
+        
+        
+    }
+    
+    public convenience init(plaintext : [String:Any], publicKey : Key) {
+        self.init()
         self.plaintext = plaintext
+        
+        generateJWE(encryptKey: publicKey);
+    }
+    
+    
+//----  Setter ----
+    
+    public func setInitVector(initVector: [UInt8]){
+        self.initVector = initVector
+    }
+    
+//---- Generator ----
+    
+    func generateJWE(encryptKey : Key) -> String {
+        
+        // 5 Different components (header, encrypted CEK, initialization Vector, Ciphertext,
+        // Authentication Tag).
+    
+        // Part 1 Header
+        let headerEncoded = joseHeaderData!.base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        // Part 2 Encrypted Key
+        if cek == nil {
+            cek = self.generateCEK()
+        }
+        let encryptedCekData = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek!)
+        encryptedCEK = encryptedCekData?.base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        // Part 3 Initialization Vector
+        if initVector == nil {
+            initVector = generateInitVec() // This already return the base64URL encoded string
+        }
+        let ivEncoded = Data.init(bytes: initVector!) .base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        // Part 4 Cipher Text
+        let middleIndex = cek!.count / 2
+        let macKey = cek![..<middleIndex]
+        let encKey = cek![middleIndex...]
+        
+        let plainData = try! JSONSerialization.data(withJSONObject: plaintext!, options: [])
+        let cipher = AES.encryptAes(data: plainData, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
+        chiphertext = cipher.base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        // Part 5 Authentication Tag
+        guard let aad = generateAAD() else {
+            print("JWE :: Cannot Generate AAD")
+            return ""
+        }
+        
+        let al = generateAL(bitsCount: aad.count * 8) // Bytes to bits
+        let hmacInput = aad + initVector! + [UInt8](cipher) + al
+        let hmacOutput = HmacSha.compute(input: Data(bytes: hmacInput) , key: Data(bytes: macKey))
+        
+        let authenticationTagData = hmacOutput.prefix(upTo: 16) // Take the first 128 bits from the output
+        authTag = authenticationTagData.base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        compactJWE = "\(headerEncoded).\(encryptedCEK!).\(ivEncoded).\(chiphertext!).\(authTag!)"
+        return compactJWE!
+    }
+    
+    
+    func generateAAD() -> [UInt8]? {
+        guard (joseHeaderData != nil) else {
+            return nil
+        }
+        return [UInt8](joseHeaderData!.base64EncodedData())
+    }
+    
+    public func generateAL(bitsCount : Int) -> [UInt8] {
+        var result : [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
+        
+        var bitString = String.init(bitsCount, radix: 2, uppercase: false)
+        print("str generateAL = \(bitString)")
+        
+        var bitsTmp = bitString.count
+        var resultIndex = result.count - 1
+        
+        repeat{
+            var indexByte : String.Index
+            if bitsTmp - 8 >= 0 {
+                indexByte = bitString.index(bitString.endIndex, offsetBy: -8)
+                print("byte : ",bitString[indexByte...])
+            } else {
+                indexByte = bitString.index(bitString.endIndex, offsetBy: -bitsTmp)
+                print("byte2 : ", bitString[indexByte...])
+            }
+            let resultByte = bitString[indexByte...]
+            bitString = String(bitString[..<indexByte])
+            print("bitString = \(bitString)")
+            
+            bitsTmp -= 8
+            
+            print(UInt8(String(resultByte), radix: 2)!)
+            result[resultIndex] = UInt8(String(resultByte), radix: 2)!
+            resultIndex -= 1
+            
+        } while (bitsTmp > 0)
+        
+        print("result = \(result)")
+        return result
     }
     
     public func generateCEK() -> [UInt8]? {
         // For A256CBC-HS512 CEK needs to be 64 Bytes : 32 Bytes for MAC Key, and 32 Bytes for ENC
         // A128CBC-HS256 needs to be 32 Bytes : 16 Bytes MAC Key, 16 Bytes ENC KEY
-        guard let randombytes = generateRandomBytes(countBytes: 32) else {
+        guard let randombytes = generateRandomBytes(countBytes: 16) else {
             print("Error creating a random bytes for CEK")
             return nil
         }
         return [UInt8](randombytes)
     }
     
-    public func generateInitVec() -> String? {
+    public func generateInitVec() -> [UInt8]? {
+        // 16 Bytes init vector for A128CBC-HS256
         guard let randombytes = generateRandomBytes(countBytes: 16) else {
             print("Error creating a random bytes for Initialization Vector")
             return nil
         }
-        return randombytes.base64EncodedString().base64ToBase64Url().clearPaddding()
+        return [UInt8](randombytes)
     }
     
     private func generateRandomBytes(countBytes: Int) -> Data? {
@@ -71,70 +181,24 @@ public class JWE {
             return nil
         }
         
-        guard SecKeyIsAlgorithmSupported(encryptKey.getKeyObject(), .encrypt, .rsaEncryptionPKCS1) else {
-            print("Key doesn't support the encryption algorithm")
-            return nil
-        }
-        print("block size = " , SecKeyGetBlockSize(encryptKey.getKeyObject()))
-        
-        
-        //transform cek to data
-        let cekData = Data(bytes: cek)
-        print("cekData count = " ,cekData.count)
-        guard cekData.count < (SecKeyGetBlockSize(encryptKey.getKeyObject())-130) else {
-            print("Cek is too big")
+        guard let cipherText = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek) else {
             return nil
         }
         
-        
-        var error: Unmanaged<CFError>?
-        guard let cipherText = SecKeyCreateEncryptedData(encryptKey.getKeyObject(), .rsaEncryptionPKCS1, cekData as! CFData, &error) as Data? else {
-            print(error!.takeRetainedValue())
-            return nil
-        }
-        print("Cipher Text = " ,[UInt8](cipherText).count)
         return cipherText.base64EncodedString().base64ToBase64Url().clearPaddding()
     }
     
-    public func encryptAes(data: Data, keyData: Data, ivData: Data) -> Data{
+    public func decryptCEK(decryptKey: Key, alg: cekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
+        if alg != .RSA1_5{
+            return nil
+        }
+        let cipher = Data.init(base64Encoded: cipherText.base64UrlToBase64().addPadding())
         
-        return aes(data: data, keyData: keyData, ivData: ivData, operation: kCCEncrypt)
-    }
-    
-    public func decryptAes(data: Data, keyData: Data, ivData: Data) -> Data{
-        
-        return aes(data: data, keyData: keyData, ivData: ivData, operation: kCCDecrypt)
-    }
-    
-    
-    public func aes(data: Data, keyData: Data, ivData: Data, operation: Int) -> Data {
-        let cryptLength = size_t(data.count + kCCBlockSizeAES128)
-        var cryptData = Data(count: cryptLength)
-        
-        let keyLength = size_t(kCCKeySizeAES128)
-        let options = CCOptions(kCCOptionPKCS7Padding)
-        
-        var bytesEncrpytedCount : size_t = 0
-        
-        let cryptStatus = cryptData.withUnsafeMutableBytes { cryptBytes in
-            data.withUnsafeBytes { dataBytes in
-                ivData.withUnsafeBytes { ivBytes in
-                    keyData.withUnsafeBytes { keyBytes in
-                        CCCrypt(CCOperation(operation), CCAlgorithm(kCCAlgorithmAES), options, keyBytes, keyLength, ivBytes, dataBytes, data.count, cryptBytes, cryptLength, &bytesEncrpytedCount)
-                    }
-                }
-            }
+        guard let plainData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: cipher!) else {
+            return nil
         }
         
-        if UInt32(cryptStatus) == UInt32(kCCSuccess) {
-            cryptData.removeSubrange(bytesEncrpytedCount..<cryptData.count)
-        } else {
-            print("Error : \(cryptStatus)")
-            
-        }
-        return cryptData
+        return [UInt8](plainData)
     }
-    
-    
     
 }

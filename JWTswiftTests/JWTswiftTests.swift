@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Security
 @testable import JWTswift
 
 class JWTswiftTests: XCTestCase {
@@ -19,6 +20,8 @@ class JWTswiftTests: XCTestCase {
     var dataToHash : String!
     var testJWK : [String:Any]!
     var testCEK : [UInt8]!
+    var testAAD : [UInt8]!
+    
     
     override func setUp() {
         super.setUp()
@@ -57,7 +60,13 @@ class JWTswiftTests: XCTestCase {
                 "qi":"eNho5yRBEBxhGBtQRww9QirZsB66TrfFReG_CcteI1aCneT0ELGhYlRlCtUkTRclIfuEPmNsNDPbLoLqqCVznFbvdB7x-Tl-m0l_eFTj2KiqwGqE9PZB9nNTwMVvH3VRRSLWACvPnSiwP8N5Usy-WRXS-V7TbpxIhvepTfE0NNo"
         ]
         
-        testCEK = [4, 211, 31, 197, 84, 157, 252, 254, 11, 100, 157, 250, 63, 170, 106,206, 107, 124, 212, 45, 111, 107, 9, 219, 200, 177, 0, 240, 143, 156,44, 207]
+        testCEK = [4, 211, 31, 197, 84, 157, 252, 254, 11, 100, 157, 250, 63, 170, 106, 206, 107, 124, 212, 45, 111, 107, 9, 219, 200, 177, 0, 240, 143, 156, 44, 207]
+        
+        testAAD = [101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 66, 77, 84, 73, 52,
+                   83, 49, 99, 105, 76, 67, 74, 108, 98, 109, 77, 105, 79, 105, 74, 66,
+                   77, 84, 73, 52, 81, 48, 74, 68, 76, 85, 104, 84, 77, 106, 85, 50, 73,
+                   110, 48]
+        
     }
     
     
@@ -71,6 +80,7 @@ class JWTswiftTests: XCTestCase {
         dataToHash = nil
         testJWK = nil
         testCEK = nil
+        testAAD = nil
         super.tearDown()
     }
     
@@ -118,8 +128,6 @@ class JWTswiftTests: XCTestCase {
         let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
         XCTAssertNotNil(keydict)
         XCTAssertEqual(keydict?.count, 2)
-        
-        
     }
     
     func testKIDGenerator () {
@@ -272,13 +280,16 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testGetKeyIDFromJWKSinBundle() {
-        var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks")
-        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: (url?.relativePath)!)
+        guard var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: (url.relativePath))
         XCTAssertNotNil(keyID)
         XCTAssertEqual(keyID, "tDVTKwRxlxhccA-yllPwjQdIBXpwbHq0GrYjt1FW8us" )
         
-        url = bundle?.url(forResource: "ios_priv", withExtension: "pem")
-        let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: (url?.relativePath)!, identifier: keyID!)
+        url = (bundle?.url(forResource: "ios_priv", withExtension: "pem"))!
+        let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: (url.relativePath), identifier: keyID!)
         let privkey = keyman.getKey(withKid: keyID!)
         XCTAssertNotNil(privkey)
         
@@ -294,31 +305,38 @@ class JWTswiftTests: XCTestCase {
         
     }
     
-    func testJWE(){
+//    ---- JWE ----
+    
+    
+    func testJWEHeader(){
         let jwe = JWE()
-        print(jwe.joseHeaderDict)
-        jwe.plaintext = "Live long and prosper."
-        guard let bytetext : [UInt8] = Array(jwe.plaintext!.utf8) else {
-            print(errno)
-        }
-        print("byte format of the text : " , bytetext)
+        print(jwe.joseHeaderDict!)
         do{
-            let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict, options: .init(rawValue: 0))
+            let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict!, options: .init(rawValue: 0))
             print(jsonheader.base64EncodedString().base64ToBase64Url().clearPaddding())
         }catch {
             XCTFail()
         }
     }
     
+    func testGenerateAAD(){
+        let protectedHeader = "eyJhbGciOiJSU0ExXzUiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0".addPadding().base64UrlToBase64()
+        let data = Data.init(base64Encoded: protectedHeader)
+//        data?.base64EncodedData()
+        
+        //var byteArray = aadString?.asByteArray()
+        print("bytes = \([UInt8](data!))")
+    }
+    
     func testJweGenerateCEK(){
         let jwe = JWE()
         let cekArray = jwe.generateCEK()
-        print(cekArray)
+        print(cekArray!)
         XCTAssertNotNil(cekArray)
-        XCTAssertEqual(cekArray?.count, 32)
+        XCTAssertEqual(cekArray?.count, 16)
     }
     
-    func testEncryptDecrpytCEK() {
+    func testEncryptCEK() {
         //encrypt CEK with public JWK from the recipient
         
         guard let key = keyman.jwkToKey(jwkDict: testJWK) else {
@@ -330,6 +348,25 @@ class JWTswiftTests: XCTestCase {
         let cipherText = jwe.encryptCEK(encryptKey: key, alg: .RSA1_5, cek: testCEK)
         print("str =" , cipherText!)
         XCTAssertNotNil(cipherText)
+    }
+    
+    func testEncryptDecryptRSA1_5(){
+       
+        let keypair =  KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let plainText = "BLC was here!"
+        let dataText = plainText.data(using: .utf8)!
+        print("plain before encryption = \([UInt8](dataText))")
+        let jwe = JWE()
+        let cipherStr = jwe.encryptCEK(encryptKey: keypair!["public"]!, alg: .RSA1_5, cek: [UInt8](dataText))
+        
+        print("Cipher text = \(cipherStr ?? "error")")
+        
+        let plain = jwe.decryptCEK(decryptKey: keypair!["private"]!, alg: .RSA1_5, cipherText: cipherStr!)
+        
+        print("plain = \(plain ?? [])")
+        
+        XCTAssertEqual(plain!, [UInt8](dataText))
+        
     }
     
     func testJweGenerateInitVector(){
@@ -351,24 +388,23 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testEncryptAES() {
-        let jwe = JWE()
         
         let message = "Don't try to read this text. Top Secret Stuff"
         let messageData = message.data(using: .utf8)!
         let keyData = "12345678901234567890123456789012".data(using: .utf8)!
         let ivData = "abcdefghijklmnop".data(using: .utf8)!
         
-        let encryptedData = jwe.encryptAes(data: messageData, keyData: keyData, ivData: ivData)
-        let decryptedData = jwe.decryptAes(data: encryptedData, keyData: keyData, ivData: ivData)
+        let encryptedData = AES.encryptAes(data: messageData, keyData: keyData, ivData: ivData)
+        let decryptedData = AES.decryptAes(data: encryptedData, keyData: keyData, ivData: ivData)
         let decrypted = String(data: decryptedData, encoding: .utf8)!
         print("decrypted Text = " , decrypted)
         XCTAssertEqual(decrypted, message)
     }
     
-    func testAES128(){
-        let jwe = JWE()
-        let testCEK = [4, 211, 31, 197, 84, 157, 252, 254, 11, 100, 157, 250, 63, 170, 106, 206, 107, 124, 212, 45, 111, 107, 9, 219, 200, 177, 0, 240, 143, 156, 44, 207]
+    func testAES128CBC(){
         
+        let jwe = JWE()
+        let iV : [UInt8] = [3, 22, 60, 12, 43, 67, 104, 105, 108, 108, 105, 99, 111, 116, 104, 101]
         //first extract CEK
         let middleIndex = (testCEK.count / 2)
         let macKey = testCEK[..<middleIndex]
@@ -376,6 +412,47 @@ class JWTswiftTests: XCTestCase {
         print("MAC KEY = \(macKey)")
         print("ENC KEY = \(encKey)")
         
+        let encKeyData = Data(bytes: encKey)
+        
+        let plaintext: [UInt8] = [76, 105, 118, 101, 32, 108, 111, 110, 103, 32, 97, 110, 100, 32,
+                         112, 114, 111, 115, 112, 101, 114, 46]
+        let dataInput = Data(bytes: plaintext)
+        
+        let cipher = AES.encryptAes(data: dataInput, keyData: encKeyData, ivData: Data(bytes: iV))
+        print([UInt8](cipher))
+        
+        XCTAssertNotNil(cipher)
+        XCTAssertEqual([UInt8](cipher), [40, 57, 83, 181, 119, 33, 133, 148, 198, 185, 243, 24, 152, 230, 6,75, 129, 223, 127, 19, 210, 82, 183, 230, 168, 33, 215, 104, 143,112, 56, 102])
+        
+        let al = jwe.generateAL(bitsCount: 408)
+        XCTAssertEqual(al, [0, 0, 0, 0, 0, 0, 1, 152])
+        
+        let hmacInput = (testAAD + iV + [UInt8](cipher) + al)
+        XCTAssertEqual(hmacInput, [101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 66, 77, 84, 73, 52,
+                                   83, 49, 99, 105, 76, 67, 74, 108, 98, 109, 77, 105, 79, 105, 74, 66,
+                                   77, 84, 73, 52, 81, 48, 74, 68, 76, 85, 104, 84, 77, 106, 85, 50, 73,
+                                   110, 48, 3, 22, 60, 12, 43, 67, 104, 105, 108, 108, 105, 99, 111,
+                                   116, 104, 101, 40, 57, 83, 181, 119, 33, 133, 148, 198, 185, 243, 24,
+                                   152, 230, 6, 75, 129, 223, 127, 19, 210, 82, 183, 230, 168, 33, 215,
+                                   104, 143, 112, 56, 102, 0, 0, 0, 0, 0, 0, 1, 152])
+        
+        let datahmac = Data.init(bytes: hmacInput)
+        let macKeydata = Data.init(bytes: macKey)
+        print("datahmac = \(datahmac)")
+        let hashResult = [UInt8](HmacSha.compute(input: datahmac, key: macKeydata))
+        
+        
+        print("hmac result = \(hashResult)")
+        XCTAssertEqual((hashResult), [83, 73, 191, 98, 104, 205, 211, 128, 201, 189, 199, 133, 32, 38, 194, 85, 9, 84, 229, 201, 219, 135, 44, 252, 145, 102, 179, 140, 105, 86, 229, 116])
+        
+        //take 128 bits from the hash result, this will be used as an Authenticated Tag
+        print("splitted = \(hashResult.prefix(upTo: 16))")
+        
+        let authenticatedTag = Data(bytes: hashResult.prefix(upTo: 16))
+        // Authenticated Tag will be sent as base64URL and without padding
+        print(authenticatedTag.base64EncodedString().base64ToBase64Url().clearPaddding())
         
     }
+    
+    
 }

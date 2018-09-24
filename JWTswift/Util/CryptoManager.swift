@@ -28,7 +28,6 @@ public class CryptoManager {
             print(errormsg)
         }
         
-        
         return cipherText
     }
     
