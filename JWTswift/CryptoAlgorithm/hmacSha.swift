@@ -13,16 +13,35 @@ struct HmacSha {
     
     static func compute(input : Data, key: Data) -> Data {
         
-        let keyBytes = UnsafePointer<CUnsignedChar>([UInt8](key))
-        let dataBytes = UnsafePointer<CUnsignedChar>([UInt8](input))
+//        let keyBytes = UnsafePointer<CUnsignedChar>([UInt8](key))
+//        let dataBytes = UnsafePointer<CUnsignedChar>([UInt8](input))
+
+        /*
+        let keyString = key.base64EncodedString()
+        let dataString = input.base64EncodedString()
         
-        var result = [CUnsignedChar](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        let inputKey = keyString.cString(using: .utf8)
+        let inputData = dataString.cString(using: .utf8)
+        print("HMAC key = \(inputKey)")
+        print("HMAC data = \(inputData)")
+        */
         
-        CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), keyBytes, Int(CC_SHA256_DIGEST_LENGTH), dataBytes, input.count, &result)
+        var result = Data(count: 32)
         
-        let hmacData = Data(bytes: result, count: Int(CC_SHA256_DIGEST_LENGTH))
+//        CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), keyBytes, key.count, dataBytes, input.count, &result)
         
-        return hmacData
+        result.withUnsafeMutableBytes { resultBytes in
+            key.withUnsafeBytes { keyBytes in
+                input.withUnsafeBytes { inputBytes in
+                   CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), keyBytes, key.count, inputBytes, input.count, resultBytes)
+                }
+            }
+        }
+        //
+        return result
+//        let hmacData = Data(bytes: result, count: Int(CC_SHA256_DIGEST_LENGTH))
+        
+//        return hmacData
     }
     
 }

@@ -125,7 +125,7 @@ class JWTswiftTests: XCTestCase {
     
     func testKeyGenerator(){
         //generate key pair create dictionary with public and private key in it
-        let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let keydict = KeyStore.generateKeyPair(keyType: .RSAkeys)
         XCTAssertNotNil(keydict)
         XCTAssertEqual(keydict?.count, 2)
     }
@@ -163,7 +163,7 @@ class JWTswiftTests: XCTestCase {
     func testCreateAndSaveKeyPair() {
         
         
-        let keypair = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let keypair = KeyStore.generateKeyPair(keyType: .RSAkeys)
 //        KeyChain.deleteKeyPair(tagString: "test", keyPair: keypair!)
         XCTAssertNotNil(keypair)
         XCTAssertTrue(keypair?.count == 2)
@@ -253,7 +253,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJWS(){
-        let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let keydict = KeyStore.generateKeyPair(keyType: .RSAkeys)
         XCTAssertNotNil(keydict)
         let jws = JWS(payloadDict: jwsPayloadDict)
         XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
@@ -264,7 +264,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJWSparse(){
-        let keydict = KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let keydict = KeyStore.generateKeyPair(keyType: .RSAkeys)
         XCTAssertNotNil(keydict)
         let jws = JWS(payloadDict: jwsPayloadDict)
         XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
@@ -352,7 +352,7 @@ class JWTswiftTests: XCTestCase {
     
     func testEncryptDecryptRSA1_5(){
        
-        let keypair =  KeyStore.generateKeyPair(keyType: kSecAttrKeyTypeRSA as String)
+        let keypair =  KeyStore.generateKeyPair(keyType: .RSAkeys)
         let plainText = "BLC was here!"
         let dataText = plainText.data(using: .utf8)!
         print("plain before encryption = \([UInt8](dataText))")
@@ -399,6 +399,23 @@ class JWTswiftTests: XCTestCase {
         let decrypted = String(data: decryptedData, encoding: .utf8)!
         print("decrypted Text = " , decrypted)
         XCTAssertEqual(decrypted, message)
+    }
+    
+    func testHmacSha256(){
+        let testString = "987654"
+        let test : [UInt8] = Array(testString.utf8)
+        let dataTest = Data(bytes: test)
+//        let dataTest = testString.data(using: .utf8)
+        
+        let keyString = "0123"
+        let key : [UInt8] = Array(keyString.utf8)
+        let keyData = Data(bytes: key)
+//        let keyData = keyString.data(using: .utf8)
+        
+        let hmacResult = HmacSha.compute(input: dataTest, key: keyData)
+//        let str  = String(data: hmacResult, encoding: .utf8)
+        print("HmacResult = \(hmacResult.hexDescription)")
+        
     }
     
     func testAES128CBC(){
@@ -450,8 +467,36 @@ class JWTswiftTests: XCTestCase {
         
         let authenticatedTag = Data(bytes: hashResult.prefix(upTo: 16))
         // Authenticated Tag will be sent as base64URL and without padding
-        print(authenticatedTag.base64EncodedString().base64ToBase64Url().clearPaddding())
+    print(authenticatedTag.base64EncodedString().base64ToBase64Url().clearPaddding())
+    }
+    
+    func testCreateJweCompactAndDecrypt(){
+        let plaintext = ["abc" : "defghijklmn",
+                         "junkfood" : "mcdonalds burger king kfc",
+                         "softdrinks" : "cola sprite fanta 7up"]
+        guard let keypair = KeyStore.generateKeyPair(keyType: .RSAkeys) else {
+            XCTFail()
+            return
+        }
         
+        let jweTest = JWE(plaintext: plaintext, publicKey: keypair["public"]!)
+        let encodedJWE = jweTest.compactJWE!
+        print("Compact JWE = \(encodedJWE)")
+        
+        let deserializingJwe : JWE
+        do{
+            deserializingJwe = try JWE(compactJWE: encodedJWE, privateKey: keypair["private"]!)
+        } catch {
+            print(error)
+            XCTFail()
+            return
+        }
+        print("CEK BEFORE = " ,jweTest.cek!)
+        
+        XCTAssertNotNil(deserializingJwe.compactJWE)
+        XCTAssertEqual(plaintext["abc"], deserializingJwe.plaintext!["abc"] as? String)
+        XCTAssertEqual(plaintext["junkfood"], deserializingJwe.plaintext!["junkfood"] as? String)
+        XCTAssertEqual(plaintext["softdrinks"], deserializingJwe.plaintext!["softdrinks"] as? String)
     }
     
     

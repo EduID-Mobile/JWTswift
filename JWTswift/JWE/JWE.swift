@@ -10,12 +10,17 @@ import Foundation
 import Security
 import CommonCrypto
 
-public enum cekEncryptionAlgorithm {
+public enum CekEncryptionAlgorithm {
     case RSA1_5
 }
 
-public enum encAlgorithm {
+public enum EncAlgorithm {
     case A256CBC_HS512
+}
+
+enum JweError : Error {
+    case wrongJweFormat
+    case validationError
 }
 
 public class JWE {
@@ -23,7 +28,7 @@ public class JWE {
     var joseHeaderData : Data?
     var encryptedCEK: String?
     var initVector : [UInt8]?
-    var chiphertext : String?
+    var ciphertext : String?
     var authTag : String?
     
     var compactJWE : String?
@@ -37,8 +42,40 @@ public class JWE {
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
     }
     
-    init(jweCompact : String) {
+    public init(compactJWE : String, privateKey : Key) throws {
         
+        let jweArray = compactJWE.components(separatedBy: ".")
+        print("array = ", jweArray)
+        
+        if jweArray.count != 5 {
+            clearAll()
+            throw JweError.wrongJweFormat
+        }
+        
+        joseHeaderData = Data.init(base64Encoded: jweArray[0].base64UrlToBase64().addPadding())
+        do{
+            joseHeaderDict = try JSONSerialization.jsonObject(with: joseHeaderData!, options: []) as? [String : Any]
+        } catch {
+            clearAll()
+            throw error
+        }
+        
+        self.compactJWE = compactJWE
+        
+        encryptedCEK = jweArray[1]
+        
+        let initVectorData = Data(base64Encoded: jweArray[2].base64UrlToBase64().addPadding())
+        initVector = [UInt8](initVectorData!)
+        
+        ciphertext = jweArray[3]
+        
+        authTag = jweArray[4]
+        
+        do{
+            let _ = try deserializeJwe(decryptKey: privateKey)
+        }catch {
+            throw error
+        }
         
     }
     
@@ -46,7 +83,7 @@ public class JWE {
         self.init()
         self.plaintext = plaintext
         
-        generateJWE(encryptKey: publicKey);
+        let _ = generateJWE(encryptKey: publicKey);
     }
     
     
@@ -55,6 +92,75 @@ public class JWE {
     public func setInitVector(initVector: [UInt8]){
         self.initVector = initVector
     }
+    
+    func clearAll(){
+        joseHeaderDict = nil
+        joseHeaderData = nil
+        encryptedCEK = nil
+        initVector = nil
+        ciphertext = nil
+        authTag = nil
+        
+        compactJWE = nil
+        cek = nil
+        plaintext = nil
+    }
+    
+//---- Deserializing ----
+    
+    func deserializeJwe(decryptKey : Key) throws -> [String : Any]? {
+        // Part 1 decrypt encoded key
+        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
+        guard let decryptedCekData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: encryptedCEKdata!) else {
+            clearAll()
+            return nil
+        }
+        
+        // Part 2 Get the mac and enc key for validation and decryption
+        cek = [UInt8](decryptedCekData)
+        print("Deserialize cek == \(cek!)")
+        
+        let middleIndex = cek!.count / 2
+        let macKey = cek![..<middleIndex]
+        let encKey = cek![middleIndex...]
+        
+        let cipherData = Data(base64Encoded: ciphertext!.base64UrlToBase64().addPadding())
+        
+        // Part 3 Validate the authentication Tag
+        let aad = generateAAD()
+//        print("AAD AFTER :: \(aad)")
+        let al = generateAL(bitsCount: aad!.count * 8)
+        let hmacInput = aad! + initVector! + [UInt8](cipherData!) + al
+
+//        print("hmacInput AFTER :: \(hmacInput)" )
+        
+        let hmacOutput = HmacSha.compute(input: Data(bytes: hmacInput), key: Data(bytes: macKey))
+//        print("HMAC OUTPUT AFTER == \([UInt8](hmacOutput))")
+        let authTagDataSecond = hmacOutput.prefix(upTo: 16)
+        let authTagSecond = authTagDataSecond.base64EncodedString().base64ToBase64Url().clearPaddding()
+        
+        print("authTagSecond == \(authTagSecond)")
+        
+        // Validation == Compare the createdTag with the received AuthTag
+        if authTag != authTagSecond {
+            clearAll()
+            throw JweError.validationError
+        }
+        
+        // Part 4 Decrypt the cipher text with the encryption key from CEK
+        
+        let decryptData = AES.decryptAes(data: cipherData!, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
+        do{
+            plaintext = try JSONSerialization.jsonObject(with: decryptData, options: []) as? [String : Any]
+        } catch {
+            print(error)
+            clearAll()
+            return nil
+        }
+        
+        return plaintext!
+    }
+    
     
 //---- Generator ----
     
@@ -75,7 +181,7 @@ public class JWE {
         
         // Part 3 Initialization Vector
         if initVector == nil {
-            initVector = generateInitVec() // This already return the base64URL encoded string
+            initVector = generateInitVec()
         }
         let ivEncoded = Data.init(bytes: initVector!) .base64EncodedString().base64ToBase64Url().clearPaddding()
         
@@ -83,10 +189,11 @@ public class JWE {
         let middleIndex = cek!.count / 2
         let macKey = cek![..<middleIndex]
         let encKey = cek![middleIndex...]
+//        print("MACKEY BEFORE == \(macKey)")
         
         let plainData = try! JSONSerialization.data(withJSONObject: plaintext!, options: [])
         let cipher = AES.encryptAes(data: plainData, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
-        chiphertext = cipher.base64EncodedString().base64ToBase64Url().clearPaddding()
+        ciphertext = cipher.base64EncodedString().base64ToBase64Url().clearPaddding()
         
         // Part 5 Authentication Tag
         guard let aad = generateAAD() else {
@@ -96,12 +203,15 @@ public class JWE {
         
         let al = generateAL(bitsCount: aad.count * 8) // Bytes to bits
         let hmacInput = aad + initVector! + [UInt8](cipher) + al
+//        print("HMAC INPUT BEFORE :: \(hmacInput)")
+        
         let hmacOutput = HmacSha.compute(input: Data(bytes: hmacInput) , key: Data(bytes: macKey))
+//        print("HMAC OUTPUT BEFORE == \([UInt8](hmacOutput))")
         
         let authenticationTagData = hmacOutput.prefix(upTo: 16) // Take the first 128 bits from the output
         authTag = authenticationTagData.base64EncodedString().base64ToBase64Url().clearPaddding()
         
-        compactJWE = "\(headerEncoded).\(encryptedCEK!).\(ivEncoded).\(chiphertext!).\(authTag!)"
+        compactJWE = "\(headerEncoded).\(encryptedCEK!).\(ivEncoded).\(ciphertext!).\(authTag!)"
         return compactJWE!
     }
     
@@ -176,7 +286,7 @@ public class JWE {
         }
     }
     
-    public func encryptCEK(encryptKey: Key, alg: cekEncryptionAlgorithm, cek: [UInt8]) -> String? {
+    public func encryptCEK(encryptKey: Key, alg: CekEncryptionAlgorithm, cek: [UInt8]) -> String? {
         if alg != .RSA1_5{
             return nil
         }
@@ -188,7 +298,7 @@ public class JWE {
         return cipherText.base64EncodedString().base64ToBase64Url().clearPaddding()
     }
     
-    public func decryptCEK(decryptKey: Key, alg: cekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
+    public func decryptCEK(decryptKey: Key, alg: CekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
         if alg != .RSA1_5{
             return nil
         }

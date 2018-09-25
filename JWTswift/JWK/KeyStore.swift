@@ -10,6 +10,10 @@ import Foundation
 import CoreFoundation
 import Security
 
+public enum KeyType {
+    case RSAkeys
+}
+
 public class KeyStore {
     
     private var keysCollection : [Key]?
@@ -410,10 +414,16 @@ public class KeyStore {
      - returns : A dictionary contains one key pair with keys "public", "private" to access the specific key
      */
     
-    public class func generateKeyPair(keyType : String) -> [String : Key]? { // parameter keyTag : String
-//        let tag = keyTag.data(using: .utf8)!
+    public static func generateKeyPair(keyType : KeyType) -> [String : Key]? { // parameter keyTag : String
+        // let tag = keyTag.data(using: .utf8)!
+        
+        // Only support RSA Keys for now
+        if keyType != .RSAkeys {
+            return nil
+        }
+        
         var keysResult : [String : Key] = [:]
-        let attributes : [String : Any] = [ kSecAttrKeyType as String : keyType,
+        let attributes : [String : Any] = [ kSecAttrKeyType as String : kSecAttrKeyTypeRSA as String,
                                             kSecAttrKeySizeInBits as String : 2048,
                                             kSecPrivateKeyAttrs as String : [kSecAttrIsPermanent as String : false]
                             
