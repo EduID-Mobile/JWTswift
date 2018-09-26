@@ -74,6 +74,7 @@ public class JWE {
         do{
             let _ = try deserializeJwe(decryptKey: privateKey)
         }catch {
+            clearAll()
             throw error
         }
         
@@ -87,7 +88,7 @@ public class JWE {
     }
     
     
-//----  Setter ----
+    // MARK: ----  Setter ----
     
     public func setInitVector(initVector: [UInt8]){
         self.initVector = initVector
@@ -106,7 +107,32 @@ public class JWE {
         plaintext = nil
     }
     
-//---- Deserializing ----
+    // MARK: --- Getter ----
+    /**
+     GetHeader function
+     - returns: A dictionary of [String: Any] and return nil if empty or /if there is an error
+    */
+    public func getHeaderAsDict() -> [String : Any]? {
+        return joseHeaderDict
+    }
+    
+    /**
+     Get payload of JWE in dictionary format
+     - returns: A dictionary of [String: Any], return nil if empty
+    */
+    public func getPayloadAsDict() -> [String : Any]? {
+        return plaintext
+    }
+    
+    /**
+     Get compact serialization of JWE
+     - returns: A String of JWE compact seriaization, return nil if empty
+     */
+    public func getCompactJWE() -> String? {
+        return compactJWE
+    }
+    
+    // MARK: ---- Deserializing ----
     
     func deserializeJwe(decryptKey : Key) throws -> [String : Any]? {
         // Part 1 decrypt encoded key
