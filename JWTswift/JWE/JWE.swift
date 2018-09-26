@@ -35,14 +35,16 @@ public class JWE {
     var cek : [UInt8]?
     var plaintext : [String : Any]?
     
-    init(issuer: String, subject: String, audience: String) {
+    init(issuer: String, subject: String, audience: String, kid : String) {
         //Header will be set with default algorithm, this could be changed in the future
         joseHeaderDict = ["alg" : "RSA1_5" ,
+                          "kid" : kid,
+                          "cty" : "JWT",
                            "enc" : "A128CBC-HS256"]
         if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
 //            joseHeaderDict!["iss"] = issuer
 //            joseHeaderDict!["sub"] = subject
-            joseHeaderDict!["aud"] = audience
+//            joseHeaderDict!["aud"] = audience
         }
         
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
@@ -86,8 +88,8 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String) {
-        self.init(issuer: issuer, subject: subject, audience: audience)
+    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String, kid: String) {
+        self.init(issuer: issuer, subject: subject, audience: audience, kid: kid)
         self.plaintext = plaintext
         
         let _ = generateJWE(encryptKey: publicKey);

@@ -346,7 +346,7 @@ class JWTswiftTests: XCTestCase {
     
     
     func testJWEHeader(){
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         print(jwe.joseHeaderDict!)
         do{
             let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict!, options: .init(rawValue: 0))
@@ -366,7 +366,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJweGenerateCEK(){
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         let cekArray = jwe.generateCEK()
         print(cekArray!)
         XCTAssertNotNil(cekArray)
@@ -380,7 +380,7 @@ class JWTswiftTests: XCTestCase {
             XCTFail()
             return
         }
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         
         let cipherText = jwe.encryptCEK(encryptKey: key, alg: .RSA1_5, cek: testCEK)
         print("str =" , cipherText!)
@@ -393,7 +393,7 @@ class JWTswiftTests: XCTestCase {
         let plainText = "BLC was here!"
         let dataText = plainText.data(using: .utf8)!
         print("plain before encryption = \([UInt8](dataText))")
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         let cipherStr = jwe.encryptCEK(encryptKey: keypair!["public"]!, alg: .RSA1_5, cek: [UInt8](dataText))
         
         print("Cipher text = \(cipherStr ?? "error")")
@@ -407,7 +407,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJweGenerateInitVector(){
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         let str = jwe.generateInitVec()
         print("init vector = " , str!.count)
         XCTAssertNotNil(str)
@@ -457,7 +457,7 @@ class JWTswiftTests: XCTestCase {
     
     func testAES128CBC(){
         
-        let jwe = JWE()
+        let jwe = JWE(issuer: "", subject: "", audience: "")
         let iV : [UInt8] = [3, 22, 60, 12, 43, 67, 104, 105, 108, 108, 105, 99, 111, 116, 104, 101]
         //first extract CEK
         let middleIndex = (testCEK.count / 2)
