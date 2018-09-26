@@ -130,6 +130,43 @@ class JWTswiftTests: XCTestCase {
         XCTAssertEqual(keydict?.count, 2)
     }
     
+    func testKeyPublic(){
+        guard var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: (url.relativePath))
+        
+        url = (bundle?.url(forResource: "ios_priv", withExtension: "pem"))!
+        guard let _ = keyman.getPrivateKeyFromPemInBundle(resourcePath: url.relativePath, identifier: keyID!) else {
+            XCTFail()
+            return
+        }
+        
+        let keyPrivate = keyman.getKey(withKid: keyID!)
+        XCTAssertNotNil(keyPrivate)
+        
+        let pubkey = KeyStore.getPublicKey(key: keyPrivate!)
+        
+        //encrypt data with public key
+        let algorithm = SecKeyAlgorithm.rsaEncryptionPKCS1
+        print("SECkeyBlockSize : " , SecKeyGetBlockSize(pubkey!.getKeyObject()))
+        let plainText = "BLC test123"
+        
+        let cipherText = CryptoManager.encryptData(key: pubkey!, algorithm: algorithm, plainData: plainText.data(using: String.Encoding.utf8)! as NSData)
+        XCTAssertNotNil(cipherText)
+        
+        //Decrypt with private key
+        XCTAssertTrue(SecKeyIsAlgorithmSupported(keyPrivate!.getKeyObject(), .decrypt, algorithm) )
+        XCTAssertEqual(cipherText?.length, SecKeyGetBlockSize(keyPrivate!.getKeyObject()) )
+        
+        let cleartext = CryptoManager.decryptData(key: keyPrivate!, algorithm: algorithm, cipherData: cipherText! as CFData)
+        XCTAssertNotNil(cleartext)
+        print("decrypted Result == \(String(data: cleartext! as Data, encoding: .utf8) ?? "")")
+        XCTAssertEqual(plainText, String.init(data: cleartext! as Data, encoding: String.Encoding.utf8))
+        
+    }
+    
     func testKIDGenerator () {
         let kid  = KeyStore.createKIDfromJWK(jwkDict: dict)
         print("KID : " , kid!)

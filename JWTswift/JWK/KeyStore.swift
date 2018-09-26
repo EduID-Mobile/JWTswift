@@ -444,4 +444,12 @@ public class KeyStore {
         
         return keysResult
     }
+    
+    public static func getPublicKey(key : Key) -> Key? {
+        guard let publicKey = SecKeyCopyPublicKey(key.getKeyObject()) else {
+            return nil
+        }
+        let pubkeyObject = Key(keyObject: publicKey, kid: key.getKid()!)
+        return pubkeyObject
+    }
 }
