@@ -516,7 +516,7 @@ class JWTswiftTests: XCTestCase {
             return
         }
         
-        let jweTest = JWE(plaintext: plaintext, publicKey: keypair["public"]!)
+        let jweTest = JWE(plaintext: plaintext, publicKey: keypair["public"]!, issuer: "abc", subject: "def", audience: "ghi")
         let encodedJWE = jweTest.compactJWE!
         print("Compact JWE = \(encodedJWE)")
         

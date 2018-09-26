@@ -15,7 +15,7 @@ public enum CekEncryptionAlgorithm {
 }
 
 public enum EncAlgorithm {
-    case A256CBC_HS512
+    case A128CBC_HS256
 }
 
 enum JweError : Error {
@@ -35,10 +35,16 @@ public class JWE {
     var cek : [UInt8]?
     var plaintext : [String : Any]?
     
-    init() {
+    init(issuer: String, subject: String, audience: String) {
         //Header will be set with default algorithm, this could be changed in the future
         joseHeaderDict = ["alg" : "RSA1_5" ,
                            "enc" : "A128CBC-HS256"]
+        if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
+            joseHeaderDict!["iss"] = issuer
+            joseHeaderDict!["sub"] = subject
+            joseHeaderDict!["aud"] = audience
+        }
+        
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
     }
     
@@ -80,8 +86,8 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], publicKey : Key) {
-        self.init()
+    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String) {
+        self.init(issuer: issuer, subject: subject, audience: audience)
         self.plaintext = plaintext
         
         let _ = generateJWE(encryptKey: publicKey);
