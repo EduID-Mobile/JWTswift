@@ -43,9 +43,9 @@ public class JWE {
                           "cty" : "JWT",
                            "enc" : "A128CBC-HS256"]
         if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
-//            joseHeaderDict!["iss"] = issuer
-//            joseHeaderDict!["sub"] = subject
-//            joseHeaderDict!["aud"] = audience
+            joseHeaderDict!["iss"] = issuer
+            joseHeaderDict!["sub"] = subject
+            joseHeaderDict!["aud"] = audience
         }
         
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
