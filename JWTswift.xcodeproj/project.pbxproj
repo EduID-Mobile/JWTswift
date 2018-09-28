@@ -19,6 +19,8 @@
 		15C2551B2158D7CF00C79695 /* RSA1_5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551A2158D7CF00C79695 /* RSA1_5.swift */; };
 		15C2551D215908C800C79695 /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551C215908C800C79695 /* AES.swift */; };
 		15C2551F21592D1100C79695 /* HmacSha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551E21592D1100C79695 /* HmacSha.swift */; };
+		15FA9678215D25EC00840C95 /* privateTest.pem in Resources */ = {isa = PBXBuildFile; fileRef = 15FA9676215D25EC00840C95 /* privateTest.pem */; };
+		15FA967D215D2BB100840C95 /* privateTest.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 15FA967C215D2BB100840C95 /* privateTest.jwks */; };
 		680BB5B41FE9143C00A877D3 /* JWTswiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */; };
 		680BB5B61FE9143C00A877D3 /* JWTswift.h in Headers */ = {isa = PBXBuildFile; fileRef = 680BB5A81FE9143C00A877D3 /* JWTswift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5BF1FE9156700A877D3 /* CryptoManager.swift */; };
@@ -99,6 +101,8 @@
 		15C2551A2158D7CF00C79695 /* RSA1_5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSA1_5.swift; sourceTree = "<group>"; };
 		15C2551C215908C800C79695 /* AES.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
 		15C2551E21592D1100C79695 /* HmacSha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacSha.swift; sourceTree = "<group>"; };
+		15FA9676215D25EC00840C95 /* privateTest.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = privateTest.pem; sourceTree = "<group>"; };
+		15FA967C215D2BB100840C95 /* privateTest.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = privateTest.jwks; sourceTree = "<group>"; };
 		680BB5A51FE9143C00A877D3 /* JWTswift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JWTswift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		680BB5A81FE9143C00A877D3 /* JWTswift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JWTswift.h; sourceTree = "<group>"; };
 		680BB5A91FE9143C00A877D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -260,6 +264,8 @@
 				682190C61FE95ECA00759FA5 /* ios_priv.pem */,
 				68DA97AD2006229800CA96B6 /* ios_priv.jwks */,
 				682190C51FE95ECA00759FA5 /* rsaCert.der */,
+				15FA9676215D25EC00840C95 /* privateTest.pem */,
+				15FA967C215D2BB100840C95 /* privateTest.jwks */,
 			);
 			path = TestResources;
 			sourceTree = "<group>";
@@ -464,10 +470,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15FA9678215D25EC00840C95 /* privateTest.pem in Resources */,
 				682190CB1FE95ECA00759FA5 /* ios_priv.p12 in Resources */,
 				68DA97AE2006229800CA96B6 /* ios_priv.jwks in Resources */,
 				682190C91FE95ECA00759FA5 /* rsaCert.der in Resources */,
 				682190C81FE95ECA00759FA5 /* eduid_pub.jwks in Resources */,
+				15FA967D215D2BB100840C95 /* privateTest.jwks in Resources */,
 				682190CA1FE95ECA00759FA5 /* ios_priv.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

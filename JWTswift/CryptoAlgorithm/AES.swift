@@ -11,11 +11,11 @@ import CommonCrypto
 
 internal struct AES {
     
-    static func encryptAes(data: Data, keyData: Data, ivData: Data) -> Data{
+    static func encryptAes(data: Data, keyData: Data, ivData: Data) -> Data {
         return aes(data: data, keyData: keyData, ivData: ivData, operation: kCCEncrypt)
     }
     
-    static func decryptAes(data: Data, keyData: Data, ivData: Data) -> Data{
+    static func decryptAes(data: Data, keyData: Data, ivData: Data) -> Data {
         return aes(data: data, keyData: keyData, ivData: ivData, operation: kCCDecrypt)
     }
     

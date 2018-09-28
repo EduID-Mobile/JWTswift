@@ -11,7 +11,7 @@ import Foundation
 internal struct RSA1_5{
     
     static func encrypt(encryptKey : Key, cek: [UInt8]) -> Data? {
-        
+        //.rsaEncryptionPKCS1
         guard SecKeyIsAlgorithmSupported(encryptKey.getKeyObject(), .encrypt, .rsaEncryptionPKCS1) else {
             print("Key doesn't support the encryption algorithm.")
             return nil
@@ -39,9 +39,15 @@ internal struct RSA1_5{
     }
     
     static func decrypt(decryptKey: Key, cipherText: Data) -> Data? {
-        
+        //rsaEncryptionPKCS1
         guard SecKeyIsAlgorithmSupported(decryptKey.getKeyObject(), .decrypt, .rsaEncryptionPKCS1) else {
             print("Key doesn't support the decryption algoritm.")
+            return nil
+        }
+        
+        print("CipherData count = \(cipherText.count)")
+        guard cipherText.count == (SecKeyGetBlockSize(decryptKey.getKeyObject())) else {
+            print("Cek is too big")
             return nil
         }
         

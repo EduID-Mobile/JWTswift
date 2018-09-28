@@ -244,7 +244,7 @@ public class KeyStore {
         }
         var jsonData : [String : Any]?
         do{
-            jsonData = try JSONSerialization.jsonObject(with: dataFromPath! as Data, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String : Any]
+            jsonData = try JSONSerialization.jsonObject(with: dataFromPath! as Data, options: []) as? [String : Any]
         }catch{
             print(error)
             return nil

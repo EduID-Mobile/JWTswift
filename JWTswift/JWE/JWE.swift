@@ -21,6 +21,7 @@ public enum EncAlgorithm {
 enum JweError : Error {
     case wrongJweFormat
     case validationError
+    case encryptionError
 }
 
 public class JWE {
@@ -35,7 +36,7 @@ public class JWE {
     var cek : [UInt8]?
     var plaintext : [String : Any]?
     
-    init(issuer: String, subject: String, audience: String, kid : String) {
+    internal init(issuer: String, subject: String, audience: String, kid : String) {
         //Header will be set with default algorithm, this could be changed in the future
         joseHeaderDict = ["alg" : "RSA1_5" ,
                           "kid" : kid,
@@ -88,11 +89,15 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String, kid: String) {
+    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String, kid: String) throws {
         self.init(issuer: issuer, subject: subject, audience: audience, kid: kid)
         self.plaintext = plaintext
-        
-        let _ = generateJWE(encryptKey: publicKey);
+        do{
+            let _ = try generateJWE(encryptKey: publicKey);
+        } catch {
+            clearAll()
+            throw error
+        }
     }
     
     
@@ -185,7 +190,7 @@ public class JWE {
         
         let decryptData = AES.decryptAes(data: cipherData!, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
         do{
-            plaintext = try JSONSerialization.jsonObject(with: decryptData, options: []) as? [String : Any]
+            plaintext = try JSONSerialization.jsonObject(with: decryptData, options: .init(rawValue: 0)) as? [String : Any]
         } catch {
             print(error)
             clearAll()
@@ -198,7 +203,7 @@ public class JWE {
     
 //---- Generator ----
     
-    func generateJWE(encryptKey : Key) -> String {
+    func generateJWE(encryptKey : Key) throws -> String {
         
         // 5 Different components (header, encrypted CEK, initialization Vector, Ciphertext,
         // Authentication Tag).
@@ -210,8 +215,10 @@ public class JWE {
         if cek == nil {
             cek = self.generateCEK()
         }
-        let encryptedCekData = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek!)
-        encryptedCEK = encryptedCekData?.base64EncodedString().base64ToBase64Url().clearPaddding()
+        guard let encryptedCekData = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek!) else {
+            throw JweError.encryptionError
+        }
+        encryptedCEK = encryptedCekData.base64EncodedString().base64ToBase64Url().clearPaddding()
         
         // Part 3 Initialization Vector
         if initVector == nil {
@@ -224,8 +231,12 @@ public class JWE {
         let macKey = cek![..<middleIndex]
         let encKey = cek![middleIndex...]
 //        print("MACKEY BEFORE == \(macKey)")
-        
-        let plainData = try! JSONSerialization.data(withJSONObject: plaintext!, options: [])
+        let plainData : Data
+        do{
+            plainData = try JSONSerialization.data(withJSONObject: plaintext!, options: [])
+        }catch {
+            throw error
+        }
         let cipher = AES.encryptAes(data: plainData, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
         ciphertext = cipher.base64EncodedString().base64ToBase64Url().clearPaddding()
         
@@ -294,7 +305,7 @@ public class JWE {
     public func generateCEK() -> [UInt8]? {
         // For A256CBC-HS512 CEK needs to be 64 Bytes : 32 Bytes for MAC Key, and 32 Bytes for ENC
         // A128CBC-HS256 needs to be 32 Bytes : 16 Bytes MAC Key, 16 Bytes ENC KEY
-        guard let randombytes = generateRandomBytes(countBytes: 16) else {
+        guard let randombytes = generateRandomBytes(countBytes: 32) else {
             print("Error creating a random bytes for CEK")
             return nil
         }
@@ -328,7 +339,7 @@ public class JWE {
         guard let cipherText = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek) else {
             return nil
         }
-        
+        print("ENCRYPTED = \([UInt8](cipherText))")
         return cipherText.base64EncodedString().base64ToBase64Url().clearPaddding()
     }
     
@@ -336,8 +347,8 @@ public class JWE {
         if alg != .RSA1_5{
             return nil
         }
-        let cipher = Data.init(base64Encoded: cipherText.base64UrlToBase64().addPadding())
-        
+        let strCipher = cipherText.addPadding().base64UrlToBase64()
+        let cipher = Data.init(base64Encoded: strCipher)
         guard let plainData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: cipher!) else {
             return nil
         }
