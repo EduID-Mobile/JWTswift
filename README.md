@@ -14,6 +14,7 @@ This library fully uses the native iOS security framework and common crypto (**i
   - [KeyStore](#keystore)
   - [KeyChain](#keychain)
   - [JWS](#jws)
+  - [JWE](#jwe)
 
 ## Installing ##
 
@@ -35,6 +36,16 @@ These are the main functions of this libary:
 * Saving, Loading, and Delete Key into / from the keychain
 * Convert jwk data into a Key object, which is required for the saving function
 * JWS basic functionalities : Sign, Verify, and Parsing the data(Payload, Header)
+* JWE basic functionalities : Create a compact JWE based on payload dictionary, and deserialize compact JWE string
+
+Supported Algorithm for JWS :: **RS256**
+
+Supported Algorithm on JWE :: 
+1. **RSA1_5**
+2. **RSA-OAEP-256**
+
+Supported Enc on JWE :: **A128CBC-HS256**
+                          
 
 ## Structure ##
 
