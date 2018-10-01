@@ -277,3 +277,59 @@ This functions takes a whole JWS encoded string as parameter.
   
   JWS.parseJWSpayload(stringJWS : 'JWS string')
 ```
+
+### JWE ###
+
+**Initialization**
+For the initialization JWE requires the following objects for its parameter: 
+  - plainText : this is the payload in [String : Any] dictionary format
+  - alg : Algorithm to encrypt the CEK(Content Encryption Key) = there are two options RSA1_5 or RSA_OAEP_256
+  - publicKey : Key Object that is used to encrypt the CEK on the JWE
+  - issuer, subject, audience , and kid : String informations for generating JWE Header
+  
+  This function could throw an error when there is problem on encryption process, so do-try-catch Handling would be required
+
+```shell
+  // JWE requires multiple objects for its initialization 
+  let payload : [String: Any] = ["test" : "payload for testing"]
+  let publickeyTest : Key  = ....
+  
+  do{
+    var jwe = try JWE(plaintext: payload, alg: .RSA1_5, publicKey: publickeyTest, issuer: "abc", subject: "def", audience: "ghi", kid: publickeyTest.getKid()!)
+    } catch {
+      print(error)
+    }
+ 
+```
+By using this initialization the framework will automatically encrypt the payload and create a compact JWE for the user.
+To get the generated serialization of the JWE, user could use the following command: 
+
+```shell
+  jwe.getCompactJwe()
+```
+
+**Working with incoming JWE from Extern(e.g. Server)**
+User could work with the incoming compact serialization of JWE. 
+For this the user only need a private key to decrypt the JWE, this is also happen automatically through the init function of the JWE.
+But this time it requires a private key and a compact serialization of JWE in String format.
+This function could also throw an error when there is problem on decryption process, so do-try-catch Handling would be required
+
+```shell
+  let compactJweTest : String = "eydrIej..."
+  let privatekeyTest : Key = ....
+  
+  do{
+    let jwe = try JWE(compactJWE: compactJweTest, privateKey: privatekeyTest)
+  } catch {
+    print(error)
+  }
+```
+If the initialization with compact serialization successful, user could read the payload or the header directly using the getter function
+
+```shell
+  // get header in dictionary format [String : Any]
+  let header = jwe.getHeaderAsDict()
+  
+  // get payload in dictionary format [String : Any]
+  let payload = jwe.getPayloadAsDict()
+```
