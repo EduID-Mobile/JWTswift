@@ -54,6 +54,8 @@ After finish embedding the xcode project with the library, this library could be
 This is just a simple object class to help the user manage the key object in a project.
 The key object contains a pair of key id and a SecKey variable
 
+---
+
 ### KeyStore ###
 The main purpose of this library is in this object class
 
@@ -186,12 +188,13 @@ These *class* methods are used to generate a kid string for a public key.
 An extra *class* method which generate a key pair objects with kid included inside.
 Key type is required as parameter, but for now only RSA(kSecAtttrKeyType) is upported.
 As result this method returns a dictionary [String : Key] with two specific keys 
-      1. "public" -> dictionary keys to retrieve the generated public Key object
-      2. "private" -> dictionary keys to retrieve the generated private Key object
+1. "public" -> dictionary keys to retrieve the generated public Key object
+2. "private" -> dictionary keys to retrieve the generated private Key object
   
 ```shell
   KeyStore.generateKeyPair(keyType: 'kSecAttrKeyTypeRSA as String')
 ```
+---
 
 ### KeyChain ###
 
@@ -238,6 +241,7 @@ Return Boolean value as result, true if the deletion is successful and false whe
   // Deleting a single key
   KeyChain.deleteKey(tagString: 'string tag of the key', keyToDelete: 'key object')
 ```
+---
 
 ### JWS ###
 
@@ -278,9 +282,11 @@ This functions takes a whole JWS encoded string as parameter.
   JWS.parseJWSpayload(stringJWS : 'JWS string')
 ```
 
+---
 ### JWE ###
 
 **Initialization**
+
 For the initialization JWE requires the following objects for its parameter: 
   - plainText : this is the payload in [String : Any] dictionary format
   - alg : Algorithm to encrypt the CEK(Content Encryption Key) = there are two options RSA1_5 or RSA_OAEP_256
@@ -309,6 +315,7 @@ To get the generated serialization of the JWE, user could use the following comm
 ```
 
 **Working with incoming JWE from Extern(e.g. Server)**
+
 User could work with the incoming compact serialization of JWE. 
 For this the user only need a private key to decrypt the JWE, this is also happen automatically through the init function of the JWE.
 But this time it requires a private key and a compact serialization of JWE in String format.
