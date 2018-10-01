@@ -19,6 +19,7 @@
 		15C2551B2158D7CF00C79695 /* RSA1_5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551A2158D7CF00C79695 /* RSA1_5.swift */; };
 		15C2551D215908C800C79695 /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551C215908C800C79695 /* AES.swift */; };
 		15C2551F21592D1100C79695 /* HmacSha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2551E21592D1100C79695 /* HmacSha.swift */; };
+		15ED1E232162287400F2A6F0 /* RSA_OAEP256.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ED1E222162287400F2A6F0 /* RSA_OAEP256.swift */; };
 		15FA9678215D25EC00840C95 /* privateTest.pem in Resources */ = {isa = PBXBuildFile; fileRef = 15FA9676215D25EC00840C95 /* privateTest.pem */; };
 		15FA967D215D2BB100840C95 /* privateTest.jwks in Resources */ = {isa = PBXBuildFile; fileRef = 15FA967C215D2BB100840C95 /* privateTest.jwks */; };
 		680BB5B41FE9143C00A877D3 /* JWTswiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680BB5B31FE9143C00A877D3 /* JWTswiftTests.swift */; };
@@ -101,6 +102,7 @@
 		15C2551A2158D7CF00C79695 /* RSA1_5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSA1_5.swift; sourceTree = "<group>"; };
 		15C2551C215908C800C79695 /* AES.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
 		15C2551E21592D1100C79695 /* HmacSha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacSha.swift; sourceTree = "<group>"; };
+		15ED1E222162287400F2A6F0 /* RSA_OAEP256.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSA_OAEP256.swift; sourceTree = "<group>"; };
 		15FA9676215D25EC00840C95 /* privateTest.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = privateTest.pem; sourceTree = "<group>"; };
 		15FA967C215D2BB100840C95 /* privateTest.jwks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = privateTest.jwks; sourceTree = "<group>"; };
 		680BB5A51FE9143C00A877D3 /* JWTswift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JWTswift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -185,6 +187,7 @@
 				15C2551A2158D7CF00C79695 /* RSA1_5.swift */,
 				15C2551C215908C800C79695 /* AES.swift */,
 				15C2551E21592D1100C79695 /* HmacSha.swift */,
+				15ED1E222162287400F2A6F0 /* RSA_OAEP256.swift */,
 			);
 			path = CryptoAlgorithm;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				680BB5C81FE9157A00A877D3 /* KeyStore.swift in Sources */,
 				15C2551B2158D7CF00C79695 /* RSA1_5.swift in Sources */,
 				680BB5C71FE9157A00A877D3 /* KeyChain.swift in Sources */,
+				15ED1E232162287400F2A6F0 /* RSA_OAEP256.swift in Sources */,
 				680BB5C61FE9157A00A877D3 /* PemGenerator.swift in Sources */,
 				680BB5C01FE9156700A877D3 /* CryptoManager.swift in Sources */,
 			);

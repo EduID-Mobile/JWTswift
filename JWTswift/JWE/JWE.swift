@@ -12,6 +12,7 @@ import CommonCrypto
 
 public enum CekEncryptionAlgorithm {
     case RSA1_5
+    case RSA_OAEP_256
 }
 
 public enum EncAlgorithm {
@@ -20,8 +21,10 @@ public enum EncAlgorithm {
 
 enum JweError : Error {
     case wrongJweFormat
+    case unsupportedAlgorithm
     case validationError
     case encryptionError
+    case decryptionErrror
 }
 
 public class JWE {
@@ -36,12 +39,20 @@ public class JWE {
     var cek : [UInt8]?
     var plaintext : [String : Any]?
     
-    internal init(issuer: String, subject: String, audience: String, kid : String) {
+    internal init(alg: CekEncryptionAlgorithm, issuer: String, subject: String, audience: String, kid : String) {
         //Header will be set with default algorithm, this could be changed in the future
-        joseHeaderDict = ["alg" : "RSA1_5" ,
-                          "kid" : kid,
+        
+        joseHeaderDict = ["kid" : kid,
                           "cty" : "JWT",
-                           "enc" : "A128CBC-HS256"]
+                          "enc" : "A128CBC-HS256"]
+        
+        switch alg {
+        case .RSA1_5:
+            joseHeaderDict!["alg"] = "RSA1_5"
+        case .RSA_OAEP_256:
+            joseHeaderDict!["alg"] = "RSA-OAEP-256"
+        }
+        
         if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
             joseHeaderDict!["iss"] = issuer
             joseHeaderDict!["sub"] = subject
@@ -89,8 +100,8 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], publicKey : Key, issuer : String, subject : String, audience: String, kid: String) throws {
-        self.init(issuer: issuer, subject: subject, audience: audience, kid: kid)
+    public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, issuer : String, subject : String, audience: String, kid: String) throws {
+        self.init(alg: alg, issuer: issuer, subject: subject, audience: audience, kid: kid)
         self.plaintext = plaintext
         do{
             let _ = try generateJWE(encryptKey: publicKey);
@@ -103,7 +114,7 @@ public class JWE {
     
     // MARK: ----  Setter ----
     
-    public func setInitVector(initVector: [UInt8]){
+    func setInitVector(initVector: [UInt8]){
         self.initVector = initVector
     }
     
@@ -149,14 +160,25 @@ public class JWE {
     
     func deserializeJwe(decryptKey : Key) throws -> [String : Any]? {
         // Part 1 decrypt encoded key
-        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
-        guard let decryptedCekData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: encryptedCEKdata!) else {
-            clearAll()
-            return nil
+//        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
+        
+        switch joseHeaderDict!["alg"] as! String {
+        case "RSA1_5":
+            cek = decryptCEK(decryptKey: decryptKey, alg: .RSA1_5, cipherText: encryptedCEK!)
+            guard cek != nil else {
+                throw JweError.decryptionErrror
+            }
+        case "RSA-OAEP-256":
+            cek = decryptCEK(decryptKey: decryptKey, alg: .RSA_OAEP_256, cipherText: encryptedCEK!)
+            guard cek != nil else {
+                throw JweError.decryptionErrror
+            }
+        default:
+            throw JweError.unsupportedAlgorithm
         }
+    
         
         // Part 2 Get the mac and enc key for validation and decryption
-        cek = [UInt8](decryptedCekData)
         print("Deserialize cek == \(cek!)")
         
         let middleIndex = cek!.count / 2
@@ -215,10 +237,22 @@ public class JWE {
         if cek == nil {
             cek = self.generateCEK()
         }
-        guard let encryptedCekData = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek!) else {
-            throw JweError.encryptionError
+        
+        switch joseHeaderDict!["alg"]! as! String {
+        case "RSA1_5" :
+            encryptedCEK = encryptCEK(encryptKey: encryptKey, alg: .RSA1_5, cek: cek!)
+            guard encryptedCEK != nil else {
+                throw JweError.encryptionError
+            }
+        
+        case "RSA-OAEP-256":
+            encryptedCEK = encryptCEK(encryptKey: encryptKey, alg: .RSA_OAEP_256, cek: cek!)
+            guard encryptedCEK != nil else {
+                throw JweError.encryptionError
+            }
+        default:
+            throw JweError.unsupportedAlgorithm
         }
-        encryptedCEK = encryptedCekData.base64EncodedString().base64ToBase64Url().clearPaddding()
         
         // Part 3 Initialization Vector
         if initVector == nil {
@@ -332,28 +366,40 @@ public class JWE {
     }
     
     public func encryptCEK(encryptKey: Key, alg: CekEncryptionAlgorithm, cek: [UInt8]) -> String? {
-        if alg != .RSA1_5{
-            return nil
+        
+        let cipherText : Data?
+        switch alg {
+        case .RSA1_5:
+            cipherText = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek)
+        case .RSA_OAEP_256:
+            cipherText = RSA_OAEP_256.encrypt(encryptKey: encryptKey, cek: cek)
         }
         
-        guard let cipherText = RSA1_5.encrypt(encryptKey: encryptKey, cek: cek) else {
+        guard cipherText != nil  else {
             return nil
         }
-        print("ENCRYPTED = \([UInt8](cipherText))")
-        return cipherText.base64EncodedString().base64ToBase64Url().clearPaddding()
+        print("ENCRYPTED = \([UInt8](cipherText!))")
+        return cipherText!.base64EncodedString().base64ToBase64Url().clearPaddding()
     }
     
     public func decryptCEK(decryptKey: Key, alg: CekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
-        if alg != .RSA1_5{
-            return nil
-        }
+
         let strCipher = cipherText.addPadding().base64UrlToBase64()
         let cipher = Data.init(base64Encoded: strCipher)
-        guard let plainData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: cipher!) else {
+        
+        let plainData : Data?
+        switch alg {
+        case .RSA1_5:
+            plainData = RSA1_5.decrypt(decryptKey: decryptKey, cipherText: cipher!)
+        case .RSA_OAEP_256:
+            plainData = RSA_OAEP_256.decrypt(decryptKey: decryptKey, cipherText: cipher!)
+        }
+        
+        guard plainData != nil else {
             return nil
         }
         
-        return [UInt8](plainData)
+        return [UInt8](plainData!)
     }
     
 }

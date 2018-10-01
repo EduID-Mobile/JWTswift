@@ -346,7 +346,7 @@ class JWTswiftTests: XCTestCase {
     
     
     func testJWEHeader(){
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, issuer: "", subject: "", audience: "", kid: "")
         print(jwe.joseHeaderDict!)
         do{
             let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict!, options: .init(rawValue: 0))
@@ -367,7 +367,7 @@ class JWTswiftTests: XCTestCase {
             XCTFail()
             return
         }
-        let jwe = try! JWE.init(plaintext: ["iat" : "in chur"], publicKey: key, issuer: "", subject: "", audience: "", kid: key.getKid()!)
+        let jwe = try! JWE.init(plaintext: ["iat" : "in chur"], alg: .RSA1_5,publicKey: key, issuer: "", subject: "", audience: "", kid: key.getKid()!)
         XCTAssertNotNil(jwe.compactJWE)
         print("Compact JWE = ", jwe.compactJWE!)
     }
@@ -382,11 +382,11 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJweGenerateCEK(){
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid: "")
         let cekArray = jwe.generateCEK()
         print(cekArray!)
         XCTAssertNotNil(cekArray)
-        XCTAssertEqual(cekArray?.count, 16)
+        XCTAssertEqual(cekArray?.count, 32)
     }
     
     func testEncryptCEK() {
@@ -404,7 +404,7 @@ class JWTswiftTests: XCTestCase {
         
         let key = KeyStore.getPublicKey(key: (keyfrombundle?.first)!)
         
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
         
         let cekTest = jwe.generateCEK()!
         print("CekTest == \(cekTest)")
@@ -433,24 +433,24 @@ class JWTswiftTests: XCTestCase {
         
         let cekString = "U2yrenUB5Z2p40b1Imk-TBhl2kpFA83MPJx2oPLg1bFmlaP76o0nQmy4nwwmQyIj5KpunQaSedTXM9djsHtuaBkboKho8gt0Mug7Fc8Lu-9Xld3HhvM37Ulp_jkc_HwvAz46mg-TenZMgsTR4Ni9ORJohmskLzowBGQjZqeEWWEMTHbBEqyEqUa6R4b5lU7IXhoWong4fFFFVq9Y79NyX3vemWxQuqdJvOHCh_wgTUY-b_PJMMGDaBdsm0ZGdsL3KXjWBl4WVHs80udJ13zprqLOoVKcxAdh4lTCwpPkRw3ssdvNvl8WWvGZSLwgsNGLnbiPIu1iyA-Y8XAJjAn7Nw"
         
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
         //let decrypted = jwe.decryptCEK(decryptKey: privKey!, alg: .RSA1_5, cipherText: cekString)
         let decryptedCek = jwe.decryptCEK(decryptKey: privkey!, alg: .RSA1_5, cipherText: cekString)
-        print("DECRYPTED =  \(decryptedCek)")
+        print("DECRYPTED =  \(String(describing: decryptedCek))")
         
         XCTAssertNotNil(decryptedCek)
     }
     
     
     func testEncryptDecryptCEK(){
-        guard var url = bundle?.url(forResource: "ios_priv", withExtension: "jwks") else {
+        guard let url = bundle?.url(forResource: "ios_priv", withExtension: "jwks") else {
             XCTFail()
             return
         }
         let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: url.path)
         
         
-        guard var urlpem = bundle?.url(forResource: "ios_priv", withExtension: "pem") else {
+        guard let urlpem = bundle?.url(forResource: "ios_priv", withExtension: "pem") else {
             XCTFail()
             return
         }
@@ -461,7 +461,7 @@ class JWTswiftTests: XCTestCase {
         let privKey = keyman.getKey(withKid: keyIDfrombundle!)
         let publickey = KeyStore.getPublicKey(key: privKey!)
         
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, issuer: "", subject: "", audience: "", kid: "")
         let cek = jwe.generateCEK()
         
         let encrypted = jwe.encryptCEK(encryptKey: publickey!, alg: .RSA1_5, cek: cek!)
@@ -479,7 +479,7 @@ class JWTswiftTests: XCTestCase {
         let dataText = plainText.data(using: .utf8)!
         print("plain before encryption = \([UInt8](dataText))")
         
-        let jwe = JWE(issuer: "", subject: "", audience: "" , kid: "")
+        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "" , kid: "")
         let cek = jwe.generateCEK()
         let cipherStr = jwe.encryptCEK(encryptKey: keypair!["public"]!, alg: .RSA1_5, cek: cek!)//[UInt8](dataText))
         print("CEK == \(cek!)")
@@ -488,13 +488,30 @@ class JWTswiftTests: XCTestCase {
         let plain = jwe.decryptCEK(decryptKey: keypair!["private"]!, alg: .RSA1_5, cipherText: cipherStr!)
         
         print("plain = \(plain ?? [])")
-        print("plainText = \(String.init(bytes: plain!, encoding: .utf8))")
+        print("plainText = \(String(describing: String.init(bytes: plain!, encoding: .utf8)))")
         XCTAssertEqual(plain!, cek )// [UInt8](dataText))
         
     }
     
+    func testEncryptDecryptRSA_OAEP(){
+        
+        let keypair = KeyStore.generateKeyPair(keyType: .RSAkeys)
+        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
+        let cek = jwe.generateCEK()!
+        
+        print("Plain before encryption = \(cek)")
+        
+        let cipher = RSA_OAEP_256.encrypt(encryptKey: keypair!["public"]!, cek: cek)
+        XCTAssertNotNil(cipher)
+        
+        let decrypted = RSA_OAEP_256.decrypt(decryptKey: keypair!["private"]!, cipherText: cipher!)
+        print("Decrypted result == \([UInt8](decrypted!))")
+        XCTAssertNotNil(decrypted)
+        XCTAssertEqual([UInt8](decrypted!), cek)
+    }
+    
     func testJweGenerateInitVector(){
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid: "")
         let str = jwe.generateInitVec()
         print("init vector = " , str!.count)
         XCTAssertNotNil(str)
@@ -544,7 +561,7 @@ class JWTswiftTests: XCTestCase {
     
     func testAES128CBC(){
         
-        let jwe = JWE(issuer: "", subject: "", audience: "", kid : "")
+        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid : "")
         let iV : [UInt8] = [3, 22, 60, 12, 43, 67, 104, 105, 108, 108, 105, 99, 111, 116, 104, 101]
         //first extract CEK
         let middleIndex = (testCEK.count / 2)
@@ -594,7 +611,7 @@ class JWTswiftTests: XCTestCase {
         print(authenticatedTag.base64EncodedString().base64ToBase64Url().clearPaddding())
     }
     
-    func testCreateJWECompact(){
+    func testCreateJWECompactRSA1_5(){
         guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
             XCTFail()
             return
@@ -607,7 +624,7 @@ class JWTswiftTests: XCTestCase {
                                     "htwchur": "blc"]
         let jwe : JWE
         do{
-            jwe = try JWE(plaintext: payload, publicKey: pubKey!, issuer: "", subject: "", audience: "", kid: pubKey!.getKid()!)
+            jwe = try JWE(plaintext: payload, alg: .RSA1_5, publicKey: pubKey!, issuer: "", subject: "", audience: "", kid: pubKey!.getKid()!)
         } catch {
             print(error)
             XCTFail()
@@ -617,13 +634,9 @@ class JWTswiftTests: XCTestCase {
         let jweCompact = jwe.getCompactJWE()!
         print("Generated JWE Compact == \(jweCompact)")
         XCTAssertNotNil(jweCompact)
-        
-        
-        
-        
     }
     
-    func testDecryptJweCompact(){
+    func testDecryptJweCompactRSA1_5(){
         guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
             XCTFail()
             return
@@ -636,7 +649,7 @@ class JWTswiftTests: XCTestCase {
         }
         let keyIDfrombundle = keyman.getPrivateKeyFromPemInBundle(resourcePath: urlpem.path, identifier: keyID!)
         
-        guard let privKey = keyman.getKey(withKid: keyID!) else {
+        guard let privKey = keyman.getKey(withKid: keyIDfrombundle!) else {
             XCTFail()
             return
         }
@@ -655,10 +668,68 @@ class JWTswiftTests: XCTestCase {
             print("Error while decrypting JWE :: \(error)")
             XCTFail()
         }
-        
     }
     
-    func testCreateJweCompactAndDecrypt(){
+    func testCreateJWECompactRSA_OAEP(){
+        guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keys = keyman.jwksToKeyFromBundle(jwksPath: url.path)
+        let pubKey = keys!.first
+        XCTAssertNotNil(pubKey)
+        
+        let payload : [String:Any] = ["julius":"test payload for RSA.OAEP",
+                                      "htwchur": "blc"]
+        let jwe : JWE
+        do{
+            jwe = try JWE(plaintext: payload, alg: .RSA_OAEP_256, publicKey: pubKey!, issuer: "", subject: "", audience: "", kid: pubKey!.getKid()!)
+        } catch {
+            print(error)
+            XCTFail()
+            return
+        }
+        
+        let jweCompact = jwe.getCompactJWE()!
+        print("Generated JWE Compact == \(jweCompact)")
+        XCTAssertNotNil(jweCompact)
+    }
+    
+    func testDecryptJweCompactRSA_OAEP(){
+        guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: url.path)
+        
+        guard let urlpem = bundle?.url(forResource: "privateTest", withExtension: "pem") else {
+            XCTFail()
+            return
+        }
+        let keyIDfrombundle = keyman.getPrivateKeyFromPemInBundle(resourcePath: urlpem.path, identifier: keyID!)
+        
+        guard let privKey = keyman.getKey(withKid: keyIDfrombundle!) else {
+            XCTFail()
+            return
+        }
+        
+        let compactJwe = "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJraWQiOiJCTENodHdjaHVyIiwiY3R5IjoiSldUIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImF1ZCI6InRoaXMgaXMgZW5jcnlwdGVkIHdpdGggUlNBLU9BRVAtMjU2LiIsImlzcyI6IkpVTElVUyJ9.YhQpI6K-XqjdPa9u_Dofb4HjBUthR75qtXbAb8D_1Qbi8lEDdDULl__hv5xrWQAvualZZNfHGyj-E3OOAV21tMJR3UNW5sfaPYOA3MFjn828A9HaxNcgJjBbPUJWu01hBpeweEINTRewZNuo0jcj49EhGees-Txx1TfsJVqO7pJm7RTne8Y_yyxwABuFS2DP5YyAxhScrpJATKdGiuWXBLhblNXcs3XrxlLKw_fPROM3-9nxLhto8onWojqcAADqVgB16ZBNx_Nz6Ti0cZNbIsXqHeCxDvelbZbV0YzWpEewGb2-SouhsxxnsyTZbekYWkN15M5tQMLNaCjg0R4u3Q.yTk_IVRmjL_cZhwuufqOBw.aHmY46TzzE_D2ln3COOSMvDqtCzff-OY2cnmtuBoVJGTZSvGIuzPqUFBBkw8SlNxNdJQQoIBgorfXbhP1_8S76I9Ih5HHLTXAw50iKkMsQ-l0AJs6ddCTC6mbt63r_xb.SINA1q_u3iwdtAmLNi4WSA"
+        do{
+            let jwe = try JWE(compactJWE: compactJwe, privateKey: privKey)
+            let header = jwe.getHeaderAsDict()
+            let payload  = jwe.getPayloadAsDict()
+            
+            print("Header from decrypted == \(String(describing: header))")
+            print("Payload from decrypted == \(String(describing: payload))")
+            XCTAssertNotNil(payload)
+            XCTAssertEqual(payload! as! [String:String], ["iss": "JULIUS", "iat": "Hello World", "aud": "this is encrypted with RSA-OAEP-256."])
+        } catch {
+            print("Error while decrypting JWE :: \(error)")
+            XCTFail()
+        }
+    }
+    
+    func testCreateJweCompactAndDecryptRSA1_5(){
         let plaintext = ["abc" : "defghijklmn",
                          "junkfood" : "mcdonalds burger king kfc",
                          "softdrinks" : "cola sprite fanta 7up"]
@@ -667,7 +738,7 @@ class JWTswiftTests: XCTestCase {
             return
         }
         
-        let jweTest = try! JWE(plaintext: plaintext, publicKey: keypair["public"]!, issuer: "abc", subject: "def", audience: "ghi", kid: "kid")
+        let jweTest = try! JWE(plaintext: plaintext, alg: .RSA1_5, publicKey: keypair["public"]!, issuer: "abc", subject: "def", audience: "ghi", kid: "kid")
         let encodedJWE = jweTest.compactJWE!
         print("Compact JWE = \(encodedJWE)")
         

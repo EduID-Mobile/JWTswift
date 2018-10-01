@@ -19,7 +19,7 @@ internal struct RSA1_5{
         print("block size = " , SecKeyGetBlockSize(encryptKey.getKeyObject()))
         
         
-        //transform cek to data
+        // Transform CEK into Data format
         let cekData = Data(bytes: cek)
         print("cekData count = " ,cekData.count)
         guard cekData.count < (SecKeyGetBlockSize(encryptKey.getKeyObject())-130) else {
