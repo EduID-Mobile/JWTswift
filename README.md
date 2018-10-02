@@ -50,6 +50,7 @@ Supported Enc on JWE :: **A128CBC-HS256**
 ## Structure ##
 
 ![alt text](https://github.com/BLC-HTWChur/JWTswift/blob/master/JWTswift%20diagram.png "JWTswift structure")
+[Click here to see the picture more clearly](https://raw.githubusercontent.com/EduID-Mobile/JWTswift/master/JWTswift%20diagram.png)
   
 ## Basics ##
 
