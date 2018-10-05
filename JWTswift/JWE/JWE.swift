@@ -41,9 +41,8 @@ public class JWE {
     var plaintext : [String : Any]?
     var plainJWS : String?
     
-    internal init(alg: CekEncryptionAlgorithm, issuer: String, subject: String, audience: String, kid : String) {
+    internal init(alg: CekEncryptionAlgorithm, kid : String) {
         //Header will be set with default algorithm, this could be changed in the future
-        
         joseHeaderDict = ["kid" : kid,
                           "cty" : "JWT",
                           "enc" : "A128CBC-HS256"]
@@ -54,13 +53,7 @@ public class JWE {
         case .RSA_OAEP_256:
             joseHeaderDict!["alg"] = "RSA-OAEP-256"
         }
-        
-        if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
-//            joseHeaderDict!["iss"] = issuer
-//            joseHeaderDict!["sub"] = subject
-//            joseHeaderDict!["aud"] = audience
-        }
-        
+
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
     }
     
@@ -102,8 +95,8 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, issuer : String, subject : String, audience: String, kid: String) throws {
-        self.init(alg: alg, issuer: issuer, subject: subject, audience: audience, kid: kid)
+    public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, kid: String) throws {
+        self.init(alg: alg, kid: kid)
         self.plaintext = plaintext
         do{
             let _ = try generateJWE(encryptKey: publicKey)
@@ -115,7 +108,7 @@ public class JWE {
     
     public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, issuer: String, subject: String, audience: String, kid: String) throws {
         
-        self.init(alg: alg, issuer: issuer, subject: subject, audience: audience, kid: kid)
+        self.init(alg: alg, kid: kid)
         self.plainJWS = plainJWS
         
         do{

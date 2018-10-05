@@ -373,7 +373,7 @@ class JWTswiftTests: XCTestCase {
     
     
     func testJWEHeader(){
-        let jwe = JWE(alg: .RSA1_5, issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, kid: "")
         print(jwe.joseHeaderDict!)
         do{
             let jsonheader = try JSONSerialization.data(withJSONObject: jwe.joseHeaderDict!, options: .init(rawValue: 0))
@@ -394,7 +394,7 @@ class JWTswiftTests: XCTestCase {
             XCTFail()
             return
         }
-        let jwe = try! JWE.init(plaintext: ["iat" : "in chur"], alg: .RSA1_5,publicKey: key, issuer: "", subject: "", audience: "", kid: key.getKid()!)
+        let jwe = try! JWE.init(plaintext: ["iat" : "in chur"], alg: .RSA1_5,publicKey: key, kid: key.getKid()!)
         XCTAssertNotNil(jwe.compactJWE)
         print("Compact JWE = ", jwe.compactJWE!)
     }
@@ -409,7 +409,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJweGenerateCEK(){
-        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, kid: "")
         let cekArray = jwe.generateCEK()
         print(cekArray!)
         XCTAssertNotNil(cekArray)
@@ -431,7 +431,7 @@ class JWTswiftTests: XCTestCase {
         
         let key = KeyStore.getPublicKey(key: (keyfrombundle?.first)!)
         
-        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256, kid: "")
         
         let cekTest = jwe.generateCEK()!
         print("CekTest == \(cekTest)")
@@ -460,7 +460,7 @@ class JWTswiftTests: XCTestCase {
         
         let cekString = "U2yrenUB5Z2p40b1Imk-TBhl2kpFA83MPJx2oPLg1bFmlaP76o0nQmy4nwwmQyIj5KpunQaSedTXM9djsHtuaBkboKho8gt0Mug7Fc8Lu-9Xld3HhvM37Ulp_jkc_HwvAz46mg-TenZMgsTR4Ni9ORJohmskLzowBGQjZqeEWWEMTHbBEqyEqUa6R4b5lU7IXhoWong4fFFFVq9Y79NyX3vemWxQuqdJvOHCh_wgTUY-b_PJMMGDaBdsm0ZGdsL3KXjWBl4WVHs80udJ13zprqLOoVKcxAdh4lTCwpPkRw3ssdvNvl8WWvGZSLwgsNGLnbiPIu1iyA-Y8XAJjAn7Nw"
         
-        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256, kid: "")
         //let decrypted = jwe.decryptCEK(decryptKey: privKey!, alg: .RSA1_5, cipherText: cekString)
         let decryptedCek = jwe.decryptCEK(decryptKey: privkey!, alg: .RSA1_5, cipherText: cekString)
         print("DECRYPTED =  \(String(describing: decryptedCek))")
@@ -488,7 +488,7 @@ class JWTswiftTests: XCTestCase {
         let privKey = keyman.getKey(withKid: keyIDfrombundle!)
         let publickey = KeyStore.getPublicKey(key: privKey!)
         
-        let jwe = JWE(alg: .RSA1_5, issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, kid: "")
         let cek = jwe.generateCEK()
         
         let encrypted = jwe.encryptCEK(encryptKey: publickey!, alg: .RSA1_5, cek: cek!)
@@ -506,7 +506,7 @@ class JWTswiftTests: XCTestCase {
         let dataText = plainText.data(using: .utf8)!
         print("plain before encryption = \([UInt8](dataText))")
         
-        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "" , kid: "")
+        let jwe = JWE(alg: .RSA1_5, kid: "")
         let cek = jwe.generateCEK()
         let cipherStr = jwe.encryptCEK(encryptKey: keypair!["public"]!, alg: .RSA1_5, cek: cek!)//[UInt8](dataText))
         print("CEK == \(cek!)")
@@ -523,7 +523,7 @@ class JWTswiftTests: XCTestCase {
     func testEncryptDecryptRSA_OAEP(){
         
         let keypair = KeyStore.generateKeyPair(keyType: .RSAkeys)
-        let jwe = JWE(alg: .RSA_OAEP_256,issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256, kid: "")
         let cek = jwe.generateCEK()!
         
         print("Plain before encryption = \(cek)")
@@ -538,7 +538,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testJweGenerateInitVector(){
-        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA1_5, kid: "")
         let str = jwe.generateInitVec()
         print("init vector = " , str!.count)
         XCTAssertNotNil(str)
@@ -575,7 +575,7 @@ class JWTswiftTests: XCTestCase {
         let dataTest = Data(bytes: test)
         //        let dataTest = testString.data(using: .utf8)
         
-        let jwe = JWE(alg: .RSA_OAEP_256, issuer: "", subject: "", audience: "", kid: "")
+        let jwe = JWE(alg: .RSA_OAEP_256, kid: "")
         let key = jwe.generateCEK()!
 //        let keyString = "0123"
 //        let key : [UInt8] = Array(keyString.utf8)
@@ -592,7 +592,7 @@ class JWTswiftTests: XCTestCase {
     
     func testAES128CBC(){
         
-        let jwe = JWE(alg: .RSA1_5,issuer: "", subject: "", audience: "", kid : "")
+        let jwe = JWE(alg: .RSA1_5, kid : "")
         let iV : [UInt8] = [3, 22, 60, 12, 43, 67, 104, 105, 108, 108, 105, 99, 111, 116, 104, 101]
         //first extract CEK
         let middleIndex = (testCEK.count / 2)
@@ -655,7 +655,7 @@ class JWTswiftTests: XCTestCase {
                                     "htwchur": "blc"]
         let jwe : JWE
         do{
-            jwe = try JWE(plaintext: payload, alg: .RSA1_5, publicKey: pubKey!, issuer: "", subject: "", audience: "", kid: pubKey!.getKid()!)
+            jwe = try JWE(plaintext: payload, alg: .RSA1_5, publicKey: pubKey!, kid: pubKey!.getKid()!)
         } catch {
             print(error)
             XCTFail()
@@ -714,7 +714,7 @@ class JWTswiftTests: XCTestCase {
                                       "htwchur": "blc"]
         let jwe : JWE
         do{
-            jwe = try JWE(plaintext: payload, alg: .RSA_OAEP_256, publicKey: pubKey!, issuer: "", subject: "", audience: "", kid: pubKey!.getKid()!)
+            jwe = try JWE(plaintext: payload, alg: .RSA_OAEP_256, publicKey: pubKey!, kid: pubKey!.getKid()!)
         } catch {
             print(error)
             XCTFail()
@@ -769,7 +769,7 @@ class JWTswiftTests: XCTestCase {
             return
         }
         
-        let jweTest = try! JWE(plaintext: plaintext, alg: .RSA1_5, publicKey: keypair["public"]!, issuer: "abc", subject: "def", audience: "ghi", kid: "kid")
+        let jweTest = try! JWE(plaintext: plaintext, alg: .RSA1_5, publicKey: keypair["public"]!, kid: "kid")
         let encodedJWE = jweTest.compactJWE!
         print("Compact JWE = \(encodedJWE)")
         
@@ -861,7 +861,7 @@ class JWTswiftTests: XCTestCase {
     }
     
     func testDebug(){
-        
+        /*
         let tagString = "HQfhICyOm75HPpnNNplU1g"
         let headerDict = ["alg":"RSA-OAEP-256", "kid":"BLChtwchur", "cty":"JWT", "enc":"A128CBC-HS256"]
         let cek : [UInt8] = [183, 146, 255, 189, 77, 135, 117, 32, 103, 130, 178, 252, 109, 152, 24, 174, 242, 34, 56, 140, 163, 124, 174, 95, 251, 96, 32, 211, 76, 42, 29, 28]
@@ -870,7 +870,7 @@ class JWTswiftTests: XCTestCase {
         let AL : [UInt8] = [0, 0, 0, 0, 0, 0, 3, 32]
         
         let cipher = Data(base64Encoded: cipherStr.clearPaddding().base64UrlToBase64())
-        
+        */
         
     }
     
