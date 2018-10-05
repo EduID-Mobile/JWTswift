@@ -300,6 +300,33 @@ class JWTswiftTests: XCTestCase {
         XCTAssertTrue(JWS.verify(jwsToVerify: jws.jwsCompactResult!, key: keydict!["public"]!))
     }
     
+    func testJWSfromBundle() {
+        // Get private key to Sign JWS
+        guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: url.path)
+        
+        guard let urlpem = bundle?.url(forResource: "privateTest", withExtension: "pem") else {
+            XCTFail()
+            return
+        }
+        let keyIDfrombundle = keyman.getPrivateKeyFromPemInBundle(resourcePath: urlpem.path, identifier: keyID!)
+        
+        guard let privKey = keyman.getKey(withKid: keyIDfrombundle!) else {
+            XCTFail()
+            return
+        }
+        
+        let jws = JWS(payloadDict: jwsPayloadDict)
+        
+        let compactJWS = jws.sign(key: privKey, alg: .RS256)
+        XCTAssertNotNil(compactJWS)
+        
+        print("Compact JWS == \(compactJWS!)")
+    }
+    
     func testJWSparse(){
         let keydict = KeyStore.generateKeyPair(keyType: .RSAkeys)
         XCTAssertNotNil(keydict)
@@ -548,8 +575,10 @@ class JWTswiftTests: XCTestCase {
         let dataTest = Data(bytes: test)
         //        let dataTest = testString.data(using: .utf8)
         
-        let keyString = "0123"
-        let key : [UInt8] = Array(keyString.utf8)
+        let jwe = JWE(alg: .RSA_OAEP_256, issuer: "", subject: "", audience: "", kid: "")
+        let key = jwe.generateCEK()!
+//        let keyString = "0123"
+//        let key : [UInt8] = Array(keyString.utf8)
         let keyData = Data(bytes: key)
         //        let keyData = keyString.data(using: .utf8)
         
@@ -557,7 +586,9 @@ class JWTswiftTests: XCTestCase {
         //        let str  = String(data: hmacResult, encoding: .utf8)
         print("HmacResult = \(hmacResult.hexDescription)")
         
+        
     }
+    
     
     func testAES128CBC(){
         
@@ -756,6 +787,91 @@ class JWTswiftTests: XCTestCase {
         XCTAssertEqual(plaintext["abc"], deserializingJwe.plaintext!["abc"] as? String)
         XCTAssertEqual(plaintext["junkfood"], deserializingJwe.plaintext!["junkfood"] as? String)
         XCTAssertEqual(plaintext["softdrinks"], deserializingJwe.plaintext!["softdrinks"] as? String)
+    }
+    
+    func testEncryptJWEwithNestedJWS(){
+        let keydict = KeyStore.generateKeyPair(keyType: .RSAkeys)
+        XCTAssertNotNil(keydict)
+        let jws = JWS(payloadDict: jwsPayloadDict)
+        XCTAssertNotNil(jws.sign(key: keydict!["private"]!, alg: .RS256))
+        
+        print("JWS Source == \(jws.jwsCompactResult!)")
+        
+        guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        
+        guard let pubkey = keyman.jwksToKeyFromBundle(jwksPath: url.path) else {
+            XCTFail()
+            return
+        }
+        
+        let jwsSource = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjFMZG1qY0tkQkFnVDk3QWdEd3V5dzJjd3plN1F4NTNLTVpEYlJPT09sa3cifQ.eyJrZXlUb1NlbmQiOnsiZSI6IkFRQUIiLCJraWQiOiJMb2xwUXBJOWxOTnFGdS1VbUFaTFFKM3pLT2VFQ0JOOFlRNFRVZjFYODZZIiwia3R5IjoiUlNBIiwibiI6InhIUU5SS0N6RG1rS2x4clFIZUF3dHJwY2FvMHoycy1ndmFaQWJUdDllMTgtMUYtTE13eUxRakRKNjgxWWhTTEhJWlhhQ0FTdEVfS3hSZjVieUJiRGJnTDVZeDFuZ0N4S2liUTQzZ0ZGaVdDSDZKUnNVTC1QTkVIWmRoT1BXblNUbHpTYnN6RnhZU3VjWVgzUHlLVm9HLWxJMDNVeVpfNjB4S2FiQWdjaVF0RXN6b0ZKNTNBM1pLaDNkZGJsc1NuUFBldWoyb0lHUlk0Q21waEF1R1hsX2ZmNUNvMWoyaTV6dFMzUDJvTTRYYVJCOTI1SElYdjJBLVNxbkJ4QktfTVJ1SDkzQnFHZk9zNkFWaDFtUmYxelNObk5BZS1MbWt1X2prVEVrLUZLbHpTamI0Y05nWHdFRHNTSVAzbUJNdVBaNnpTS0ZmM0ZwWDFrVlJkODNlY05mdyJ9LCJ0ZXN0ZGF0YSI6InRlc3QxIiwicGF5bG9hZFRlc3QiOiJ0ZXN0MiJ9.SOAjlgN3i-f5gKeF3gkoULXBj-GrzkApAOuOQKGRvnvuas1rM_qErCYUjdJ_9a6w3ul8BybZ27Xwrq430m28JPbB4ChR6ohRuw5zOZq0UKY3SZpACjWb1EOAAQyB3xrp_31OfwtYmeuZT63Q8drr_Ykal3mwLUX9ofTTIreY5caHiFNtwd3j1Zda6sRA1HAwHNPURmobLuUZrozjuFf-ggscDQkKhZVH1HQjSCYspfs8DsAJkK4raLv1xxKZhzNEIKHZn8GtrG3amKgMLP0I86CtrdhtAJSqeHXy5peBNnDfFf_sa7rb0sPS-wjDBdrmfeL0uysmxZ4K6-IV35kvLg"
+        
+        let jwe : JWE
+        do {
+            jwe = try JWE(plainJWS: jwsSource, alg: .RSA_OAEP_256, publicKey: pubkey.first!, issuer: "eduidApp", subject: "jul", audience: "server", kid: pubkey.first!.getKid()!)
+        } catch {
+            print(error)
+            XCTFail()
+            return
+        }
+        
+        XCTAssertNotNil(jwe.getCompactJWE()!)
+        print("COMPACT JWE == \(jwe.getCompactJWE()!)")
+
+    }
+    
+    
+    func testDecryptJWEwithNestedJWS(){
+        
+        let encryptedJwe = "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJraWQiOiJCTENodHdjaHVyIiwiY3R5IjoiSldUIiwiZW5jIjoiQTEyOENCQy1IUzI1NiJ9.pMUq4oW1VjB3heMi5oMyT0a4rScOoj7zx6lNERkS1a7HAshGwYuA_cVKCpwYSJdTlC4Eb83QyHuNv_LY_oW_zpD3g6E9HintK8PMapir_9m9Nri65vKxISjRSH026EMh1ztzh5FjotGxnazdEPo8HVZ2Wg6Xj1e3mazwB5UoiN_hilVoMxXx9KVefT2g9FtM3Vp-zOE98Bykf28XQN1FAn_QtZ4iiNWKsv3oZNmil3wgz8fBUNQvNNoLkUwsGQjHRM14fX5Dm00pyoTHugCWuwuBC8NzRLhr5yGWzC1IA8z9Y5-020MMfMPq9FSk39BWY2_qeSXa2do-5zQbmhz4LA.fW9Ul7E03LKf5SsTVqKZSA.v4HeDgv-JRyLVlTqMDTVX2CGIAD7jeocycYOhNqnjEIXlJo6etSykgO62pcPCwYo_VBhHVsZVJ0ox0jNzTrC-s_JfG-3Yz_ljZfxdbLClMwT8gNyQ2KaiWUdqlPj3EoPK0-OAcF8JlYel9BPqOmYYFpVExqMOUqLNX3pmqCgZ8UuAdnSMzuGt-5-eiQi_e92lNlb2uGx-_LevaIEQ0R2pcS46cNgsZg15HdhSRNg4A1HPRtwgMeVGTnQb_7Id57tqkKtoyA8v6BbIQnIZ3I7hk6loARJRgmpfAOQ04K-F8hnE4g4as6yMrLP5rmactrj4Ab6mWFk0UpHX4pGU9z41VJbCQPz_o2ALxoF-Ebu0whjUgeYwP6ThxqqZy2KgeRHVyzHbRtCT-TXjejSNUybn0kKCqrtqkVFoatdSUQUMYqyVcj3JKGfW-V0V03i7skIvo-JsT_GpOQr2MFx478DI8Kpnrbj5OzauFCTlUt9d7zVnwsZFRoDdDXXWBjQTOfpp3YnydP_frn2dh0o-hoIrHgekhR8OwaLP6zti1ghHbEYj2MUPRvJ25zM_5WKTTXq9ps1nAqGkhaIvhoaKo6W81KL9DAZ8Iz03c--Wjd3VdEUsF5xiXUWbtkz8KdbsUWla2Gj3xn4vjtycvFLTTbqd-F6LLoxogv0iAFfyfPIXDAj3WODYTHyE1wp_eHkZ3vBSLbs9LQC2HQ29CNhp6C2eID6hNsAQdlOZV8zTcKeWI6nSgBNVn6iui7hM2G3COWFHYxQIxc6MuBS3FA1pMrO4Wz5rFDMxReMusszDMGbJ681ucZjgS4XGf1WrxKrXP330WFruR7XJ_e6-fZ-9uzGSk9jAvMaVcalVHe48txfpmbqmEG4PPFCHNycgtxLnFZRRWDVpETLgkqh6jj-FrDgMu96UMYOV4tGbT_xPoEXcnqTS4jmAenks_gY11YvSnLJNOJJ4NYS1z08onH0ySXqEtVs-wEvXPZYR-QC-O1BU8qJk4uybxpt21EZfWdgfHA5f4Vy1UVam6pLbDXHbc9DADQvtnz97Xun_A7WGoeH2MmqY6IgLwYYScLvWrp5H76IVWJJMLaUCd8jBr4_6S6QKsfdJQ3-UTWXs_BY9Ir0tgsEnn5N0DdUh6IhZAT7LnFwMX-rwCIJ8lOVb6g57s9WrxZv7Fetm_BTDYFcHsKz2FKon-lQVAycpQ-p4-E8pAlNBhVyMxOq4AKJYBd9XKjidGjljESKgcGxmtnDYj0P2Tugg5t-GdfgpxAo30HBD350YrtqZJaLwlQNFNYEIQKvgTW67nS152DJHZ-kM3Zd4TuwMztCxobHFddKyH4jAflto3lm3YLGLa-N3MbVOv2G7yowNTmJimQQaEq7Gvsr71LJKzawzuGg9jtoLpQDSLtOaahzwE-ndLpBsG3mUCTKHXaC8WXUB3jjBLA8BH_8L9wWmrcxx-36bR0x7pZweYUs.HQfhICyOm75HPpnNNplU1g"
+        
+        // Get private key to decrypt JWE
+        guard let url = bundle?.url(forResource: "privateTest", withExtension: "jwks") else {
+            XCTFail()
+            return
+        }
+        let keyID = keyman.getPrivateKeyIDFromJWKSinBundle(resourcePath: url.path)
+        
+        guard let urlpem = bundle?.url(forResource: "privateTest", withExtension: "pem") else {
+            XCTFail()
+            return
+        }
+        let keyIDfrombundle = keyman.getPrivateKeyFromPemInBundle(resourcePath: urlpem.path, identifier: keyID!)
+        
+        guard let privKey = keyman.getKey(withKid: keyIDfrombundle!) else {
+            XCTFail()
+            return
+        }
+        
+        let jwe : JWE
+        do{
+            jwe = try JWE(compactJWE: encryptedJwe, privateKey: privKey)
+        } catch {
+            print(error)
+            XCTFail()
+            return
+        }
+        
+        print("PLAIN JWS == \(jwe.plainJWS)")
+        
+        XCTAssertEqual(jwe.plainJWS!, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImQyM1FZWFVjaTBoUU9hU1dydFhwUzhQU0ktcjhRcDFRd3N5amloUjZ5RjQifQ.eyJrZXlUb1NlbmQiOnsiZSI6IkFRQUIiLCJraWQiOiJMb2xwUXBJOWxOTnFGdS1VbUFaTFFKM3pLT2VFQ0JOOFlRNFRVZjFYODZZIiwia3R5IjoiUlNBIiwibiI6InhIUU5SS0N6RG1rS2x4clFIZUF3dHJwY2FvMHoycy1ndmFaQWJUdDllMTgtMUYtTE13eUxRakRKNjgxWWhTTEhJWlhhQ0FTdEVfS3hSZjVieUJiRGJnTDVZeDFuZ0N4S2liUTQzZ0ZGaVdDSDZKUnNVTC1QTkVIWmRoT1BXblNUbHpTYnN6RnhZU3VjWVgzUHlLVm9HLWxJMDNVeVpfNjB4S2FiQWdjaVF0RXN6b0ZKNTNBM1pLaDNkZGJsc1NuUFBldWoyb0lHUlk0Q21waEF1R1hsX2ZmNUNvMWoyaTV6dFMzUDJvTTRYYVJCOTI1SElYdjJBLVNxbkJ4QktfTVJ1SDkzQnFHZk9zNkFWaDFtUmYxelNObk5BZS1MbWt1X2prVEVrLUZLbHpTamI0Y05nWHdFRHNTSVAzbUJNdVBaNnpTS0ZmM0ZwWDFrVlJkODNlY05mdyJ9LCJ0ZXN0ZGF0YSI6InRlc3QxIiwicGF5bG9hZFRlc3QiOiJ0ZXN0MiJ9.fkMF80PTBa_6cyXlJKpfXJbl2Vb0Y2pzGpZuvIPdm5kCy-RdzvxM6qMOpWUkLVaGnhp2dCzVgcpYj3J51kawMxullcG5ECSbPbjpPK_b5V4FeZWxtfmbWvR_u1fMj0wPNG0cOuFjSSSIEqfg6uFPNTb7gcn4ISBnLbSbDAoxo8ELEpiCCj44z75b0usepTii7dfgjlGLiOHIkxlR_eYIRblrM3Mbl4fxdWPM8ZW6I7lfvIGNpGPiPD1uQv9ltASYu8hmLgtzbg52UjWso-ghqRl3lFiAW5klV8QyNWcvS2WarWbQjhy6VdJHsz0KvslpzISW8-XRqEZfLV_Xz-vWLQ")
+    }
+    
+    func testDebug(){
+        
+        let tagString = "HQfhICyOm75HPpnNNplU1g"
+        let headerDict = ["alg":"RSA-OAEP-256", "kid":"BLChtwchur", "cty":"JWT", "enc":"A128CBC-HS256"]
+        let cek : [UInt8] = [183, 146, 255, 189, 77, 135, 117, 32, 103, 130, 178, 252, 109, 152, 24, 174, 242, 34, 56, 140, 163, 124, 174, 95, 251, 96, 32, 211, 76, 42, 29, 28]
+        let cipherStr = "v4HeDgv-JRyLVlTqMDTVX2CGIAD7jeocycYOhNqnjEIXlJo6etSykgO62pcPCwYo_VBhHVsZVJ0ox0jNzTrC-s_JfG-3Yz_ljZfxdbLClMwT8gNyQ2KaiWUdqlPj3EoPK0-OAcF8JlYel9BPqOmYYFpVExqMOUqLNX3pmqCgZ8UuAdnSMzuGt-5-eiQi_e92lNlb2uGx-_LevaIEQ0R2pcS46cNgsZg15HdhSRNg4A1HPRtwgMeVGTnQb_7Id57tqkKtoyA8v6BbIQnIZ3I7hk6loARJRgmpfAOQ04K-F8hnE4g4as6yMrLP5rmactrj4Ab6mWFk0UpHX4pGU9z41VJbCQPz_o2ALxoF-Ebu0whjUgeYwP6ThxqqZy2KgeRHVyzHbRtCT-TXjejSNUybn0kKCqrtqkVFoatdSUQUMYqyVcj3JKGfW-V0V03i7skIvo-JsT_GpOQr2MFx478DI8Kpnrbj5OzauFCTlUt9d7zVnwsZFRoDdDXXWBjQTOfpp3YnydP_frn2dh0o-hoIrHgekhR8OwaLP6zti1ghHbEYj2MUPRvJ25zM_5WKTTXq9ps1nAqGkhaIvhoaKo6W81KL9DAZ8Iz03c--Wjd3VdEUsF5xiXUWbtkz8KdbsUWla2Gj3xn4vjtycvFLTTbqd-F6LLoxogv0iAFfyfPIXDAj3WODYTHyE1wp_eHkZ3vBSLbs9LQC2HQ29CNhp6C2eID6hNsAQdlOZV8zTcKeWI6nSgBNVn6iui7hM2G3COWFHYxQIxc6MuBS3FA1pMrO4Wz5rFDMxReMusszDMGbJ681ucZjgS4XGf1WrxKrXP330WFruR7XJ_e6-fZ-9uzGSk9jAvMaVcalVHe48txfpmbqmEG4PPFCHNycgtxLnFZRRWDVpETLgkqh6jj-FrDgMu96UMYOV4tGbT_xPoEXcnqTS4jmAenks_gY11YvSnLJNOJJ4NYS1z08onH0ySXqEtVs-wEvXPZYR-QC-O1BU8qJk4uybxpt21EZfWdgfHA5f4Vy1UVam6pLbDXHbc9DADQvtnz97Xun_A7WGoeH2MmqY6IgLwYYScLvWrp5H76IVWJJMLaUCd8jBr4_6S6QKsfdJQ3-UTWXs_BY9Ir0tgsEnn5N0DdUh6IhZAT7LnFwMX-rwCIJ8lOVb6g57s9WrxZv7Fetm_BTDYFcHsKz2FKon-lQVAycpQ-p4-E8pAlNBhVyMxOq4AKJYBd9XKjidGjljESKgcGxmtnDYj0P2Tugg5t-GdfgpxAo30HBD350YrtqZJaLwlQNFNYEIQKvgTW67nS152DJHZ-kM3Zd4TuwMztCxobHFddKyH4jAflto3lm3YLGLa-N3MbVOv2G7yowNTmJimQQaEq7Gvsr71LJKzawzuGg9jtoLpQDSLtOaahzwE-ndLpBsG3mUCTKHXaC8WXUB3jjBLA8BH_8L9wWmrcxx-36bR0x7pZweYUs"
+        let ivStr = "fW9Ul7E03LKf5SsTVqKZSA"
+        let AL : [UInt8] = [0, 0, 0, 0, 0, 0, 3, 32]
+        
+        let cipher = Data(base64Encoded: cipherStr.clearPaddding().base64UrlToBase64())
+        
+        
     }
     
     

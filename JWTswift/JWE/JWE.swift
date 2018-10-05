@@ -25,6 +25,7 @@ enum JweError : Error {
     case validationError
     case encryptionError
     case decryptionErrror
+    case unsupportedFormatForPayload
 }
 
 public class JWE {
@@ -38,6 +39,7 @@ public class JWE {
     var compactJWE : String?
     var cek : [UInt8]?
     var plaintext : [String : Any]?
+    var plainJWS : String?
     
     internal init(alg: CekEncryptionAlgorithm, issuer: String, subject: String, audience: String, kid : String) {
         //Header will be set with default algorithm, this could be changed in the future
@@ -54,9 +56,9 @@ public class JWE {
         }
         
         if issuer.count > 0 && subject.count > 0  && audience.count > 0 {
-            joseHeaderDict!["iss"] = issuer
-            joseHeaderDict!["sub"] = subject
-            joseHeaderDict!["aud"] = audience
+//            joseHeaderDict!["iss"] = issuer
+//            joseHeaderDict!["sub"] = subject
+//            joseHeaderDict!["aud"] = audience
         }
         
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
@@ -104,13 +106,25 @@ public class JWE {
         self.init(alg: alg, issuer: issuer, subject: subject, audience: audience, kid: kid)
         self.plaintext = plaintext
         do{
-            let _ = try generateJWE(encryptKey: publicKey);
+            let _ = try generateJWE(encryptKey: publicKey)
         } catch {
             clearAll()
             throw error
         }
     }
     
+    public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, issuer: String, subject: String, audience: String, kid: String) throws {
+        
+        self.init(alg: alg, issuer: issuer, subject: subject, audience: audience, kid: kid)
+        self.plainJWS = plainJWS
+        
+        do{
+            let _ = try generateJWE(encryptKey: publicKey)
+        } catch {
+            clearAll()
+            throw error
+        }
+    }
     
     // MARK: ----  Setter ----
     
@@ -135,17 +149,27 @@ public class JWE {
     /**
      GetHeader function
      - returns: A dictionary of [String: Any] and return nil if empty or /if there is an error
-    */
+     */
     public func getHeaderAsDict() -> [String : Any]? {
         return joseHeaderDict
     }
     
     /**
      Get payload of JWE in dictionary format
+     if return nil, the payload could be a JWS String and could be fetched with getPayloadJWS()
      - returns: A dictionary of [String: Any], return nil if empty
-    */
+     */
     public func getPayloadAsDict() -> [String : Any]? {
         return plaintext
+    }
+    
+    /**
+     Get a payload of Jws nested inside JWE in a compact string format
+     if return nil, the payload could be just a normal Dictionary payload and could be fetched with getPayloadAsDict()
+     - returns: A compact string of JWS, return nil if empty
+     */
+    public func getPayloadJWS() -> String? {
+        return plainJWS
     }
     
     /**
@@ -158,9 +182,9 @@ public class JWE {
     
     // MARK: ---- Deserializing ----
     
-    func deserializeJwe(decryptKey : Key) throws -> [String : Any]? {
+    func deserializeJwe(decryptKey : Key) throws -> Bool {
         // Part 1 decrypt encoded key
-//        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
+        //        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
         
         switch joseHeaderDict!["alg"] as! String {
         case "RSA1_5":
@@ -176,7 +200,7 @@ public class JWE {
         default:
             throw JweError.unsupportedAlgorithm
         }
-    
+        
         
         // Part 2 Get the mac and enc key for validation and decryption
         print("Deserialize cek == \(cek!)")
@@ -189,14 +213,14 @@ public class JWE {
         
         // Part 3 Validate the authentication Tag
         let aad = generateAAD()
-//        print("AAD AFTER :: \(aad)")
+        //        print("AAD AFTER :: \(aad)")
         let al = generateAL(bitsCount: aad!.count * 8)
         let hmacInput = aad! + initVector! + [UInt8](cipherData!) + al
-
-//        print("hmacInput AFTER :: \(hmacInput)" )
+        
+        //        print("hmacInput AFTER :: \(hmacInput)" )
         
         let hmacOutput = HmacSha.compute(input: Data(bytes: hmacInput), key: Data(bytes: macKey))
-//        print("HMAC OUTPUT AFTER == \([UInt8](hmacOutput))")
+        //        print("HMAC OUTPUT AFTER == \([UInt8](hmacOutput))")
         let authTagDataSecond = hmacOutput.prefix(upTo: 16)
         let authTagSecond = authTagDataSecond.base64EncodedString().base64ToBase64Url().clearPaddding()
         
@@ -215,21 +239,26 @@ public class JWE {
             plaintext = try JSONSerialization.jsonObject(with: decryptData, options: .init(rawValue: 0)) as? [String : Any]
         } catch {
             print(error)
-            clearAll()
-            return nil
+            
+            // Data could be in string = nested JWS inside JWE
+            plainJWS = String(data: decryptData, encoding: .utf8)
+            guard plainJWS != nil else {
+                clearAll()
+                throw JweError.unsupportedFormatForPayload
+            }
         }
         
-        return plaintext!
+        return true
     }
     
     
-//---- Generator ----
+    //---- Generator ----
     
     func generateJWE(encryptKey : Key) throws -> String {
         
         // 5 Different components (header, encrypted CEK, initialization Vector, Ciphertext,
         // Authentication Tag).
-    
+        
         // Part 1 Header
         let headerEncoded = joseHeaderData!.base64EncodedString().base64ToBase64Url().clearPaddding()
         
@@ -244,7 +273,7 @@ public class JWE {
             guard encryptedCEK != nil else {
                 throw JweError.encryptionError
             }
-        
+            
         case "RSA-OAEP-256":
             encryptedCEK = encryptCEK(encryptKey: encryptKey, alg: .RSA_OAEP_256, cek: cek!)
             guard encryptedCEK != nil else {
@@ -264,13 +293,21 @@ public class JWE {
         let middleIndex = cek!.count / 2
         let macKey = cek![..<middleIndex]
         let encKey = cek![middleIndex...]
-//        print("MACKEY BEFORE == \(macKey)")
+        //        print("MACKEY BEFORE == \(macKey)")
+        
         let plainData : Data
-        do{
-            plainData = try JSONSerialization.data(withJSONObject: plaintext!, options: [])
-        }catch {
-            throw error
+        if plaintext != nil {
+            do{
+                plainData = try JSONSerialization.data(withJSONObject: plaintext!, options: [])
+            }catch {
+                throw error
+            }
+        } else if plainJWS != nil {
+            plainData = plainJWS!.data(using: .utf8)!
+        } else {
+            throw JweError.unsupportedFormatForPayload
         }
+        
         let cipher = AES.encryptAes(data: plainData, keyData: Data(bytes: encKey), ivData: Data(bytes: initVector!))
         ciphertext = cipher.base64EncodedString().base64ToBase64Url().clearPaddding()
         
@@ -282,10 +319,10 @@ public class JWE {
         
         let al = generateAL(bitsCount: aad.count * 8) // Bytes to bits
         let hmacInput = aad + initVector! + [UInt8](cipher) + al
-//        print("HMAC INPUT BEFORE :: \(hmacInput)")
+                print("HMAC INPUT BEFORE :: \(hmacInput)")
         
         let hmacOutput = HmacSha.compute(input: Data(bytes: hmacInput) , key: Data(bytes: macKey))
-//        print("HMAC OUTPUT BEFORE == \([UInt8](hmacOutput))")
+                print("HMAC OUTPUT BEFORE == \([UInt8](hmacOutput))")
         
         let authenticationTagData = hmacOutput.prefix(upTo: 16) // Take the first 128 bits from the output
         authTag = authenticationTagData.base64EncodedString().base64ToBase64Url().clearPaddding()
@@ -383,7 +420,7 @@ public class JWE {
     }
     
     public func decryptCEK(decryptKey: Key, alg: CekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
-
+        
         let strCipher = cipherText.addPadding().base64UrlToBase64()
         let cipher = Data.init(base64Encoded: strCipher)
         
