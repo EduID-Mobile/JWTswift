@@ -811,7 +811,7 @@ class JWTswiftTests: XCTestCase {
         
         let jwe : JWE
         do {
-            jwe = try JWE(plainJWS: jwsSource, alg: .RSA_OAEP_256, publicKey: pubkey.first!, issuer: "eduidApp", subject: "jul", audience: "server", kid: pubkey.first!.getKid()!)
+            jwe = try JWE(plainJWS: jwsSource, alg: .RSA_OAEP_256, publicKey: pubkey.first!, kid: pubkey.first!.getKid()!)
         } catch {
             print(error)
             XCTFail()
@@ -855,7 +855,7 @@ class JWTswiftTests: XCTestCase {
             return
         }
         
-        print("PLAIN JWS == \(jwe.plainJWS)")
+        print("PLAIN JWS == \(jwe.plainJWS ?? "default")")
         
         XCTAssertEqual(jwe.plainJWS!, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImQyM1FZWFVjaTBoUU9hU1dydFhwUzhQU0ktcjhRcDFRd3N5amloUjZ5RjQifQ.eyJrZXlUb1NlbmQiOnsiZSI6IkFRQUIiLCJraWQiOiJMb2xwUXBJOWxOTnFGdS1VbUFaTFFKM3pLT2VFQ0JOOFlRNFRVZjFYODZZIiwia3R5IjoiUlNBIiwibiI6InhIUU5SS0N6RG1rS2x4clFIZUF3dHJwY2FvMHoycy1ndmFaQWJUdDllMTgtMUYtTE13eUxRakRKNjgxWWhTTEhJWlhhQ0FTdEVfS3hSZjVieUJiRGJnTDVZeDFuZ0N4S2liUTQzZ0ZGaVdDSDZKUnNVTC1QTkVIWmRoT1BXblNUbHpTYnN6RnhZU3VjWVgzUHlLVm9HLWxJMDNVeVpfNjB4S2FiQWdjaVF0RXN6b0ZKNTNBM1pLaDNkZGJsc1NuUFBldWoyb0lHUlk0Q21waEF1R1hsX2ZmNUNvMWoyaTV6dFMzUDJvTTRYYVJCOTI1SElYdjJBLVNxbkJ4QktfTVJ1SDkzQnFHZk9zNkFWaDFtUmYxelNObk5BZS1MbWt1X2prVEVrLUZLbHpTamI0Y05nWHdFRHNTSVAzbUJNdVBaNnpTS0ZmM0ZwWDFrVlJkODNlY05mdyJ9LCJ0ZXN0ZGF0YSI6InRlc3QxIiwicGF5bG9hZFRlc3QiOiJ0ZXN0MiJ9.fkMF80PTBa_6cyXlJKpfXJbl2Vb0Y2pzGpZuvIPdm5kCy-RdzvxM6qMOpWUkLVaGnhp2dCzVgcpYj3J51kawMxullcG5ECSbPbjpPK_b5V4FeZWxtfmbWvR_u1fMj0wPNG0cOuFjSSSIEqfg6uFPNTb7gcn4ISBnLbSbDAoxo8ELEpiCCj44z75b0usepTii7dfgjlGLiOHIkxlR_eYIRblrM3Mbl4fxdWPM8ZW6I7lfvIGNpGPiPD1uQv9ltASYu8hmLgtzbg52UjWso-ghqRl3lFiAW5klV8QyNWcvS2WarWbQjhy6VdJHsz0KvslpzISW8-XRqEZfLV_Xz-vWLQ")
     }

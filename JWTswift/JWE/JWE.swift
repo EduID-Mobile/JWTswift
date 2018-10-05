@@ -106,7 +106,7 @@ public class JWE {
         }
     }
     
-    public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, issuer: String, subject: String, audience: String, kid: String) throws {
+    public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, kid: String) throws {
         
         self.init(alg: alg, kid: kid)
         self.plainJWS = plainJWS
