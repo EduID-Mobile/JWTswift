@@ -324,9 +324,9 @@ public class KeyStore {
      */
     public class func pemToJWK(pemData : Data , kid: String? = nil) -> [String: Any]{
         var jwk : [String : String] = [:]
-        print("LAST INDEX : \(pemData.endIndex.hashValue)")
+        print("LAST INDEX : \(pemData.endIndex)") //.hashValue)")
         let rangeModulus : Range<Int> = 9..<265
-        let rangeExponent : Range<Int> = Int(267)..<pemData.endIndex.hashValue
+        let rangeExponent : Range<Int> = Int(267)..<pemData.endIndex //.hashValue
         //rangeExponent
         print("DATA SIZE :  \(pemData.count),",pemData.base64EncodedString())
         let subdataMod = pemData.subdata(in: rangeModulus)

@@ -25,11 +25,9 @@ class JWTswiftTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        //        pubPath = Bundle.main.url(forResource: "eduid_pub", withExtension: "jwks") || NOT FOR FRAMEWORK
         
-        //        pubPath = bundle?.url(forResource: "eduid_pub", withExtension: "jwks")
         keyman = KeyStore()
-        //        print("public key path : \(pubPath.path)")
+
         dict = [
             "e"  : "AQAB",
             "kty" : "RSA",
