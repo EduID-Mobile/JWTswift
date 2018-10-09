@@ -10,8 +10,8 @@ import Foundation
 
 internal struct RSA_OAEP_256 {
     
+    
     static func encrypt(encryptKey : Key, cek : [UInt8]) -> Data? {
-        
         guard SecKeyIsAlgorithmSupported(encryptKey.getKeyObject(), .encrypt, .rsaEncryptionOAEPSHA256) else {
             
             print("Key doesn't support the encryption algorithm")
@@ -39,8 +39,8 @@ internal struct RSA_OAEP_256 {
         return cipherText
     }
     
+    
     static func decrypt(decryptKey: Key, cipherText: Data) -> Data? {
-        
         guard SecKeyIsAlgorithmSupported(decryptKey.getKeyObject(), .decrypt, .rsaEncryptionOAEPSHA256) else {
             print("Key doesn't support the decryption algorithm.")
             return nil

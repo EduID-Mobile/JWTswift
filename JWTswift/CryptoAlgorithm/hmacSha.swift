@@ -11,24 +11,12 @@ import CommonCrypto
 
 struct HmacSha {
     
+    /**
+     Main function of HMAC Sha256 algorithm 
+     */
     static func compute(input : Data, key: Data) -> Data {
         
-//        let keyBytes = UnsafePointer<CUnsignedChar>([UInt8](key))
-//        let dataBytes = UnsafePointer<CUnsignedChar>([UInt8](input))
-
-        /*
-        let keyString = key.base64EncodedString()
-        let dataString = input.base64EncodedString()
-        
-        let inputKey = keyString.cString(using: .utf8)
-        let inputData = dataString.cString(using: .utf8)
-        print("HMAC key = \(inputKey)")
-        print("HMAC data = \(inputData)")
-        */
-        
         var result = Data(count: 32)
-        
-//        CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), keyBytes, key.count, dataBytes, input.count, &result)
         
         result.withUnsafeMutableBytes { resultBytes in
             key.withUnsafeBytes { keyBytes in
@@ -37,11 +25,7 @@ struct HmacSha {
                 }
             }
         }
-        //
-        return result
-//        let hmacData = Data(bytes: result, count: Int(CC_SHA256_DIGEST_LENGTH))
         
-//        return hmacData
+        return result
     }
-    
 }

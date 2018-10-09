@@ -303,7 +303,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "194"
             endingLineNumber = "194"
-            landmarkName = "getPrivateKeyIDFromJWKSinBundle(resourcePath:)"
+            landmarkName = "jwksToKeyFromServer(jwksSourceData:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -319,8 +319,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "184"
             endingLineNumber = "184"
-            landmarkName = "getPrivateKeyFromPemInBundle(resourcePath:identifier:)"
-            landmarkType = "7">
+            landmarkName = "KeyStore"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -335,7 +335,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "225"
             endingLineNumber = "225"
-            landmarkName = "jwksToKeyFromBundle(jwksPath:)"
+            landmarkName = "jwksToKeys(jwksSourceData:jwksPath:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -351,7 +351,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "233"
             endingLineNumber = "233"
-            landmarkName = "jwksToPem(jwksSourceData:jwksPath:)"
+            landmarkName = "jwksToKeys(jwksSourceData:jwksPath:)"
             landmarkType = "7">
             <Locations>
                <Location

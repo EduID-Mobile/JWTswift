@@ -42,8 +42,11 @@ public class JWE {
     var plaintext : [String : Any]?
     var plainJWS : String?
     
+    /**
+     Default init - assigning the header data properly for the JWE instance
+    */
     internal init(alg: CekEncryptionAlgorithm, kid : String, aud: String? = nil) {
-        //Header will be set with default algorithm, this could be changed in the future
+        //Header will be set with default enc algorithm, this could be changed in the future
         joseHeaderDict = ["kid" : kid,
                           "cty" : "JWT",
                           "enc" : "A128CBC-HS256"]
@@ -59,10 +62,14 @@ public class JWE {
         }
 
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
-        
-        
     }
     
+    /**
+     Main function to work with incoming compact serialized JWE from external endpoints. As a parameter a private key would be required to decrypt the incoming JWE.
+     - parameter compactJWE : String format of JWE with 5 different parts, separated by '.'
+     - parameter privateKey : Key object, that will be used to decrypt the JWE
+     - Throws: One of JweError if deserializing process failed
+     */
     public init(compactJWE : String, privateKey : Key) throws {
         
         let jweArray = compactJWE.components(separatedBy: ".")
@@ -98,9 +105,17 @@ public class JWE {
             clearAll()
             throw error
         }
-        
     }
     
+    /**
+    Main function to create JWE instance based from the payload in dictionary format
+     - parameter plaintext: A dictionary for the payload
+     - parameter alg: CekEncryptionAlgorithm, algorithm that is used to encrypt the CEK data
+     - parameter publicKey: public key to encrypt the data using the alg above
+     - parameter kid: kid from the public key in String format
+     - parameter aud: optional claim for the assertion forwarding(RFC 7521+7523)
+     - Throws: One of JweError if serializing process failed
+     */
     public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, kid: String, aud: String? = nil) throws {
         self.init(alg: alg, kid: kid, aud: aud)
         self.plaintext = plaintext
@@ -112,6 +127,15 @@ public class JWE {
         }
     }
     
+    /**
+     Main function to create a nested JWE with a compact JWS as payload inside
+     - parameter plainJWS: A compact serialization of JWS in String
+     - parameter alg: CekEncryptionAlgorithm, algorithm that is used to encrypt the CEK data
+     - parameter publicKey: public key to encrypt the data using the alg above
+     - parameter kid: kid from the public key in String format
+     - parameter aud: optional claim for the assertion forwarding(RFC 7521+7523)
+     - Throws: One of JweError if serializing process failed
+     */
     public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, kid: String, aud: String? = nil) throws {
         
         self.init(alg: alg, kid: kid, aud: aud)
@@ -137,6 +161,9 @@ public class JWE {
         }
     }
     
+    /**
+     Clearing all the data if any error occured on the initializing process
+     */
     func clearAll(){
         joseHeaderDict = nil
         joseHeaderData = nil
@@ -186,10 +213,14 @@ public class JWE {
     }
     
     // MARK: ---- Deserializing ----
-    
+    /**
+     Function to work (validate & decrypt) with incoming compact JWE from the extern endpoints.
+     This function will be executed automatically from init with compact JWE as parameter.
+     - parameter decryptKey: Key for decryption
+     - Throws: one of JweError from the deserializing process
+     */
     func deserializeJwe(decryptKey : Key) throws -> Bool {
         // Part 1 decrypt encoded key
-        //        let encryptedCEKdata = Data.init(base64Encoded: encryptedCEK!.base64UrlToBase64().addPadding())
         
         switch joseHeaderDict!["alg"] as! String {
         case "RSA1_5":
@@ -255,10 +286,15 @@ public class JWE {
         
         return true
     }
-    
-    
+
     //---- Generator ----
-    
+    /**
+     Function to generate a compact JWE based on the payload data and encryption algorithm.
+     This function will be executed automaticall from the init() with payload dictionary or JWS as parameter.
+     - parameter encryptKey: Key to encrypt the Data
+     - Throws: one JweError from the serializing process
+     - returns: String of compact serialized JWE
+     */
     func generateJWE(encryptKey : Key) throws -> String {
         
         // 5 Different components (header, encrypted CEK, initialization Vector, Ciphertext,
@@ -387,6 +423,11 @@ public class JWE {
         return result
     }
     
+    /**
+     Random byte generator of a specific byte length.
+     This bytes will be used to encrypt the payload and make a signature.
+     - returns: Array of (32) unsigned integer
+    */
     public func generateCEK() -> [UInt8]? {
         // For A256CBC-HS512 CEK needs to be 64 Bytes : 32 Bytes for MAC Key, and 32 Bytes for ENC
         // A128CBC-HS256 needs to be 32 Bytes : 16 Bytes MAC Key, 16 Bytes ENC KEY
@@ -397,6 +438,10 @@ public class JWE {
         return [UInt8](randombytes)
     }
     
+    /**
+     Random byte generator that will be used as an init vector on encryption/decryption process.
+     - returns: Array of (16) unsigned integer
+     */
     public func generateInitVec() -> [UInt8]? {
         // 16 Bytes init vector for A128CBC-HS256
         guard let randombytes = generateRandomBytes(countBytes: 16) else {
@@ -406,6 +451,11 @@ public class JWE {
         return [UInt8](randombytes)
     }
     
+    /**
+     Main function to generate random bytes, this is used for generateInitVec() and generateCEK()
+     - parameter countBytes: number of random bytes that will be generated
+     - returns: random bytes in Data format or nil if there is any Error
+    */
     private func generateRandomBytes(countBytes: Int) -> Data? {
         var randombytes = [UInt8](repeating: 0, count: countBytes)
         let status = SecRandomCopyBytes(kSecRandomDefault, randombytes.count, &randombytes)
@@ -416,6 +466,13 @@ public class JWE {
         }
     }
     
+    /**
+     Help function to encrypt the CEK based with the selected algorithm
+     - parameter encryptKey: Key to encrypt the cek
+     - parameter alg: selected algorithm
+     - parameter cek: bytes to encrypt
+     - returns: A encrypted cek in string format, that will be sent as a part of JWE serialization
+    */
     public func encryptCEK(encryptKey: Key, alg: CekEncryptionAlgorithm, cek: [UInt8]) -> String? {
         
         let cipherText : Data?
@@ -433,6 +490,13 @@ public class JWE {
         return cipherText!.base64EncodedString().base64ToBase64Url().clearPaddding()
     }
     
+    /**
+     Help function to decrypt the CEK based with the selected algorithm
+     - parameter decryptKey: Key to decrypt the cek
+     - parameter alg: selected algorithm
+     - parameter cipherText: String to decrypt
+     - returns: An array of unsigned integer that could be used to validate and decrypt the JWE,or nil if there is any error
+     */
     public func decryptCEK(decryptKey: Key, alg: CekEncryptionAlgorithm, cipherText: String) -> [UInt8]? {
         
         let strCipher = cipherText.addPadding().base64UrlToBase64()

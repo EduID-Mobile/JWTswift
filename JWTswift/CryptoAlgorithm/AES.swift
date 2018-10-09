@@ -19,6 +19,11 @@ internal struct AES {
         return aes(data: data, keyData: keyData, ivData: ivData, operation: kCCDecrypt)
     }
     
+    
+    /**
+     Main function for aes128 algorithm
+     - returns: Cipher Data from encryption or PlainText from decryption
+     */
     static func aes(data: Data, keyData: Data, ivData: Data, operation: Int) -> Data {
         let cryptLength = size_t(data.count + kCCBlockSizeAES128)
         var cryptData = Data(count: cryptLength)

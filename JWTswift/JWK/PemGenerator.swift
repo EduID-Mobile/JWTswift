@@ -8,6 +8,10 @@
 
 import Foundation
 
+/**
+ Main class to generate a pem data(PKCS1) based on the modulus and exponent.
+ This class mainly work with low-level data to generate a structured PEM data
+ */
 class PemGenerator {
     
     private var modulusHex : String

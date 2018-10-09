@@ -14,6 +14,12 @@ public enum KeyType {
     case RSAkeys
 }
 
+/**
+ Class that store keys object in a collection.
+ Other than that this class is used to convert Keys object as follows:
+ - Pem(#PKCS1) -> Key object (Private & Public Key)
+ -
+*/
 public class KeyStore {
     
     private var keysCollection : [Key]?
@@ -100,46 +106,11 @@ public class KeyStore {
             return nil
         }
     }
-    /*
-    public func getCertificateFromBundle(resourcePath: String) -> SecCertificate? {
-        if let data = NSData(contentsOfFile: resourcePath) {
-            
-            //let cfData = CFDataCreate(kCFAllocatorDefault, UnsafePointer<UInt8>(data.bytes), data.length)
-            let cert = SecCertificateCreateWithData(kCFAllocatorDefault, data as NSData)
-            return cert
-        }
-        return nil
-    }
-    */
-    
-   /*
-    //specialize for RSA private key in pem format (#PKCS1)
-    func getPrivateKeyFromBundle() -> SecKey? {
-        
-        let data = NSData(contentsOfFile: resourcePath!)
-        
-        let options = NSMutableDictionary()
-        var privateKey : SecKey? = nil
-        options.setObject("password", forKey: kSecImportExportPassphrase as! NSCopying)
-        var items = CFArrayCreate(nil, nil, 0, nil)
-        var securityError = SecPKCS12Import(data!, options as CFDictionary, &items)
-        if ( securityError == noErr && CFArrayGetCount(items) > 0 ) {
-            let identityDict : CFDictionary = CFArrayGetValueAtIndex(items, 0) as! CFDictionary
-            var keyIdentity = kSecImportItemIdentity
-            let identityApp : SecIdentity = CFDictionaryGetValue(identityDict, &keyIdentity) as! SecIdentity
-            
-            securityError = SecIdentityCopyPrivateKey(identityApp, &privateKey)
-            if(securityError != noErr){
-                privateKey = nil
-            }
-        }
-        return privateKey
-    }*/
     
     /**
      Additional function to import private key from the pem format(PKCS#1)
      - parameter certString: String form from a private key(.pem PKCS#1)
- */
+     */
     private func cutHeaderFooterPem (certString : inout String) {
         //CUT HEADER AND TAIL FROM PEM KEY
         let offset = ("-----BEGIN RSA PRIVATE KEY-----").count
@@ -156,7 +127,7 @@ public class KeyStore {
     /**
      Get RSA private key from pem(#PKCS1) data in bundle
      - parameter resourcePath: Path to the private key data in pem format (PKCS#1)
-     - returns : kid fromt the key object or nil when there is an error or no key found in pem data
+     - returns : kid from the key object or nil when there is an error or no key found in pem data
      */
     public func getPrivateKeyFromPemInBundle(resourcePath : String, identifier : String) -> String? {
         var keyInString : String?
@@ -191,6 +162,11 @@ public class KeyStore {
         return nil
     }
     
+    /**
+     Get a private key id from the jwks, usually this function is combined with getPrivateKeyFromPemInBundle() the keyid will be useful for the key object.
+     - parameter resourcePath: String path for the jwks data
+     - returns: String of key id, or nil if no key/kid found
+    */
     public func getPrivateKeyIDFromJWKSinBundle(resourcePath : String) -> String? {
         var jsonDict : [String: Any]
         do{
@@ -206,31 +182,36 @@ public class KeyStore {
     }
     
     /**
-     Converting jwks data from Server to key object(s)
+     Converting JWKS data from external endpoints to key object(s).
+     This works only for public key.
      - parameter jwksSourceData: jwks in Data format
-     - returns : an array of key objects, or nil if no key found in jwks
+     - returns: an array of key objects, or nil if no key found in jwks
     */
     public func jwksToKeyFromServer(jwksSourceData : Data) -> [Key]?{
         if jwksSourceData.count == 0 {
             return nil
         }
-        return jwksToPem(jwksSourceData: jwksSourceData)
+        return jwksToKeys(jwksSourceData: jwksSourceData)
     }
     
     /**
-     Converting jwks data from app bundle to key object(s)
+     Converting jwks data from app bundle to key object(s).
+     This works only for public key.
      - parameter jwksPath: path to the jwks data
-     - returns : an array of key objects, or nil if no key found in jwks
+     - returns: an array of key objects, or nil if no key found in jwks
      */
     public func jwksToKeyFromBundle(jwksPath : String) -> [Key]? {
         if jwksPath.count == 0{
             return nil
         }
-        return jwksToPem(jwksPath: jwksPath)
+        return jwksToKeys(jwksPath: jwksPath)
     }
     
-    
-    private func jwksToPem(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [Key]? {
+    /**
+     Main function that convert the jwks into a keyObjects.
+     Only works for public key.
+    */
+    private func jwksToKeys(jwksSourceData : Data? = nil, jwksPath : String? = nil) -> [Key]? {
         var result  = [Key]()
         var dataFromPath : Data?
         
@@ -261,14 +242,12 @@ public class KeyStore {
         return result
     }
     
-    
-    //TODO : make it private
     /**
-     Main function to convert a single jwk data into a Key object(which could be used by the apple native functions).
+     Main function to convert a single jwk data into a Key object(which could be used by the apple native functions). Only for public key
      - parameter jwkDict: a JWK in dictionary format
-     - returns : A key object or nil if there is any error on converting process
+     - returns: A key object or nil if there is any error on converting process
     */
-    public func jwkToKey(jwkDict : [String : Any] ) -> Key? {
+    func jwkToKey(jwkDict : [String : Any] ) -> Key? {
         var exponentStr = jwkDict["e"] as! String
         exponentStr = exponentStr.base64UrlToBase64().addPadding()
         let exponentData = Data(base64Encoded: exponentStr)
@@ -317,7 +296,7 @@ public class KeyStore {
     
     /**
      pkcs1 // SecKeyData as input parameter
-     Main function to convert Pem Key into a jwk
+     Main function to convert Pem Key into a jwk. Only work for public key.
      - parameter pemData: data form of the key(SecKey/ keyObject)
      - parameter kid: key id if available for the jwk
      - returns : a JWK object in dictionary format [String: Any]
@@ -345,6 +324,11 @@ public class KeyStore {
         return jwk
     }
     
+    /**
+     Converting public key object into a JWK, this is used when user want to send a public key to the external endpoint inside JWE/JWS.
+     - parameter key: Key that will be converted into a jwk
+     - returns: jwk in a Dictionary format or nil if there is any error
+    */
     public class func keyToJwk(key : Key) -> [String: Any]? {
         var error : Unmanaged<CFError>?
         guard let dataFromKey : Data = SecKeyCopyExternalRepresentation(key.getKeyObject(), &error)! as Data? else {
@@ -355,6 +339,12 @@ public class KeyStore {
         return pemToJWK(pemData: dataFromKey, kid: key.getKid()?.base64ToBase64Url() )
     }
     
+    /**
+     Automatically create a kid for a key that doesn't have any.
+     (RFC 7638)
+     - parameter key: Key that need a kid
+     - returns: Key object with a automatically generated kid inside
+    */
     public class func createKIDfromKey(key : Key) -> Key? {
         if key.getKid() != nil {
             print("KID is already exist!")
@@ -373,9 +363,10 @@ public class KeyStore {
     }
     
     /**
-    Generate a key ID from a modulus, exponent and keytype for the JWK
+    Generate a key ID from a modulus, exponent and keytype for the JWK.
+    This function is based on RFC 7638
      - parameter jwkDict: String dictionary, containing keys : e, n , and kty , which are required to create a kid (thumbprint)
-     - returns : KID in base64encoded string format (without Padding)
+     - returns: KID in base64encoded string format (without Padding)
      */
     public class func createKIDfromJWK(jwkDict : [String: Any]) -> String? {
         
@@ -445,6 +436,12 @@ public class KeyStore {
         return keysResult
     }
     
+    /**
+     Get a public key from a private key object
+     The public key will have the same kid as the private key.
+     - parameter key: private Key object
+     - returns: public key or nil if there is any error
+    */
     public static func getPublicKey(key : Key) -> Key? {
         guard let publicKey = SecKeyCopyPublicKey(key.getKeyObject()) else {
             return nil

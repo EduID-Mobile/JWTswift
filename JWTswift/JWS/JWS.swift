@@ -82,11 +82,9 @@ public class JWS{
     //    kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256
     //    - RSA signature with PKCS#1 padding, SHA-256 digest is generated from input data of any size.
     
-    //TODO : CHANGE inout on signature
-    
     /**
      Verify function to check if the data has been sent by the desired Sender
-     - parameter jwsToVerify : a jws packet, that the user want to verify
+     - parameter jwsToVerify : a jws compact serialization, that to be verified
      - parameter key: a key to verify the signature of the JWS package
      -returns:  Status from verifying the data, true if successful, false if not verified or if there any error on process
      */
@@ -198,24 +196,5 @@ public class JWS{
         
         return result
     }
-    
-    /*
-     public class func createHeader () -> String{
-     var keys : [String] = []
-     var header : [String : Any] = [:]
-     keys.append("typ")
-     keys.append("alg")
-     header["typ"] = "JWT"
-     header["alg"] = "HS256"
-     print(header.description)
-     var headerStr = "{"
-     for i in 0..<keys.count {
-     headerStr += "\"\(keys[i])\":" + "\"\(header[keys[i]] as! String)\""
-     if(i < keys.count - 1) { headerStr += ",\r\n "}
-     }
-     headerStr += "}"
-     return headerStr
-     }
-     */
     
 }
