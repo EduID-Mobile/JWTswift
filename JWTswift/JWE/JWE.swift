@@ -26,6 +26,7 @@ enum JweError : Error {
     case encryptionError
     case decryptionErrror
     case unsupportedFormatForPayload
+    case serializationError
 }
 
 public class JWE {
@@ -41,11 +42,14 @@ public class JWE {
     var plaintext : [String : Any]?
     var plainJWS : String?
     
-    internal init(alg: CekEncryptionAlgorithm, kid : String) {
+    internal init(alg: CekEncryptionAlgorithm, kid : String, aud: String? = nil) {
         //Header will be set with default algorithm, this could be changed in the future
         joseHeaderDict = ["kid" : kid,
                           "cty" : "JWT",
                           "enc" : "A128CBC-HS256"]
+        if aud != nil {
+            joseHeaderDict!["aud"] = aud
+        }
         
         switch alg {
         case .RSA1_5:
@@ -55,6 +59,8 @@ public class JWE {
         }
 
         joseHeaderData = try! JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
+        
+        
     }
     
     public init(compactJWE : String, privateKey : Key) throws {
@@ -95,8 +101,8 @@ public class JWE {
         
     }
     
-    public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, kid: String) throws {
-        self.init(alg: alg, kid: kid)
+    public convenience init(plaintext : [String:Any], alg: CekEncryptionAlgorithm, publicKey : Key, kid: String, aud: String? = nil) throws {
+        self.init(alg: alg, kid: kid, aud: aud)
         self.plaintext = plaintext
         do{
             let _ = try generateJWE(encryptKey: publicKey)
@@ -106,9 +112,9 @@ public class JWE {
         }
     }
     
-    public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, kid: String) throws {
+    public convenience init(plainJWS : String, alg: CekEncryptionAlgorithm, publicKey: Key, kid: String, aud: String? = nil) throws {
         
-        self.init(alg: alg, kid: kid)
+        self.init(alg: alg, kid: kid, aud: aud)
         self.plainJWS = plainJWS
         
         do{
@@ -121,8 +127,14 @@ public class JWE {
     
     // MARK: ----  Setter ----
     
-    func setInitVector(initVector: [UInt8]){
+    func setInitVector(initVector: [UInt8]) {
         self.initVector = initVector
+    }
+    
+    func addExtraHeader(headerClaim : String, headerValue: Any) {
+        if headerClaim == "aud" || headerClaim == "iss" || headerClaim == "sub" {
+            joseHeaderDict![headerClaim] = headerValue
+        }
     }
     
     func clearAll(){
@@ -251,9 +263,17 @@ public class JWE {
         
         // 5 Different components (header, encrypted CEK, initialization Vector, Ciphertext,
         // Authentication Tag).
-        
+        let headerEncoded : String
         // Part 1 Header
-        let headerEncoded = joseHeaderData!.base64EncodedString().base64ToBase64Url().clearPaddding()
+        do {
+            let headerDataTmp = try JSONSerialization.data(withJSONObject: joseHeaderDict!, options: [])
+            headerEncoded = headerDataTmp.base64EncodedString().base64ToBase64Url().clearPaddding()
+        } catch {
+            print(error)
+            throw JweError.serializationError
+        }
+            
+            //joseHeaderData!.base64EncodedString().base64ToBase64Url().clearPaddding()
         
         // Part 2 Encrypted Key
         if cek == nil {
@@ -329,6 +349,7 @@ public class JWE {
         guard (joseHeaderData != nil) else {
             return nil
         }
+        
         return [UInt8](joseHeaderData!.base64EncodedData())
     }
     

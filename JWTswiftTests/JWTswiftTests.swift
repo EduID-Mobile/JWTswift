@@ -809,7 +809,7 @@ class JWTswiftTests: XCTestCase {
         
         let jwe : JWE
         do {
-            jwe = try JWE(plainJWS: jwsSource, alg: .RSA_OAEP_256, publicKey: pubkey.first!, kid: pubkey.first!.getKid()!)
+            jwe = try JWE(plainJWS: jwsSource, alg: .RSA_OAEP_256, publicKey: pubkey.first!, kid: pubkey.first!.getKid()!, aud: "BLC")
         } catch {
             print(error)
             XCTFail()
